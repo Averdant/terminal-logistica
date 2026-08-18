@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <style>
+    body { background-color: #0b0e14; color: #ecf0f1; font-family: 'Courier New', Courier, monospace; overflow-x: hidden; }
+    .terminal-header { background-color: #1a1a1a; padding: 15px 20px; border-bottom: 4px solid #f39c12; margin-bottom: 25px; position: relative; }
+    .header-content { display: flex; align-items: center; justify-content: center; gap: 20px; }
+    
+    .logo-lcs-svg { height: 75px; width: auto; display: block; filter: drop-shadow(0 0 6px rgba(243, 156, 18, 0.3)); }
+
+    .title-text { font-weight: bold; font-size: 2.2rem; margin: 0; letter-spacing: 2px; color: #ffffff; }
+    .subtitle-text { color: #bdc3c7; font-size: 1rem; margin: 0; text-transform: uppercase; }
+
+    .creator-link { position: absolute; top: 15px; right: 20px; color: #bdc3c7; font-size: 0.8rem; text-decoration: none; transition: 0.3s; }
+    .creator-link:hover { color: #f39c12; text-decoration: underline; }
+    .btn-audio { position: absolute; top: 15px; left: 20px; background-color: #e74c3c; color: white; border: 1px solid #c0392b; padding: 5px 10px; font-size: 0.8rem; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+    .btn-audio.active { background-color: #27ae60; border-color: #2ecc71; }
+
+    .nav-tabs { border-bottom: 2px solid #444; margin-bottom: 20px; flex-wrap: wrap; gap: 5px;}
+    .nav-tabs .nav-link { color: #bdc3c7; background-color: #1c252e; border: 1px solid #444; margin-right: 2px; font-weight: bold; transition: 0.3s;}
+    .nav-tabs .nav-link:hover { color: #f39c12; border-color: #f39c12; }
+    .nav-tabs .nav-link.active { color: #0b0e14; background-color: #f39c12; border-color: #f39c12; }
+
+    .card-terminal { background-color: #1c252e; border: 1px solid #444; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+    .card-chart { background-color: #1c252e; border: 1px solid #444; border-radius: 8px; padding: 15px; margin-bottom: 20px; }
+    .form-section { border: 1px dashed #444; padding: 15px; border-radius: 8px; background-color: #141b22; margin-bottom: 15px; }
+
+    .caja-activa { background-color: #2c3e50; border-left: 5px solid #33ff33; padding: 15px; margin-bottom: 10px; border-radius: 5px; transition: 0.3s;}
+    .timer { font-size: 1.5rem; font-weight: bold; color: #f39c12; }
+
+    @keyframes blinkL1 { 0%, 100% { border-color: #f1c40f; box-shadow: 0 0 5px #f1c40f; background-color: #3b3a20;} 50% { border-color: #f39c12; box-shadow: 0 0 10px #f39c12; background-color: #4a4520;} }
+    @keyframes blinkL2 { 0%, 100% { border-color: #e67e22; box-shadow: 0 0 10px #e67e22; background-color: #4a3520;} 50% { border-color: #d35400; box-shadow: 0 0 15px #d35400; background-color: #5a3020;} }
+    @keyframes blinkL3 { 0%, 100% { border-color: #e74c3c; box-shadow: 0 0 15px #e74c3c; background-color: #4a2020;} 50% { border-color: #c0392b; box-shadow: 0 0 20px #c0392b; background-color: #5a1010;} }
+    @keyframes blinkL4 { 0%, 100% { border-color: #c0392b; box-shadow: 0 0 20px #c0392b; background-color: #5a1010;} 50% { border-color: #ff0000; box-shadow: 0 0 25px #ff0000; background-color: #7a0000;} }
+    @keyframes blinkMulero { 0%, 100% { border-color: #9b59b6; box-shadow: 0 0 10px #9b59b6; } 50% { border-color: #8e44ad; box-shadow: 0 0 20px #8e44ad; } }
+
+    .caja-activa.alerta-sin-mulero { animation: blinkMulero 1.5s infinite; border-left-color: #9b59b6; }
+    .caja-activa.nivel-1 { animation: blinkL1 2.5s infinite !important; border-left-color: #f1c40f !important; } 
+    .caja-activa.nivel-2 { animation: blinkL2 1.5s infinite !important; border-left-color: #e67e22 !important; } 
+    .caja-activa.nivel-3 { animation: blinkL3 0.8s infinite !important; border-left-color: #e74c3c !important; } 
+    .caja-activa.nivel-4 { animation: blinkL4 0.4s infinite !important; border-left-color: #ff0000 !important; } 
+
+    .ramp-box.alerta-sin-mulero { animation: blinkMulero 1.5s infinite; border-color: #9b59b6; }
+    .ramp-box.nivel-1 { animation: blinkL1 2.5s infinite !important; border-color: #f1c40f !important; }
+    .ramp-box.nivel-2 { animation: blinkL2 1.5s infinite !important; border-color: #e67e22 !important; }
+    .ramp-box.nivel-3 { animation: blinkL3 0.8s infinite !important; border-color: #e74c3c !important; }
+    .ramp-box.nivel-4 { animation: blinkL4 0.4s infinite !important; border-color: #ff0000 !important; }
+
+    .form-label { color: #bdc3c7; font-size: 0.85rem; margin-bottom: 2px; font-weight: bold; }
+    .form-control, .form-select { background-color: #0b0e14; color: #33ff33; border: 1px solid #444; font-family: 'Courier New'; }
+    .form-control:focus, .form-select:focus { background-color: #1a1a1a; color: #f39c12; border-color: #f39c12; box-shadow: none; }
+    .btn-time { background-color: #444; color: white; border: none; font-size: 0.8rem; padding: 2px 8px; border-radius: 4px; cursor: pointer; transition: 0.3s;}
+    .btn-time:hover { background-color: #f39c12; color: black; }
+    
+    .btn-status-retira { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; cursor: pointer; transition: 0.2s; border: none; font-weight: bold; }
+    .btn-libre { background-color: #27ae60; color: white; }
+    .btn-libre:hover { background-color: #2ecc71; }
+    .btn-pendiente { background-color: #f39c12; color: black; }
+    .btn-pendiente:hover { background-color: #f1c40f; }
+
+    .btn-submit { background-color: #f39c12; color: black; font-weight: bold; width: 100%; border: none; padding: 10px; font-size: 1.1rem; border-radius: 5px; margin-top: 15px;}
+    .btn-submit:hover { background-color: #d68910; }
+
+    .map-layout { background-color: #0b0e14; padding: 20px; border-radius: 8px; border: 1px dashed #f39c12; }
+    .ramp-group { border: 1px solid #444; border-radius: 6px; padding: 8px; background-color: #141b22; display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; position: relative; margin-top: 10px;}
+    .ramp-group-title { position: absolute; top: -12px; background: #141b22; padding: 0 5px; font-size: 0.7rem; color: #3498db; font-weight: bold; border-radius:3px; }
+    
+    .ramp-box { background-color: #2c3e50; border: 2px solid #7f8c8d; border-radius: 4px; padding: 3px; width: 68px; height: 62px; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between; align-items: center; font-size: 0.68rem;}
+    .ramp-box:hover { border-color: #f39c12; transform: scale(1.1); z-index: 10;}
+    .ramp-box.ocupada { border-color: #f39c12; background-color: #d35400; }
+    
+    .ramp-box span.title { color: #fff; font-weight: bold; font-size: 0.72rem; margin-bottom: 1px;}
+    .ramp-box span.badge { background: #000; color: #bdc3c7; padding: 2px; border-radius: 3px; font-size: 0.62rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+    
+    .caja-tag { background: #f39c12; color: #000; font-weight: bold; border-radius: 2px; padding: 2px 4px; font-size: 0.62rem; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+    .prov-tag { background: #ecf0f1; color: #2c3e50; border-radius: 2px; padding: 1px 4px; font-size: 0.52rem; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+    
+    .table-dark { background-color: #1c252e; font-size: 0.85rem; }
+    .table-dark th { color: #f39c12; border-color: #444; }
+    .table-dark td { border-color: #444; color: #ecf0f1; vertical-align: middle;}
+    .vendor-badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); display: inline-block;}
+    
+    .kpi-card { background-color: #141b22; border: 1px solid #333; border-radius: 6px; padding: 10px 15px; text-align: center; }
+    .kpi-title { color: #ffffff !important; font-weight: bold; font-size: 0.85rem; letter-spacing: 1px; }
+    .kpi-value { font-size: 1.8rem; font-weight: bold; }
+
+    .filter-btn-group .btn { font-size: 0.75rem; font-weight: bold; border-color: #444; color: #bdc3c7; }
+    .filter-btn-group .btn.active { background-color: #f39c12; color: #000; border-color: #f39c12; }
+  </style>
+</head>
+<body>
+
+  <div class="terminal-header">
+    <button id="btnAudioToggle" class="btn-audio" onclick="toggleAudio()">🔇 Activar Alertas y Voz</button>
+    <a href="mailto:leonardo_patricio_cedillo@whirlpool.com" class="creator-link">Created by: leonardo_patricio_cedillo@whirlpool.com</a>
+    
+    <div class="header-content">
+      <svg class="logo-lcs-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#a0a0a0">
+          <circle cx="100" cy="100" r="82"/>
+          <rect x="88" y="0" width="24" height="200" rx="4"/>
+          <rect x="88" y="0" width="24" height="200" rx="4" transform="rotate(30 100 100)"/>
+          <rect x="88" y="0" width="24" height="200" rx="4" transform="rotate(60 100 100)"/>
+          <rect x="88" y="0" width="24" height="200" rx="4" transform="rotate(90 100 100)"/>
+          <rect x="88" y="0" width="24" height="200" rx="4" transform="rotate(120 100 100)"/>
+          <rect x="88" y="0" width="24" height="200" rx="4" transform="rotate(150 100 100)"/>
+        </g>
+        <circle cx="100" cy="100" r="56" fill="#ffffff" stroke="#888888" stroke-width="2"/>
+        <text x="100" y="116" font-family="'Courier New', Courier, monospace, sans-serif" font-weight="900" font-size="48" fill="#000000" text-anchor="middle" letter-spacing="-1">LCS</text>
+      </svg>
+
+      <div class="text-start">
+        <h1 class="title-text">TERMINAL DE LOGÍSTICA</h1>
+        <p class="subtitle-text">SISTEMA INTEGRAL DE MONITOREO E INVENTARIOS</p>
+      </div>
+    </div>
+    <div class="text-center mt-3">
+      <p id="reloj" style="color: #f39c12; font-weight: bold; font-size: 1.2rem; margin: 0;"></p>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    
+    <ul class="nav nav-tabs justify-content-center" id="mainTabs" role="tablist">
+      <li class="nav-item" role="presentation"><button class="nav-link active" id="rampas-tab" data-bs-toggle="tab" data-bs-target="#rampas" type="button">🚚 Movimientos y Rampas</button></li>
+      <li class="nav-item" role="presentation"><button class="nav-link" id="descargas-tab" data-bs-toggle="tab" data-bs-target="#descargas" type="button">📉 Descargas x Turno</button></li>
+      <li class="nav-item" role="presentation"><button class="nav-link" id="equipovacio-tab" data-bs-toggle="tab" data-bs-target="#equipovacio" type="button">🚛 Equipo Vacío</button></li>
+      <li class="nav-item" role="presentation"><button class="nav-link" id="facturas-tab" data-bs-toggle="tab" data-bs-target="#facturas" type="button">📑 Inventario Facturas</button></li>
+      <li class="nav-item" role="presentation"><button class="nav-link" id="patios-tab" data-bs-toggle="tab" data-bs-target="#patios" type="button">📦 Inventario Patios</button></li>
+      <li class="nav-item" role="presentation"><button class="nav-link" id="proveedores-tab" data-bs-toggle="tab" data-bs-target="#proveedores" type="button">🏢 Cajas x Proveedor</button></li>
+    </ul>
+
+    <div class="tab-content" id="mainTabsContent">
+      
+      <!-- TAB RAMPAS -->
+      <div class="tab-pane fade show active" id="rampas" role="tabpanel">
+        <div class="card-terminal mb-4">
+          <h4 class="text-warning text-center mb-4">🗺️ Layout de Patios y Rampas</h4>
+          <p class="text-center text-muted small">Selecciona una rampa para cargar la información.</p>
+          <div class="map-layout d-flex flex-column gap-3" id="mapa-rampas"></div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-7">
+            <h4 class="text-warning mb-3">⏱️ Cajas Activas (En Proceso)</h4>
+            <div id="cajas-activas-container" class="mb-4"><p class="text-muted">Cargando monitoreo...</p></div>
+
+            <div class="card-terminal" id="zonaFormulario">
+              <h4 class="text-warning mb-3">📋 Plataforma Operador de Báscula</h4>
+              <form id="registroForm">
+                <div class="form-section">
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <label class="form-label"># Caja</label>
+                      <input type="text" class="form-control" id="caja" list="lista-cajas" onblur="buscarDatosCaja()" required placeholder="Buscar o Escribir...">
+                      <datalist id="lista-cajas"></datalist>
+                      <small id="busquedaLoader" class="text-warning" style="display:none; font-size: 0.7rem;">Buscando...</small>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Rampa Ingreso</label>
+                      <input type="text" class="form-control" id="rampa" style="transition: background-color 0.5s;">
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <div class="col-md-6">
+                      <label class="form-label d-flex align-items-center gap-2 mb-1">
+                        Estatus Caja Vacía:
+                        <button type="button" class="btn-status-retira btn-libre" onclick="setRetiraValue('Rampa Libre')">Rampa Libre</button>
+                        <button type="button" class="btn-status-retira btn-pendiente" onclick="setRetiraValue('Caja Vacía Pendiente')">Caja Vacía Pend.</button>
+                      </label>
+                      <input type="text" class="form-control" id="retira" placeholder="Selecciona una opción o escribe">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">1. Contador Inicial Solicitud Mulero <button type="button" class="btn-time ms-2" onclick="setHora('paso1')">⏱️</button></label>
+                      <input type="text" class="form-control" id="paso1" placeholder="HH:MM:SS">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-section">
+                  <div class="row mb-2">
+                    <div class="col-md-6">
+                      <label class="form-label">Nombre Mulero</label>
+                      <input type="text" class="form-control" id="mulero">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Realizado Por (Usuario)</label>
+                      <input type="number" class="form-control" id="usuario" placeholder="Solo números">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-section">
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <label class="form-label">2. Hora llega Mulero a rampa <button type="button" class="btn-time ms-2" onclick="setHora('paso2')">⏱️</button></label>
+                      <input type="text" class="form-control" id="paso2" placeholder="HH:MM:SS">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">3. Contador Inicial Caja Enrampada <button type="button" class="btn-time ms-2" onclick="setHora('paso3')">⏱️</button></label>
+                      <input type="text" class="form-control" id="paso3" placeholder="HH:MM:SS">
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <label class="form-label">4. Contador Final Caja Enrampada <button type="button" class="btn-time ms-2" onclick="setHora('paso4')">⏱️</button></label>
+                      <input type="text" class="form-control" id="paso4" placeholder="HH:MM:SS">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">5. Hora Inicial Descarga Caja <button type="button" class="btn-time ms-2" onclick="setHora('paso5')">⏱️</button></label>
+                      <input type="text" class="form-control" id="paso5" placeholder="HH:MM:SS">
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <div class="col-md-6">
+                      <label class="form-label">6. Hora Final Descarga Caja <button type="button" class="btn-time ms-2" onclick="setHora('paso6')">⏱️</button></label>
+                      <input type="text" class="form-control" id="paso6" placeholder="HH:MM:SS">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <label class="form-label">Estatus de la Caja</label>
+                    <select class="form-select" id="status" required>
+                      <option value="En Proceso">En Proceso</option>
+                      <option value="Finalizado">Finalizado</option>
+                      <option value="Fuera de Tiempo">Fuera de Tiempo</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btnGuardar">GUARDAR REGISTRO O ACTUALIZAR</button>
+                <div id="mensajeExito" class="text-success mt-2 fw-bold" style="display:none;">¡Datos Guardados Exitosamente!</div>
+              </form>
+            </div>
+          </div>
+
+          <div class="col-lg-5">
+            <div class="card-chart">
+              <h5 class="text-center text-warning mb-3">Estatus Salidas</h5>
+              <div id="donut_status" style="width: 100%; height: 280px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB DESCARGAS -->
+      <div class="tab-pane fade" id="descargas" role="tabpanel">
+        <div class="row mb-3">
+          <div class="col-md-4"><div class="kpi-card"><div class="kpi-title">TOTAL DESCARGAS (DIARIO)</div><div class="kpi-value text-warning" id="kpi_total_descargas">0</div></div></div>
+          <div class="col-md-4"><div class="kpi-card"><div class="kpi-title">TURNO A (DIARIO)</div><div class="kpi-value text-info" id="kpi_turno_a">0</div></div></div>
+          <div class="col-md-4"><div class="kpi-card"><div class="kpi-title">TURNO B (DIARIO)</div><div class="kpi-value text-success" id="kpi_turno_b">0</div></div></div>
+        </div>
+        
+        <div class="row">
+          <div class="col-lg-7">
+            <div class="card-chart">
+              <h5 class="text-warning text-center mb-3">📉 Tendencia Diaria de Descargas por Turno</h5>
+              <div id="chart_descargas" style="width: 100%; height: 350px;"></div>
+            </div>
+            
+            <div class="card-chart">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="text-warning mb-0">🏢 Descargas por Proveedor</h5>
+                <div class="btn-group filter-btn-group" role="group">
+                  <button type="button" class="btn btn-sm btn-outline-warning active" onclick="cambiarFiltroDescargasVendor('diario', this)">Diario</button>
+                  <button type="button" class="btn btn-sm btn-outline-warning" onclick="cambiarFiltroDescargasVendor('semanal', this)">Semanal</button>
+                  <button type="button" class="btn btn-sm btn-outline-warning" onclick="cambiarFiltroDescargasVendor('mensual', this)">Mensual</button>
+                  <button type="button" class="btn btn-sm btn-outline-warning" onclick="cambiarFiltroDescargasVendor('anual', this)">Anual</button>
+                </div>
+              </div>
+              <div id="chart_descargas_vendor" style="width: 100%; height: 350px;"></div>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="card-terminal">
+              <h5 class="text-warning text-center mb-3">🗓️ Resumen Estadístico Diario</h5>
+              <div id="tabla-descargas-container" class="table-responsive" style="max-height: 720px; overflow-y: auto;">
+                 <p class="text-muted text-center">Calculando estadísticas...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-terminal mt-3">
+          <h5 class="text-warning text-center mb-3">📋 Registro de Descargas Realizadas</h5>
+          
+          <div class="d-flex justify-content-center mb-3">
+            <div style="width: 60%; max-width: 550px;">
+              <input type="text" id="searchDescargasTable" class="form-control text-center shadow" 
+                     placeholder="🔍 Buscar por Día, Fecha, Línea, Caja, Proveedor, Mulero..." 
+                     onkeyup="filtrarTablaDescargasUI()" 
+                     style="border: 2px solid #f39c12; background-color: #0b0e14; color: #33ff33; font-weight: bold; font-size: 0.95rem;">
+            </div>
+          </div>
+
+          <div id="tabla-descargas-detalle-container" class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+             <p class="text-muted text-center">Cargando registros de descargas...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB EQUIPO VACÍO -->
+      <div class="tab-pane fade" id="equipovacio" role="tabpanel">
+        <div class="row mb-3">
+          <div class="col-md-4"><div class="kpi-card"><div class="kpi-title">TOTAL SALIDAS DE VACÍO (DIARIO)</div><div class="kpi-value text-warning" id="kpi_vacio_total">0</div></div></div>
+          <div class="col-md-4"><div class="kpi-card"><div class="kpi-title">TURNO A (DIARIO)</div><div class="kpi-value text-info" id="kpi_vacio_a">0</div></div></div>
+          <div class="col-md-4"><div class="kpi-card"><div class="kpi-title">TURNO B (DIARIO)</div><div class="kpi-value text-success" id="kpi_vacio_b">0</div></div></div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="card-chart">
+              <h5 class="text-warning text-center mb-3">🚛 Salidas de Equipo Vacío por Fecha y Turno</h5>
+              <div id="chart_vacio_tendencia" style="width: 100%; height: 380px;"></div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card-chart">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="text-warning mb-0">🏆 Top Proveedores con Más Salidas RRVP</h5>
+                <div class="btn-group filter-btn-group" role="group">
+                  <button type="button" class="btn btn-sm btn-outline-warning active" onclick="cambiarFiltroTopVacio('diario', this)">Diario</button>
+                  <button type="button" class="btn btn-sm btn-outline-warning" onclick="cambiarFiltroTopVacio('semanal', this)">Semanal</button>
+                  <button type="button" class="btn btn-sm btn-outline-warning" onclick="cambiarFiltroTopVacio('mensual', this)">Mensual</button>
+                  <button type="button" class="btn btn-sm btn-outline-warning" onclick="cambiarFiltroTopVacio('anual', this)">Anual</button>
+                </div>
+              </div>
+              <div id="chart_vacio_proveedores" style="width: 100%; height: 340px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-terminal">
+          <h5 class="text-warning text-center mb-3">📋 Registros de Salidas de Equipo Vacío</h5>
+          
+          <div class="d-flex justify-content-center mb-3">
+            <div style="width: 70%; max-width: 650px;">
+              <input type="text" id="searchVacioTable" class="form-control text-center shadow" 
+                     placeholder="🔍 Buscar por FECHA, LINEA, CAJA, PROVEEDOR, TRACTOR, TRANSPORTISTA, HORA, GRUPO..." 
+                     onkeyup="filtrarTablaVacioUI()" 
+                     style="border: 2px solid #f39c12; background-color: #0b0e14; color: #33ff33; font-weight: bold; font-size: 0.95rem;">
+            </div>
+          </div>
+
+          <div id="tabla-vacio-container" class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+             <p class="text-muted text-center">Cargando equipo vacío...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB FACTURAS -->
+      <div class="tab-pane fade" id="facturas" role="tabpanel">
+        <div class="card-terminal">
+          <h4 class="text-warning text-center mb-3">📑 Inventario y Status de Facturas</h4>
+          
+          <div class="d-flex justify-content-center mb-4">
+            <div style="width: 60%; max-width: 550px;">
+              <input type="text" id="searchFacturas" class="form-control text-center shadow" 
+                     placeholder="🔍 Buscar por Proveedor, # Caja o Fecha..." 
+                     onkeyup="filtrarFacturasUI()" 
+                     style="border: 2px solid #f39c12; background-color: #0b0e14; color: #33ff33; font-weight: bold; font-size: 1rem;">
+            </div>
+          </div>
+
+          <div class="row" id="facturas-group-container">
+             <p class="text-muted text-center">Cargando inventario de facturas...</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="patios" role="tabpanel">
+        <div class="card-terminal">
+          <h4 class="text-warning text-center mb-4">📦 Inventario de Cajas en Patios</h4>
+          <div id="patios-container" class="table-responsive" style="max-height: 800px; overflow-y: auto;"><p class="text-muted text-center">Cargando...</p></div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="proveedores" role="tabpanel">
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="card-chart"><h5 class="text-warning text-center mb-4">🏢 Top Proveedores con más Cajas</h5><div id="bar_vendors" style="width: 100%; height: 500px;"></div></div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card-terminal"><h5 class="text-warning text-center mb-4">📊 Directorio y Conteo General</h5><div id="tabla-vendors-container" class="table-responsive" style="max-height: 500px; overflow-y: auto;"><p class="text-muted text-center">Calculando...</p></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div> 
+  </div>
+
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script>
+    google.charts.load('current', {'packages':['corechart', 'bar']});
+    
+    // ENLACE DE TU IMPLEMENTACIÓN DE APPS SCRIPT
+    const WEB_APP_URL = 'https://script.google.com/a/macros/whirlpool.com/s/AKfycbwUd3uSl2VL1gkonhz7xcUChAQnaH3mMQcL4esKMWUIN7Srlty4vEET5INhzk5_Ddfy/exec';
+
+    const VENDORS = [
+      {id: "2414", name: "SP ACQUISITION LLC"}, {id: "7949", name: "CONTROL TECHNOLOGIES INC"}, {id: "8227", name: "ACME SCREW CO"}, {id: "8289", name: "AVERY DENNISON"}, {id: "8433", name: "DURACO SPECIALTY TAPES, LLC"}, {id: "8596", name: "KI INDUSTRIES INC"}, {id: "8697", name: "NORTHERN ENGRAVING CORP"}, {id: "8711", name: "OEM MILLER"}, {id: "8786", name: "MICHIGAN DIE CASTING LLC"}, {id: "8812", name: "ROBERTSHAW CONTROLS CO"}, {id: "8908", name: "THERM O DISC INC"}, {id: "8916", name: "TRIANGLE RUBBER CO INC"}, {id: "8968", name: "US STEEL CORP"}, {id: "9028", name: "MODINEER WOLVERINE LLC"}, {id: "12921", name: "AMERICAN TRIM SIDNEY DIVISION"}, {id: "12950", name: "BEMIS MANUFACTURING CO"}, {id: "13139", name: "STANDARD TOOL & DIE"}, {id: "13143", name: "A 1 TOOL CORPORATION"}, {id: "13745", name: "NATIONAL INSTRUMENTS CORP"}, {id: "13757", name: "FLEXTRONICS LOGISTICS USA INC B10"}, {id: "13784", name: "RR DONNELLEY"}, {id: "13854", name: "KAMCO PLASTICS"}, {id: "13975", name: "RWC INC"}, {id: "13982", name: "WAKO ELECTRONICS USA INC"}, {id: "14073", name: "EPI PRINTING"}, {id: "14762", name: "CONNECTION SERVICE"}, {id: "14829", name: "ASTRODYNE CORPORATION"}, {id: "14841", name: "JOHNSON ELECTRIC NORTH AMERICA INC"}, {id: "14855", name: "MAR BAL INC"}, {id: "15192", name: "THE LYONS COMPANIES LLC"}, {id: "15735", name: "QUALITY FIRST SYSTEMS INC"}, {id: "15862", name: "JIT AUTOMATION"}, {id: "16251", name: "BAYER"}, {id: "16254", name: "FORTIS PLASTICS LLC"}, {id: "16311", name: "WABASH PLASTICS INC"}, {id: "16347", name: "TEC AIR INC"}, {id: "16354", name: "SOUTHERN STEEL & WIRE CO"}, {id: "16373", name: "JONES PLASTICS JEFFERSONTOWN DIV"}, {id: "16385", name: "ARKANSAS GENERAL INDUSTRIES"}, {id: "16391", name: "3M PURIFICATION INC"}, {id: "16396", name: "OMICO PLASTICS INC"}, {id: "16441", name: "FORT RECOVERY INDUSTRIES INC"}, {id: "16446", name: "YODER DIE CASTING CORP"}, {id: "16495", name: "FRIENDSHIP SERVICES CENTER"}, {id: "16496", name: "CHAU'S ELECTRICAL INT'L INC"}, {id: "16525", name: "MCGREGOR & ASSOC INC"}, {id: "16536", name: "JONES PLASTICS LEITCHFIELD DIV"}, {id: "16537", name: "JONES PLASTIC & ENGINEERING CO, LLC"}, {id: "16546", name: "KROMET INTERNATIONAL INC"}, {id: "16620", name: "GENERAL ELECTRIC CO"}, {id: "16632", name: "JASPER RUBBER PRODUCTS IN"}, {id: "16684", name: "AMERICAN TRIM CULLMAN DIVISION"}, {id: "16811", name: "HOOKS & ASSOCIATES, INC"}, {id: "16922", name: "LIGHT METALS CORP"}, {id: "16934", name: "BATESVILLE TOOL & DIE"}, {id: "16949", name: "SCHOTT GEMTRON CORP"}, {id: "16995", name: "MCALLEN METAL STAMPING"}, {id: "17004", name: "CEBI MICROMOTORS SWITZERLAND SA"}, {id: "18352", name: "EHRHARDT TOOL & MACHINE CO"}, {id: "18459", name: "AFROS SPA"}, {id: "18917", name: "SHAMROCK BOLT AND SCREW CO INC"}, {id: "19479", name: "PANASONIC INDUSTRIAL CO"}, {id: "19491", name: "MILLS PRODUCTS LLC"}, {id: "19520", name: "NIDEC MOTOR CORP"}, {id: "19675", name: "SCA NORTH AMERICA PACKAGING DIV"}, {id: "21002", name: "LUCAS MILHAUPT INC"}, {id: "21767", name: "MOLEX LLC"}, {id: "23161", name: "SAIA BURGESS INC"}, {id: "23348", name: "EVONIK CORPORATION"}, {id: "24024", name: "INCOE CORP"}, {id: "24443", name: "BRANSON ULTRASONICS CORP"}, {id: "24585", name: "RELIANCE WORLDWIDE CORPORATION"}, {id: "24752", name: "MOLL INDUSTRIES INC EV"}, {id: "24792", name: "ILLINOIS TOOL WORKS, INC"}, {id: "25034", name: "PSC FABRICATING"}, {id: "25450", name: "SOLSTICE ADVANCED MATERIALS US, INC"}, {id: "25594", name: "JABIL CIRCUIT GUANGZHOU LTD"}, {id: "25880", name: "DURA MAGNETICS INC"}, {id: "26853", name: "CINCINNATI TEST SYSTEMS"}, {id: "27103", name: "SENSATA TECHNOLOGIES INC"}, {id: "27126", name: "MOLD MASTERS LTD"}, {id: "27569", name: "COLD JET LLC"}, {id: "27827", name: "METAL POWDER PRODUCTS"}, {id: "27891", name: "BRAZEWAY LLC"}, {id: "28083", name: "JABIL CIRCUIT MEXICO SA DE CV"}, {id: "29237", name: "SUPPLY TECHNOLOGIES"}, {id: "29316", name: "HENDERSON STAMPING"}, {id: "30553", name: "SIKA CORPORATION"}, {id: "30692", name: "WS PACKAGING GROUP"}, {id: "32335", name: "CIRCUIT CHECK INC"}, {id: "33182", name: "DELTA PRODUCTS CORP"}, {id: "33343", name: "INDUSTRIAL DIELECTRICS INC"}, {id: "33443", name: "NIDEC AMERICA CORP"}, {id: "33502", name: "SATURN ELECTRONICS & ENGINEERING"}, {id: "33677", name: "LIFETIME BRANDS INC"}, {id: "34123", name: "EDS MANUFACTURING INC"}, {id: "34618", name: "CUSTOM PAK INC"}, {id: "35372", name: "FLEXTRONICS INT'L EUROPE B V"}, {id: "36041", name: "NIDEC GLOBAL APPLIANCE NORTH"}, {id: "36345", name: "COMPONENTS FOR INDUSTRY"}, {id: "36842", name: "KABLE SPECIALTY PACKAGING SERVICES"}, {id: "36926", name: "CUSTOM PROFILE INC"}, {id: "37433", name: "WORLD BUYING SERVICE"}, {id: "37483", name: "KNAPE & VOGT"}, {id: "38394", name: "NORDSON EFD LLC"}, {id: "38416", name: "AMERICAN VULKAN CORP"}, {id: "38902", name: "HUNTINGTON FOAM LLC"}, {id: "39688", name: "ASBER ENTERPRISE CO LTD TAIWAN BRAN"}, {id: "40511", name: "GEON PERFORMANCE SOLUTIONS LLC"}, {id: "40836", name: "NINGHAI DAPENG MOLD&PLASTIC CO LTD"}, {id: "40878", name: "ALEJANDRO CORONA CARLOS"}, {id: "40912", name: "WESTARK DIVERSIFIED ENTERPRISES"}, {id: "41773", name: "KEMFLO INTERNATIONAL CO LTD"}, {id: "41782", name: "WALKER TOOL & DIE INC"}, {id: "41840", name: "MERKLE KORFF INDUSTRIES"}, {id: "42280", name: "CUSTOM PAK"}, {id: "42583", name: "ESPERANZA HERNANDEZ AGUILAR"}, {id: "42697", name: "BITRON SPA"}, {id: "42700", name: "JABIL CIRCUIT"}, {id: "42888", name: "INNO FLEX CORP"}, {id: "42997", name: "PIEDMONT ENERGY SYSTEMS"}, {id: "43375", name: "ZEPHYR SECURE INC"}, {id: "43533", name: "LUCAS MILHAUP WARWICK"}, {id: "43759", name: "ELECTRICAL COMPONENTS INTERNATIONAL"}, {id: "44548", name: "LYONDELLBASELL ADVANCED POLYMERS,"}, {id: "44721", name: "KX TECHNOLOGIES"}, {id: "45287", name: "LAFRANCE CORP"}, {id: "45886", name: "ADVANTAGE SINTERED METALS INC"}, {id: "46193", name: "FESTO PNEUMATIC S A"}, {id: "46314", name: "SMC CORPORATION MEXICO SA DE CV"}, {id: "46349", name: "CAMCAR TEXTRON DE MEXICO SA DE CV"}, {id: "46362", name: "ESPARRAGOS TORNILLOS Y BIRLOS SA DE"}, {id: "46372", name: "HB FULLER MEXICO SA DE CV"}, {id: "46375", name: "JOSE ALFREDO LEAL GARZA"}, {id: "46384", name: "OSRAM SA DE CV"}, {id: "46390", name: "PROVEEDORA DE AISLANTES ELECTRICOS"}, {id: "46393", name: "QUIMOBASICOS SA DE CV"}, {id: "46394", name: "QUIMOPLASTICOS SA DE CV"}, {id: "46401", name: "SMURFIT CARTON Y PAPEL SA DE CV"}, {id: "46422", name: "ARJESSIGER DE MEXICO SA DE CV"}, {id: "46499", name: "NORDSON DE MEXICO SA DE CV"}, {id: "46535", name: "BOSTIK MEXICANA SA DE CV"}, {id: "46536", name: "CARTONPACK SA DE CV"}, {id: "46537", name: "CRAFT ORIGINATORS DE MEXICO SA"}, {id: "46539", name: "ETAL SA DE CV"}, {id: "46541", name: "GEMTRON DE MEXICO SA DE CV"}, {id: "46542", name: "HENKEL CAPITAL SA DE CV"}, {id: "46550", name: "MANUFACTURAS Y SERVICIOS TROQUELADO"}, {id: "46553", name: "POLIOLES SA DE CV"}, {id: "46555", name: "PRODUCTOS NACOBRE SA DE CV"}, {id: "46557", name: "RPK MEXICO SA DE CV"}, {id: "46560", name: "SPARVEL S DE R L DE C V"}, {id: "46601", name: "ESTAMPER SA DE CV"}, {id: "46652", name: "MONTAJES ELECTROMECANICOS E INGENIE"}, {id: "46668", name: "SERVICIO VENTAS Y ENSAMBLES SA DE C"}, {id: "46694", name: "ACAT MEXICANA SA DE CV"}, {id: "46810", name: "RISOUL Y COMPANIA SA DE CV"}, {id: "46812", name: "RODAMIENTOS Y ACCESORIOS SA DE CV"}, {id: "46829", name: "TALLER MECANICO PELGO SA DE CV"}, {id: "46843", name: "COMERCIALIZADORA JESYHAR SA DE CV"}, {id: "46849", name: "ESPECIALIDADES TROQUELADAS SA DE CV"}, {id: "46851", name: "GRAFICA DEL NORTE SA DE CV"}, {id: "46852", name: "IDENTI SA DE CV"}, {id: "46854", name: "IMSA MEX SA DE CV PTA IMSA"}, {id: "46856", name: "KI MEXICO S DE R L DE C V"}, {id: "46859", name: "JALCO PLASTICOS Y ENVASES SA DE CV"}, {id: "46864", name: "REGIO PAK SA DE CV"}, {id: "46882", name: "BRAZEWAY MEXICO S DE R L DE CV"}, {id: "46888", name: "CASSIOLI BRASIL LTDA"}, {id: "46893", name: "COMI SRL IT"}, {id: "46901", name: "CANNON ERGOS SPA"}, {id: "46912", name: "DITEMSA S A DE C V"}, {id: "46914", name: "DUDEK AND BOCK S DE R L DE C V"}, {id: "46925", name: "FAGOR ARRASATE"}, {id: "46931", name: "GENESYS INFORMATICA SA DE CV"}, {id: "46942", name: "ILLINOIS TOOL WORKS, INC."}, {id: "46967", name: "MSK COVERTECH INC"}, {id: "46970", name: "NEXOR ELECTRONICA SA DE CV"}, {id: "46975", name: "ON TIME MOLDE LTDA"}, {id: "46983", name: "PRECISION METAL WORKS"}, {id: "46987", name: "PRODUCTION CONTROL UNITS INC"}, {id: "46999", name: "SCOTT TECHNOLOGY LTD"}, {id: "47001", name: "SERVICE TOOL & DIE"}, {id: "47011", name: "OUTOKUMPU MEXINOX SA DE CV"}, {id: "47015", name: "TROQUELES ELIZONDO SA DE CV"}, {id: "47021", name: "ACME SCREW CO"}, {id: "47030", name: "ILLINOIS TOOL WORKS, INC."}, {id: "47032", name: "FORTIS PLASTICS LLC"}, {id: "47035", name: "BASF MEXICANA SA DE CV"}, {id: "47040", name: "CAPLUGS LLC"}, {id: "47045", name: "COLLIS DE MEXICO S DE RL DE CV"}, {id: "47046", name: "COMPUTIME LTD"}, {id: "47051", name: "THE LUBRIZOL CORP"}, {id: "47052", name: "CRESCENT PLASTICS INC"}, {id: "47054", name: "DEVAN SEALANTS INC"}, {id: "47056", name: "DUDEK & BOCK"}, {id: "47057", name: "DUDEK AND BOCK R DE R L DE CV"}, {id: "47062", name: "EMB CORPORATION"}, {id: "47064", name: "NIDEC GLOBAL APPLIANCE NORTH AMERIC"}, {id: "47067", name: "EMICOL ELECTRO ELETRONICA LTDA"}, {id: "47070", name: "FERRO CORP"}, {id: "47078", name: "GENERAL ELECTRIC CO"}, {id: "47083", name: "IDENTI SA DE CV"}, {id: "47086", name: "INDIANA TUBE CO"}, {id: "47089", name: "INLAND CORRUGADOS DE MONTERREY SA D"}, {id: "47095", name: "ILLINOIS TOOL WORKS, INC"}, {id: "47098", name: "JABIL CIRCUIT INC"}, {id: "47100", name: "JONES PLASTIC & ENGINEERING DE"}, {id: "47103", name: "ALPHA ASSEMBLY SOLUTIONS INC."}, {id: "47105", name: "INEOS ABS USA CORP"}, {id: "47106", name: "LIMEX FORMADO Y DECORADO S RL DE CV"}, {id: "47108", name: "MANSFIELD ENGINEERED COMPONENTS INC"}, {id: "47110", name: "MASTER MANUFACTURING CO"}, {id: "47111", name: "MERCURY PLASTICS LLC"}, {id: "47112", name: "METALURGICA DUQUE S A"}, {id: "47120", name: "WHIRLPOOL SA"}, {id: "47122", name: "NORTHERN ENGRAVING CO"}, {id: "47126", name: "PANASONIC INDUSTRIAL CO"}, {id: "47127", name: "PANDUIT MEXICO S DE ENNC DE CV"}, {id: "47128", name: "POLY VINYL CO"}, {id: "47131", name: "UNIQUE PRESCOTECH INC"}, {id: "47134", name: "PSC FABRICATING CORP"}, {id: "47135", name: "REHAU SA DE CV"}, {id: "47140", name: "SERVICE TOOL & PLASTICS"}, {id: "47141", name: "SHAMROCK INTERNATIONAL FASTENER LLC"}, {id: "47143", name: "SOLVAY FLUOR MEXICO SA DE CV"}, {id: "47144", name: "SPARTECH DE MEXICO SA DE CV"}, {id: "47146", name: "BACKER EHP INC"}, {id: "47147", name: "SUNG SHIN CO LTD"}, {id: "47149", name: "SENSATA TECHNOLOGIES INC"}, {id: "47156", name: "TRIOWORLD NYBORG A/S"}, {id: "47157", name: "UNELKO CORP"}, {id: "47159", name: "UNIVERSAL METAL PRODUCTS INC"}, {id: "47163", name: "ELECTRICAL COMPONENTS INTERNATIONAL"}, {id: "47167", name: "WHIRLPOOL CORP"}, {id: "47169", name: "REVERE PLASTICS SYSTEMS LLC"}, {id: "47171", name: "WOLVERINE TUBE INC"}, {id: "47172", name: "VERITIV OPERATING COMPANY"}, {id: "47173", name: "ZOPPAS INDUSTRIES DE MEXICO SA DE C"}, {id: "47796", name: "UNICAR PLASTICS SA DE CV"}, {id: "47804", name: "MADERERIA Y FERRETERIA LOS ALPES SA"}, {id: "47806", name: "TERMOPLASTICOS DE MONTERREY SA DE C"}, {id: "47814", name: "CRISER SA DE CV"}, {id: "47815", name: "ELECTRONICOS ANIMADOS SA DE CV"}, {id: "47836", name: "REFRIGERACION Y AIRE ACONDICIONADO"}, {id: "47846", name: "LG CHEMICAL AMERICA INC"}, {id: "47852", name: "TASUS CANADA CORP"}, {id: "47866", name: "SISTEMAS DE FUERZA INDUSTRIAL SA"}, {id: "47958", name: "DUDEK & BOCK S DE RL DE CV"}, {id: "47979", name: "EMZ HANAUER GMBH & CO KGAA"}, {id: "48001", name: "MOLL MEXICO S DE RL DE CV"}, {id: "48007", name: "PAS APPLIANCE SYSTEMS S A DE C V"}, {id: "48118", name: "INFASTECH DECORAH LLC"}, {id: "48120", name: "ILPEA S DE R L DE C V"}, {id: "48132", name: "AWECO DE MEXICO S EN C DE CV"}, {id: "48282", name: "NEUMATICA PROFESIONAL SA DE CV"}, {id: "48284", name: "OMNI MANUFACTURING SERVICES SA DE"}, {id: "48315", name: "SOLUCIONES INTEGRADAS EN MANEJO DE"}, {id: "48319", name: "TECNO MONTAJES S A DE C V"}, {id: "48320", name: "TECNO TROQUELES S A DE C V"}, {id: "48325", name: "TYCO ELECTRONICS MEXICO S A"}, {id: "48440", name: "AIR POWER INC"}, {id: "48542", name: "EQUIPOS INDUSTRIALES DE CONTROL SA"}, {id: "48567", name: "POLIESTIRENO ALFA GAMMA S A DE C V"}, {id: "48604", name: "GRAINGER S A DE C V"}, {id: "48798", name: "OMEGA TOOL INC"}, {id: "48824", name: "LUIS BORIOLI S A DE C V"}, {id: "48834", name: "POLIENVASES S A DE C V"}, {id: "48923", name: "VAUGHN MANUFACTURING CO INC"}, {id: "48975", name: "INDUSTRIAS DINAMEK SA DE CV"}, {id: "48983", name: "TROQUELES ELIZONDO SA DE CV"}, {id: "48995", name: "PSION TEKLOGIX S A DE C V"}, {id: "49047", name: "HERRAMENTAL MONTERREY S A"}, {id: "49094", name: "HECTOR RODRIGUEZ MENDOZA"}, {id: "49329", name: "GLASSER SA DE CV"}, {id: "49344", name: "NATIONAL INSTRUMENTS DE MEX SA CV"}, {id: "49365", name: "SISTEMAS DE DESARROLLO Y LOGIST SA"}, {id: "49368", name: "DITEMSA S A DE C V"}, {id: "49391", name: "HUNTINGTON FOAM DE MEXICO"}, {id: "49517", name: "JARDEN PLASTICS SOLUTIONS"}, {id: "49581", name: "INGENIERIA Y DIS ELECTRICO Y DE CON"}, {id: "49612", name: "MLS SYSTEMS INC"}, {id: "49614", name: "THE CONAIR GROUP INC"}, {id: "49643", name: "FRANCISCO JAVIER GARCIA HERNANDEZ"}, {id: "49678", name: "USON LP"}, {id: "49719", name: "MANUFACTURAS Y DISEÑOS DE SALTILLO"}, {id: "49736", name: "NATIONAL COPPER & SMELTING CO"}, {id: "49738", name: "QUALITY SCREW & NUT CO INC"}, {id: "49741", name: "SERVIACERO PLANOS S DE R L DE C V"}, {id: "49744", name: "SNIDER BOLT & SCREW INC"}, {id: "49753", name: "WHIRLPOOL S.A."}, {id: "49834", name: "CASSIOLI SRL"}, {id: "49977", name: "CAMCAR DE MEXICO SA DE CV"}, {id: "50053", name: "MILLS PRODUCTS DE MEXICO SA DE CV"}, {id: "50137", name: "KOPAR S A DE C V"}, {id: "50307", name: "AUTOMATED DATA SYSTEMS S A DE C V"}, {id: "50313", name: "EVCO PLASTICS DE MEXICO S DE RL"}, {id: "50326", name: "EPM PLASTICS SA DE CV"}, {id: "50407", name: "BECKETT AIR, INC"}, {id: "50408", name: "US MINIATURE LAMPS"}, {id: "50409", name: "BAYER DE MEXICO"}, {id: "50571", name: "SENSORTROL S A DE C V"}, {id: "50578", name: "SCREENPRINT/DOW"}, {id: "50630", name: "INEOS STYRENICS LLC"}, {id: "50672", name: "COMERCIALIZADORA DE MANGUERAS Y ART"}, {id: "50721", name: "YI FONG MOLD LTD"}, {id: "50953", name: "CONAIR MEXICANA S A DE C V"}, {id: "51035", name: "CANNON LEGOS S.P.A"}, {id: "51235", name: "AUTOMATICA TECHNOLOGIES S A DE C V"}, {id: "51282", name: "MARTINIANO BERRONES CONTRERAS"}, {id: "51349", name: "PACE INDUSTRIES OF MEXICO L L C"}, {id: "51376", name: "ENGINEERED PRODUCTS INDUSTRIES LLC"}, {id: "51454", name: "KENMORE REFRIGERATION COMPONENTS"}, {id: "51479", name: "PERTEK ERLER S DE RL DE CV"}, {id: "51564", name: "EMZ HANAUER GMBH & CO KG AA"}, {id: "51567", name: "SERIGRAPH INC"}, {id: "51702", name: "EDGE ADHESIVES INC., DBA PARR"}, {id: "51737", name: "SP MANUFACTURAS S DE RL DE CV"}, {id: "51937", name: "ZHANGQIU HAIER ELECTROMOTOR CO LTD"}, {id: "52154", name: "MORRILL MOTORS INC"}, {id: "52182", name: "MT VERNON SCREW PROD"}, {id: "52212", name: "MAYTAG APPLIANCES SALES CO"}, {id: "52281", name: "MOONS' PRECISION PRODUCTS, INC."}, {id: "52302", name: "JAMAK INC"}, {id: "52366", name: "MILLS PRODUCTS LLC"}, {id: "52394", name: "NUEVA GENERACION MANUFACTURAS SA DE"}, {id: "52416", name: "NIDEC INSTRUMENTS (AMERICA) CORPORA"}, {id: "52420", name: "PLASTIC PRODUCTS COMPANY INC"}, {id: "52491", name: "GKN SINTER METALS"}, {id: "52626", name: "SFEG CORP"}, {id: "52679", name: "INTREX GLOBAL SOURCING"}, {id: "52792", name: "DESIGN SYSTEMS INC"}, {id: "52842", name: "IDTEC AUTOMATIZACION S A DE C V"}, {id: "52920", name: "INDUSTRIAL RAGUSA S A DE C V"}, {id: "52996", name: "ABRAHAM PUGA CASTAÑON"}, {id: "53040", name: "PLASTIEXPORTS SA DE CV"}, {id: "53115", name: "IMPRESOS TECNOGRAFICOS SA DE CV"}, {id: "53159", name: "SPARTECH DE MEXICO SA DE CV"}, {id: "53420", name: "VERITIV SA DE CV"}, {id: "53567", name: "NETWORK IMAGING SOLUTIONS LLC"}, {id: "53596", name: "ROSTI SEARCY INC"}, {id: "53649", name: "CHANNEL PRIME ALLIANCE"}, {id: "53765", name: "MEM COMERCIALIZADORA E IMPRESOS"}, {id: "53899", name: "INDUSTRIAL EQUIPMENT & ACCESORIES S"}, {id: "54326", name: "CHANGZHOU HUAWEI ARRK MOULD CO LTD"}, {id: "54386", name: "NATIONAL STARCH & CHEMICALS"}, {id: "54458", name: "INTERNATIONAL BUYING GROUP LTD"}, {id: "54466", name: "CCL LABEL, INC."}, {id: "54613", name: "ENGINEERED PLASTIC COMPONENTS INC"}, {id: "54622", name: "PERENNIAL USA INC"}, {id: "54624", name: "HIP YICK INDUSTRIAL COMPANY LTD"}, {id: "54660", name: "OPTIMAS OE SOLUTIONS LLC"}, {id: "54707", name: "TAYLOR CORPORATION"}, {id: "54718", name: "RIVER BEND INDUSTRIES LLC"}, {id: "54733", name: "PLASTIC PRODUCTS COMPANY INC"}, {id: "54756", name: "FOAM FABRICATORS INC"}, {id: "54758", name: "FLAIR MOLDED PLASTICS INC"}, {id: "54794", name: "PLASTIC PRODUCTS COMPANY INC"}, {id: "54812", name: "DERBY INDUSTRIES"}, {id: "54820", name: "HONEYWELL SENSING & CNTRL"}, {id: "54821", name: "NETWORK IMAGING SOLUTIONS"}, {id: "55086", name: "MAYTAG CORP"}, {id: "55098", name: "EQUIPOS E INSUMOS INDUSTLS PARA LIM"}, {id: "55268", name: "MOLON MOTORS & COIL CORP"}, {id: "55296", name: "HANKSCRAFT INC"}, {id: "55337", name: "DUROPLAST RAMOS ARIZPE SA DE CV"}, {id: "56001", name: "LEDFORD ENGINEERING CO IN"}, {id: "56169", name: "MAQUINADOS Y RECTIFICADOS LIBERTAD"}, {id: "56485", name: "TOUCH SENSOR TECHNOLOGIES"}, {id: "56573", name: "ILLINOIS TOOL WORKS, INC."}, {id: "56953", name: "BIKKOPLAST SP Z O O"}, {id: "57029", name: "ROBERTSHAW CONTROLS CO"}, {id: "57170", name: "MANTZ AUTOMATION INC"}, {id: "57502", name: "RIVER BEND INDUSTRIES"}, {id: "57503", name: "MANUEL HOLGUIN MELENDEZ"}, {id: "58239", name: "SUNRON INTL LLC"}, {id: "58553", name: "INTERDRYERS S R L"}, {id: "58568", name: "KEMFLO INT CO LTD"}, {id: "58754", name: "CENTRO DE ING Y MAQUINADOS ESP DE C"}, {id: "58827", name: "ASC CAPACITORS"}, {id: "59043", name: "SEIL S A DE C V"}, {id: "59200", name: "CONVEYORS Y ACCESORIOS REGIOMONTANO"}, {id: "59419", name: "PENTHA S R L"}, {id: "59698", name: "DISTRIBUCION DE PIEZAS METALICAS Y"}, {id: "59799", name: "FOAM FABRICATORS INC"}, {id: "59882", name: "FORTIS PLASTICS LLC"}, {id: "59974", name: "JING MEI INDUSTRIAL LTD"}, {id: "59978", name: "ARNOLDO MALACARA ALVAREZ"}, {id: "60129", name: "THERM-O-DISC (ASIA) LIMITED"}, {id: "60241", name: "HCL TECHNOLOGIES CORPORATE"}, {id: "60393", name: "COMMAI DE MONTERREY S A DE C V"}, {id: "60419", name: "TAE SUNG PRECISION CO LTD"}, {id: "60428", name: "VALLEY INTERNATIONAL CORP"}, {id: "60741", name: "COMERCIALIZADORA INDUSTRIAL DEL NOR"}, {id: "60752", name: "MAQUILADORA SYR S A DE C V"}, {id: "60869", name: "USEONG INTERNATIONAL LTD"}, {id: "60888", name: "HERNANDO MAURICIO GARZA MUZQUIZ"}, {id: "61179", name: "PNEUMATECNIA S A DE C V"}, {id: "61244", name: "ENGINEERED PLASTIC COMPONENTS INC"}, {id: "61393", name: "MOELLER MANUFACTURING DE MEXICO S D"}, {id: "61431", name: "SRG GLOBAL SUZHOU CO LTD"}, {id: "61438", name: "ITECH AUTOMATION SOLUTIONS INC."}, {id: "61461", name: "AUTOMATION CONSULTING GROUP S A D"}, {id: "61870", name: "PLASTIEQUIPOS DE MONTERREY S A"}, {id: "61882", name: "CICLOPLAFEST"}, {id: "61922", name: "CHANGZHOU LESHI LEILI MOTOR CO LTD"}, {id: "61944", name: "RWC SPARE PARTS, INC."}, {id: "61946", name: "RACKART DEL NORTE S A DE C V"}, {id: "61961", name: "INTERNATIONAL QUALITY PLASTICS S A"}, {id: "62194", name: "JUAN ALONSO ALVAREZ"}, {id: "62197", name: "COGNIS BRASIL L TDA"}, {id: "62300", name: "ASSEMBLY & TEST WORLWIDE INC"}, {id: "62345", name: "JING MEI INDUSTRIAL USA INC"}, {id: "62583", name: "PINTURA Y ENSAMBLES DE MEXICO SA"}, {id: "62680", name: "MARCEGAGLIA DO BRASIL LTC"}, {id: "62689", name: "FLEXTRONICS INTERNATIONAL LATIN"}, {id: "62723", name: "F LLI ROSSI S R L"}, {id: "62832", name: "ANIXTER FASTENERS DE MEXICO S DE R"}, {id: "62937", name: "GUANGHENG HEYOU INTERNATIONAL TRADI"}, {id: "63035", name: "MAQUINADOS Y DISPOSITIVOS MAREHC S"}, {id: "63326", name: "INGERSOLL RAND S A DE C V"}, {id: "63347", name: "PRESMEC INTERNATIONAL LLC"}, {id: "63415", name: "TUV RHEINLAND DE MEXICO S A DE C V"}, {id: "63437", name: "STAHL FASTENERS S A DE C V"}, {id: "63462", name: "STEEL TECHNOLOGIES DE MEXICO SA DE"}, {id: "63556", name: "SPG CO LTD"}, {id: "63567", name: "TS CONSULTORIA DE INFORMATICA"}, {id: "63579", name: "INSTALACIONES Y SERVICIOS INDLS REA"}, {id: "63580", name: "AVYDI S DE R L DE C V"}, {id: "63585", name: "XIAMEN RUNNER INDUSTRIAL CORPORATIO"}, {id: "63660", name: "AUTOMATIZACIONES E INSTALACIONES IN"}, {id: "63695", name: "GRO MAC ASSOC INC"}, {id: "63789", name: "NATIONAL MATERIAL OF MEXICO S DE R"}, {id: "63846", name: "TIN INC DBA TEMPLE INLAND"}, {id: "63853", name: "POLYMSA S A DE C V"}, {id: "63970", name: "TERNIUM MEXICO S A DE C V"}, {id: "63983", name: "LIBERTY MOLDS INC"}, {id: "64032", name: "SUPER ELECTRIC MOTOR LTD"}, {id: "64047", name: "CALVERT MCBRIDE INC"}, {id: "64247", name: "SABIC COMMERCIAL MATERIALS S DE R"}, {id: "64349", name: "GUANGDONG DAYA SMART KITCHEN"}, {id: "64361", name: "SHANGHAI TONGTAI PRECISE ALUMINUM A"}, {id: "64443", name: "APERAM STAINLESS EUROPE"}, {id: "64541", name: "ANSEN ELECTRONICS CO"}, {id: "64719", name: "SISTEMAS ELECTRONICOS DE MONTERREY"}, {id: "64790", name: "COMERCIALIZADORA BLH S A DE C V"}, {id: "64799", name: "DONGKUK STEEL MEXICO"}, {id: "64801", name: "BN STEELA CO LTD"}, {id: "64955", name: "COLLIS DE MEXICO LLC"}, {id: "65049", name: "SUZHOU HESHENG SPECIAL MATERIAL CO"}, {id: "65239", name: "IUSA S A DE C V"}, {id: "65283", name: "PROCESOS ELECTROFORETICOS S A"}, {id: "65354", name: "FIRST FILM EXTRUDING LLC"}, {id: "65368", name: "TP REFLEX GROUP S.P.A"}, {id: "65373", name: "EMPRESAS TITAN S A DE C V"}, {id: "65391", name: "MARMON RETAIL SERVICES ASIA CORPOR"}, {id: "65540", name: "ELECTRICAL COMPONENTS INTERNATIONAL"}, {id: "65604", name: "ENGINEERED PLASTIC COMPONENTS INC"}, {id: "65610", name: "D & S MACHINE PRODUCTS INC"}, {id: "65642", name: "AUTO&HYN S DE R L DE C V"}, {id: "65749", name: "TAE SUNG MEXICO S A DE C V"}, {id: "65784", name: "LESHI LEILI TRADE CO LIMITED"}, {id: "65858", name: "BACKER ALPE S DE R L DE C V"}, {id: "66047", name: "FORTIS PLASTICS LLC"}, {id: "66103", name: "REFRIGERACION Y AIRE ACONDICIONADO"}, {id: "66104", name: "SOLTEAM INCORPORATION"}, {id: "66142", name: "PAS APPLIANCE SYSTEMS S A DE C V"}, {id: "66221", name: "TEST TECHNOLOGIES DE MEXICO S A DE"}, {id: "66238", name: "INDUSTRIAS COLUNGA S A DE C V"}, {id: "66239", name: "CHICAGO MOLD ENGINEERING CO INC"}, {id: "66244", name: "MANGAS TOOL & DIE DIV OF PACER IND"}, {id: "66317", name: "HOFFER PLASTICS CORP"}, {id: "66338", name: "INDUSTRIAS EN SERVICIOS PLASTICOS"}, {id: "66434", name: "ESSENTRA COMPONENTS S DE RL DE CV"}, {id: "66456", name: "OETIKER INC"}, {id: "66457", name: "FORTIS PLASTICS LLC"}, {id: "66543", name: "SAINT GOBAIN MEXICO S A DE C V"}, {id: "66643", name: "MODELLERIA PIVA SRL"}, {id: "66684", name: "INTERNATIONAL QUALITY PLASTICS S A"}, {id: "66701", name: "HENAN NEW KELONG ELECT APPLIANCES"}, {id: "66778", name: "NISSHA USA INC"}, {id: "66779", name: "SIGMA ELECTRIC MFG CORP"}, {id: "66809", name: "LG HAUSYS AMERICA INC"}, {id: "66838", name: "KUNSHAN SPECIAL TECHNOLOGY PRECISIO"}, {id: "66849", name: "FPG MEXICO S DE R L DE C V"}, {id: "66928", name: "ATW LEBANON"}, {id: "66930", name: "M&M PRODUCTS AND SERVICES"}, {id: "67139", name: "TESERACTO S C"}, {id: "67175", name: "JIANGSU XIUQIANG GLASSWORK CO LTD"}, {id: "67224", name: "MSC LAMINATES & COMPOSITES EGV"}, {id: "67245", name: "PLASTEC USA INC"}, {id: "67253", name: "CIS GLOBAL LLC"}, {id: "67313", name: "HIRATA CORPORATION OF AMERICA"}, {id: "67315", name: "VOLTRAK S A DE C V"}, {id: "67323", name: "DITEK DE MEXICO S A DE CV"}, {id: "67446", name: "SOLTEAM INCORPORATION"}, {id: "67448", name: "POLYONE DISTRIBUTION"}, {id: "67456", name: "C&H DIE CASTING INC"}, {id: "67534", name: "EIMO TECHNOLOGIES INC"}, {id: "67564", name: "VISTA LIGHTING WORLDWIDE LLC"}, {id: "67630", name: "SPARTECH LLC"}, {id: "67692", name: "MODELOS INDUSTRIALES DEL NORTE S A"}, {id: "67764", name: "ENGINEERED PLASTIC COMPONENTS INC"}, {id: "67891", name: "GRACO MEXICANA S A DE C V"}, {id: "67929", name: "SHENZHEN MEIYAD OPTOELECTRONICS"}, {id: "67953", name: "QINGDAO HAIER MOULDS CO LTD"}, {id: "68006", name: "ATLAS INSTALADOR DE MAQUINARIA INDL"}, {id: "68110", name: "CUSTOM MECHANICAL CONSTRUCTION INC"}, {id: "68169", name: "GALVASID S A DE C V"}, {id: "68244", name: "STANDARD TOOL & DIE S DE R L DE C V"}, {id: "68359", name: "FLEXTRONICS INTERNATIONAL EUROPE"}, {id: "68594", name: "PUNE METAGRAPH"}, {id: "68759", name: "APPLIED MEXICO S A DE CV"}, {id: "68801", name: "COILPLUS TEXAS"}, {id: "68814", name: "SEALED AIR DE MEXICO OPERATIONS"}, {id: "68980", name: "FUJIAN SUPER TECH ADVANCED MATERIAL"}, {id: "68995", name: "BEMIS DE MEXICO S A DE C V"}, {id: "69115", name: "C&H DIE CASTING DE MONTERREY S DE"}, {id: "69184", name: "IMM INOX MARKET MESSICO SA DE CV"}, {id: "69223", name: "ISGO NA LLC"}, {id: "69253", name: "JING MEI INDUSTRIAL LTD"}, {id: "69286", name: "SUNRISE TOOL & DIE INC"}, {id: "69308", name: "CELESTICA CORP"}, {id: "69323", name: "POSCO MPPC S A DE C V"}, {id: "69361", name: "CHAU'S ELECTRICAL CO LTD"}, {id: "69455", name: "ABLE ONE TECHNOLOGY LTD"}, {id: "69506", name: "RUBEN MORENO ARIAS"}, {id: "69557", name: "ASCOMATICA S A DE C V"}, {id: "69680", name: "ARCHWAY MARKETING SERVICES"}, {id: "69699", name: "SIGNATURE PARTNERS INC"}, {id: "69774", name: "MILLER MOLD CO"}, {id: "69830", name: "JABIL CIRCUIT GUANGZHOU LTD"}, {id: "69845", name: "SABIC INNOVATIVE PLASTICS MEXICO"}, {id: "69850", name: "EPC COLUMBIA INC"}, {id: "70053", name: "NIDEC AMERICA CORP"}, {id: "70063", name: "ESTROSA"}, {id: "70147", name: "EXCELCUTS S DE R L DE C V"}, {id: "70154", name: "NEWARK CORP"}, {id: "70168", name: "NORDRI SOLUTIONS S C"}, {id: "70285", name: "NACIONAL DE COBRE S A DE C V"}, {id: "70333", name: "CRAIG MACHINERY & DESIGN INC"}, {id: "70356", name: "BRINDEC BRINDES PROMOCIONAIS LTDA"}, {id: "70466", name: "THERMAL VISIONS INC"}, {id: "70575", name: "LESHI LEILI TRADE CO LIMITED"}, {id: "70688", name: "SUZHOU PUDA PRECISE MOLD LTD"}, {id: "70695", name: "MEXICHEM FLUOR S A DE C V"}, {id: "70703", name: "GOSS AUTOMOTIVE S A DE C V"}, {id: "70801", name: "MAQUINADOS INDUSTRIALES TAMEZ S A D"}, {id: "70869", name: "LUVATA FRANKLIN INC"}, {id: "70921", name: "IMA ENTERPRISES LLC"}, {id: "70958", name: "MINTECH DE MEXICO S A DE C V"}, {id: "70992", name: "SIGLOC DE COAHUILA S A DE C V"}, {id: "71032", name: "ENSEL TECHNOLOGIES S A DE CV"}, {id: "71109", name: "UNION INDUSTRY HK HOLDING CO LTD"}, {id: "71142", name: "TECNOMECANICA PRIES"}, {id: "71143", name: "INTERNACIONAL DE PLASTICOS Y"}, {id: "71245", name: "JU YOUNG SERVICES SA DE CV"}, {id: "71267", name: "COILPLUS MEXICANA SA DE CV"}, {id: "71286", name: "SCANET SOLUTIONS S A DE C V"}, {id: "71392", name: "DIGA S A DE C V"}, {id: "71398", name: "DITEMSA PLASTICS S A DE C V"}, {id: "71538", name: "ERACOM SA DE CV"}, {id: "71580", name: "MARCEGAGLIA MEXICO, S DE RL DE CV"}, {id: "71606", name: "TORNEXPRESS SA DE CV"}, {id: "71724", name: "STARION MONTERREY MEXICO S A DE C"}, {id: "71791", name: "INGENIERIA METALICA Y PLASTICA DE M"}, {id: "72059", name: "BASF S A"}, {id: "72196", name: "ZHEJIANG KANGSHENG CO LTD"}, {id: "72209", name: "CORCAR MANUFACTURING SERVICES LLC"}, {id: "72247", name: "INTERNATIONAL AUTOMOTIVE COMPONENTS"}, {id: "72390", name: "KURZ MEXICO S DE RL DE CV"}, {id: "72618", name: "SOFTTEK SERVICIOS Y TECNOLOGIA SA"}, {id: "72628", name: "KEYENCE MEXICO SA DE CV"}, {id: "72684", name: "POLYONE DE MEXICO MANUFACTURING"}, {id: "72691", name: "ARMA FILTRE SISTEMLERI SANAYI VE TI"}, {id: "72799", name: "A B GRAPHICS SA DE CV"}, {id: "72937", name: "ILPEA INDUSTRIES"}, {id: "72958", name: "OPENSERVICE S A DE C V"}, {id: "72963", name: "REVERE INDUSTRIES"}, {id: "72975", name: "HENAN NEW KELONG ELECT APPLIANCES"}, {id: "73034", name: "ASCOMATICA S A DE C V"}, {id: "73098", name: "FOSHAN TONGBAO HUAYU INDUSTRIAL LTD"}, {id: "73300", name: "ACME MACHINE AUTOMATICS, INC"}, {id: "73371", name: "GLOBAL MOLD TECH MANAGEMENT LLC"}, {id: "73405", name: "JABIL CIRCUIT MEXICO"}, {id: "73442", name: "JABIL CIRCUIT GUANGZHOU LTD"}, {id: "73475", name: "INTERNATIONAL PAPER MONTERREY"}, {id: "73553", name: "SHENZHEN H&T INTELLIGENT CONTROL CO"}, {id: "73660", name: "FEINROHREN S P A"}, {id: "73695", name: "3D MEASUREMENT TECHNOLOGIES"}, {id: "73870", name: "MICRO PLASTICS INC"}, {id: "73884", name: "CCL LABEL INC"}, {id: "73886", name: "COSMA SRL"}, {id: "73889", name: "PSC S&S INDUSTRIES DE MEXICO"}, {id: "73936", name: "PRETTL HOME SOL MEX"}, {id: "73956", name: "PAS APPLIANCE SYSTEMS SA DE CV"}, {id: "74045", name: "WSP SOFTWARE FACTORY SA DE CV"}, {id: "74051", name: "SWANN INDUSTRIES PTE LTD"}, {id: "74098", name: "TOOLING SYSTEMS GROUP INC"}, {id: "74197", name: "ALMES NA INC"}, {id: "74268", name: "EMZ-HANAUER GMBH & CO. KGAA"}, {id: "74286", name: "GALVAPRIME SA DE CV"}, {id: "74338", name: "INTERNATIONAL PAPER MX CO, S DE RL"}, {id: "74351", name: "MATRIX WIRE MEXICO LLC"}, {id: "74389", name: "FORZA GLOBAL SOLUTIONS"}, {id: "74427", name: "ARCHER WIRE INTERNATIONAL CORP"}, {id: "74558", name: "POLYMSA SA DE CV"}, {id: "74581", name: "POLYEMPAQUES Y DERIVADOS MTY"}, {id: "74598", name: "MAQUILADORA SYR S A DE C V"}, {id: "74639", name: "HUANGSHI DONGBEI ELECTRICAL"}, {id: "74773", name: "JC GRAND CORPORATION"}, {id: "74903", name: "QUIMICA SAGITARIO S A DE C V"}, {id: "75228", name: "AISLANTES INDUSTRIALES MONTERREY"}, {id: "75318", name: "IDENTCO DE MEXICO S DE RL DE CV"}, {id: "75448", name: "WATERS SA DE CV"}, {id: "75624", name: "INTERNATIONAL PAPER MX CO S DE RL"}, {id: "75684", name: "UNION INDUSTRY HONG KONG HOLDING CO"}, {id: "75739", name: "ENGINEERING INTERNATIONAL INC"}, {id: "75815", name: "ANALISIS Y SOLUCIONES ELECTRICAS"}, {id: "75820", name: "COMERCIALIZADORA TEST TECHNOLOGIES"}, {id: "75831", name: "JIAXIPERA COMPRESSOR CO LTD"}, {id: "75895", name: "REPLASA ADVANCED MATERIALS, S.A."}, {id: "75928", name: "BIO PAPPEL PRODUCTS"}, {id: "76106", name: "POSCO AMERICA CORP"}, {id: "76268", name: "PROYECTOS INDUSTRIALES Y DE"}, {id: "76272", name: "GEXPRO SERVICES"}, {id: "76289", name: "APISA FASTENERS"}, {id: "76515", name: "SUZHOU GOODTIME TECH DEV CO LTD"}, {id: "76538", name: "ADRIANO ENGINEERING S DE RL DE CV"}, {id: "76551", name: "NANTONG ZHENQUN ELECTRONIC CO LTD"}, {id: "76577", name: "TEKMART INTEGRATED MANUFACTURING"}, {id: "76583", name: "COVESTRO S A DE C V"}, {id: "76736", name: "DONGGUAN KUMKANG LOTUS LIGHTING CO"}, {id: "76770", name: "HI TEC CNC MEXICO SA DE CV"}, {id: "76976", name: "BIO PAPPEL SAB DE CV"}, {id: "76982", name: "NANTONG SAFETY HARDWARE TECHNOLOGY"}, {id: "77015", name: "FOAM FABRICATORS SERVICES S DE RL D"}, {id: "77023", name: "TEST AND CONTROLS INTERNATIONAL, IN"}, {id: "77047", name: "GALILEO TP INC."}, {id: "77079", name: "GT PLASTICS NORTE"}, {id: "77138", name: "SONOCO OPERADORA S DE RL DE CV"}, {id: "77206", name: "HAINING HAIYUE ILLUMINATION CO, LTD"}, {id: "77220", name: "DANIEL FUENTES ELIZONDO"}, {id: "77644", name: "MICG SOLUCIONES SA DE CV"}, {id: "77722", name: "HOLM INDUSTRIES"}, {id: "77727", name: "ROBERT BOSCH LLC"}, {id: "77731", name: "COMMERCIAL TOOL & DIE"}, {id: "77786", name: "MECATRÓNICA E INTEGRACIÓN S.A. DE C"}, {id: "78157", name: "CONTROL AUTOMATIZACION Y PROYECTOS"}, {id: "78290", name: "ANSEN ELECTRONICS COMPANY"}, {id: "78349", name: "METAK INDUSTRIA E COMERCIO DE PEÇAS"}, {id: "78425", name: "FLUIDOS TECNICOS, S.A. DE C.V."}, {id: "78564", name: "JIANGSU KIND ELECTRIC CO., LTD"}, {id: "78703", name: "INDUMA S.A. DE C.V."}, {id: "78808", name: "SUZHOU V.I.P NEW MATERIAL CO. LTD."}, {id: "78870", name: "VENTURA MANUFACTURING"}, {id: "78927", name: "DISEÑOS METÁLICOS JMH SA DE CV"}, {id: "79037", name: "SUZHOU WEIXI WIRE ELECTRICAL APPLIA"}, {id: "79075", name: "WUXI JINHUA YIYUAN TECHNOLOGY CO LT"}, {id: "79232", name: "JABIL INC."}, {id: "79281", name: "ENTRON CONTROLS DE MEXICO SA DE CV"}, {id: "79319", name: "DANIELA PATRICIA CASTAÑO LOPEZ"}, {id: "79494", name: "SINCI GDL"}, {id: "79585", name: "WORLDMARK UK LIMITED"}, {id: "79718", name: "QP HOLDINGS, LLC"}, {id: "79723", name: "QP HOLDINGS, LLC"}, {id: "79725", name: "TROQUELES COREN SA DE CV"}, {id: "79745", name: "MACHINE CONCEPTS, INC."}, {id: "79958", name: "SPECTRUM ENGINEERING SERVICES"}, {id: "80153", name: "HECTOR DAVID RODRIGUEZ GONZALEZ"}, {id: "80203", name: "DEREN ELECTRONIC HONGKONG CO LTD"}, {id: "80363", name: "AGRAMKOW FLUID SYSTEMS"}, {id: "80373", name: "FLURIDA SINGAPORE PTE., LTD."}, {id: "80402", name: "HARRIS PRODUCTS GROUP"}, {id: "80404", name: "KONVEYOR BEYAZ ESYA VE OTOMOTIV YAN"}, {id: "80442", name: "SDIMSA S.A. DE C.V."}, {id: "80506", name: "ISYSOFT"}, {id: "80674", name: "ARION TECHNOLOGY LTD"}, {id: "80683", name: "MARCOS TREJO CANTU"}, {id: "80793", name: "AB TEST SOLUTIONS SA DE CV"}, {id: "80798", name: "VIDEOLAR-INNOVA S.A."}, {id: "80814", name: "INCO CONSTRUCCIONES Y MANTENIMIENTO"}, {id: "80984", name: "LONGDA INTERNATIONAL GROUP LIMITED"}, {id: "80998", name: "INDUSTRIAS DINAMEK SA DE CV"}, {id: "81020", name: "JUAN ARMANDO LOERA HERNANDEZ"}, {id: "81025", name: "PRAXAIR MEXICO S DE R L DE C V"}, {id: "81059", name: "BARKSDALE & ASSOC INC"}, {id: "81227", name: "TOOLS TRY OUTS AND SERVICES S DE RL"}, {id: "81345", name: "SOLUCIONES EN EXTRUSIONES NORESTE"}, {id: "81391", name: "WORLD BUYING SERVICE"}, {id: "81396", name: "THE GREAT STAR PRECISION SCREW CO"}, {id: "81448", name: "CHEONG WOON MEXICO S.A. DE C.V."}, {id: "81569", name: "TECH-SONIC, INC."}, {id: "81589", name: "REGAL MOLD & DIE"}, {id: "81603", name: "QINGDAO CONRUN INDUSTRY& TRADE CO."}, {id: "81686", name: "METALMECANICA Y AUTOMATIZACION RODG"}, {id: "81693", name: "MAHABAL AUTO ANCILLARIES PVT. LTD."}, {id: "81800", name: "ASTOM S.R.L"}, {id: "82096", name: "SANHUA INTERNATIONAL, INC."}, {id: "82113", name: "ELECTRICAL COMPONENTS INTERNATIONAL"}, {id: "82205", name: "SICHUAN MICOLON VACUUM NEW MATERIAL"}, {id: "82209", name: "LESHI LEILI TRADE CO LIMITED"}, {id: "82330", name: "H&T INTELLIGENT CONTROL INTERNATION"}, {id: "82470", name: "LINCOLN ELECTRIC AUTOMATION, INC."}, {id: "82473", name: "COMI AMERICAS"}, {id: "82488", name: "WANHUA CHEMICAL (SINGAPORE) PTE LTD"}, {id: "82528", name: "SANHUA INTERNATIONAL, INC."}, {id: "82662", name: "WHIRLPOOL CHINA CO LTD"}, {id: "82758", name: "NN, INC"}, {id: "82900", name: "TERMOPLASTICOS MNLH S.A. DE C.V."}, {id: "82948", name: "REVERE SALTILLO PLANT"}, {id: "83016", name: "OLSON METAL PRODUCTS, LLC"}, {id: "83134", name: "SHENZHEN EASTFIELD LIGHTING CO. LTD"}, {id: "83228", name: "ISE METAL INC"}, {id: "83280", name: "IFCN.SW S DE RL DE CV"}, {id: "83346", name: "TTI, INC"}, {id: "83523", name: "MECHANICA S.R.L."}, {id: "83595", name: "EVONIK INDUSTRIES DE MEXICO, SA DE"}, {id: "83624", name: "XPACK INTERNATIONAL CO LTD"}, {id: "83628", name: "KARTHIGEYA DRIVE AND COMPONENTS"}, {id: "83635", name: "JIAXIPERA COMPRESSOR CO., LTD."}, {id: "83756", name: "NIDEC GLOBAL APPLIANCE NORTH AMERIC"}, {id: "83908", name: "ELECTRICAL COMPONENTS INTERNATIONAL"}, {id: "83910", name: "EAMMOSCA DE MEXICO S DE RL DE CV"}, {id: "84013", name: "SENIX TOOLS"}, {id: "84028", name: "NISSHA PMX TECHNOLOGIES"}, {id: "84049", name: "KX TECHNOLOGIES PTE LTD"}, {id: "84085", name: "A´DEXCELLEI MOTOR MEXICO SA DE CV"}, {id: "84098", name: "GOODTIME MANUFACTURING SDN BHD"}, {id: "84099", name: "CHANGZHENG BMR REFRIGERATION"}, {id: "84108", name: "NIDEC GLOBAL APPLIANCE NORTH"}, {id: "84446", name: "SELF GROUP COMI SRL"}, {id: "84469", name: "YAT (H.K.) CO., LIMITED"}, {id: "84484", name: "GURU AMARDASS INTERNATIONAL PVT LTD"}, {id: "84491", name: "NGL RESOURCES, S.A. DE C.V."}, {id: "84528", name: "OPTIMAS OE SOLUTIONS LTDA"}, {id: "84565", name: "SEPSTAR MEXICO"}, {id: "84577", name: "EASTFIELD LIGHTING (HONG KONG)"}, {id: "84804", name: "REHAU INDUSTRIAL SOLUTIONS MEXICO"}, {id: "A463", name: "WHIRLPOOL OVERSEAS MANUFACTURING"}, {id: "F002", name: "WHIRLPOOL PLAINFIELD DIVISION"}, {id: "FM21", name: "RAMOS FDC"}, {id: "M008", name: "FINDLAY DIV WHIRLPOOL CORP"}, {id: "M022", name: "SUPSA MFG"}, {id: "M023", name: "ERNA MFG"}, {id: "M039", name: "OTTAWA DIV WHIRLPOOL CORP"}, {id: "M317", name: "AMANA MFG DIVISION"}, {id: "ML20", name: "WHIRLPOOL OVERSEAS MANUFACTURING"}, {id: "ML21", name: "RAMOS ARIZPE PLANT"}, {id: "ML24", name: "WHIRLPOOL OVERSEAS MANUFACTURING S."}, {id: "P002", name: "LAPORTE PARTS DIV WHIRLPOOL CORP"}, {id: "P005", name: "FORT SMITH DIV WHIRLPOOL CORP"}, {id: "P007", name: "EVANSVILLE DIV WHIRLPOOL CORP"}, {id: "P317", name: "AMANA MFG DIVISION"}, {id: "SEPM", name: "EUROPARTNERS MEXICO S A DE C V"}, {id: "SGLINT", name: "GLINT SOLUCIONES S A DE C V"}, {id: "SHWLD", name: "HELLMANN WORLDWIDE LOGISTICS SA DE"}, {id: "SPENLUS", name: "PENSKE LOGISTICA S A DE C V"}, {id: "SPLLLC", name: "PENSKE LOGISTICS LLC"}, {id: "SRCM", name: "RACING CARGO MEXICO SA DE CV"}
+    ];
+
+    const PALETA_COLORES = [
+      '#f39c12', '#3498db', '#e74c3c', '#2ecc71', '#9b59b6', 
+      '#1abc9c', '#e67e22', '#e84393', '#00cec9', '#6c5ce7', 
+      '#fdcb6e', '#d63031', '#00b894', '#0984e3', '#ff7675',
+      '#10ac84', '#ff9f43', '#ee5253', '#0abde3', '#576574'
+    ];
+
+    // REQUISITO 1: VALIDADOR ESTRICTO DE AÑO 2026 (Elimina 1900, 2025 o vacíos)
+    function esFechaValida2026(fechaStr) {
+        if (!fechaStr) return false;
+        let str = fechaStr.toString().trim();
+        if (str.includes('1900') || str.includes('2025')) return false;
+        return str.includes('2026');
+    }
+
+    function toTitleCase(str) {
+      if (!str) return '';
+      return str.toLowerCase().replace(/(?:^|\s|-)\S/g, function(a) { return a.toUpperCase(); });
+    }
+
+    function getVendorColor(vendorName) {
+      if(!vendorName) return '#7f8c8d';
+      let hash = 0;
+      for (let i = 0; i < vendorName.length; i++) hash = vendorName.charCodeAt(i) + ((hash << 5) - hash);
+      let index = Math.abs(hash) % PALETA_COLORES.length;
+      return PALETA_COLORES[index];
+    }
+
+    function checkVendorBadge(celda) {
+        if (!celda || celda.trim() === "") return celda;
+        let vn = celda.trim().toUpperCase();
+        let match = VENDORS.find(v => v.name.toUpperCase().includes(vn) || vn.includes(v.name.toUpperCase()) || v.id === celda);
+        let colorName = match ? match.name : celda;
+        return `<span class="vendor-badge" style="background-color: ${getVendorColor(colorName)}">${celda}</span>`;
+    }
+
+    function parseFacturasSheet(facturasData) {
+        let items = []; 
+        let grupos = { "RECIBO SUR": [], "RECIBO PONIENTE": [], "RECIBO ORIENTE": [] }; 
+        let vendorCounts = {};
+
+        if (!facturasData || facturasData.length < 3) return { items, grupos, vendorCounts };
+
+        const secciones = [
+            { name: "RECIBO SUR", col: 0 },
+            { name: "RECIBO PONIENTE", col: 3 },
+            { name: "RECIBO ORIENTE", col: 6 }
+        ];
+
+        secciones.forEach(sec => {
+            let currentVendor = "S/N";
+            let currentVendorColor = "#7f8c8d";
+
+            for (let i = 2; i < facturasData.length; i++) {
+                let row = facturasData[i];
+                if (!row) continue;
+
+                let cell0 = row[sec.col] ? row[sec.col].toString().trim() : "";     
+                let cell1 = row[sec.col+1] ? row[sec.col+1].toString().trim() : ""; 
+                let cell2 = row[sec.col+2] ? row[sec.col+2].toString().trim() : ""; 
+
+                if (!cell0) continue;
+
+                if (cell1 === "" && cell2 !== "") {
+                    currentVendor = cell0.toUpperCase();
+                    currentVendorColor = getVendorColor(currentVendor);
+                    grupos[sec.name].push({
+                        isHeader: true,
+                        vendor: currentVendor,
+                        qty: cell2,
+                        color: currentVendorColor
+                    });
+                    if (!vendorCounts[currentVendor]) { vendorCounts[currentVendor] = 0; }
+                } else if (cell1 !== "") {
+                    let cajaName = cell0.toUpperCase();
+                    let fecha = cell1;
+
+                    let matchLinea = cajaName.match(/^[A-Z\s]+/i);
+                    let linea = matchLinea ? matchLinea[0].trim() : cajaName;
+
+                    items.push({
+                        caja: cajaName,
+                        proveedor: currentVendor,
+                        fecha: fecha,
+                        linea: linea,
+                        recibo: sec.name
+                    });
+
+                    grupos[sec.name].push({
+                        isHeader: false,
+                        caja: cajaName,
+                        fecha: fecha,
+                        linea: linea,
+                        vendor: currentVendor,
+                        color: currentVendorColor
+                    });
+
+                    vendorCounts[currentVendor] = (vendorCounts[currentVendor] || 0) + 1;
+                }
+            }
+        });
+
+        return { items, grupos, vendorCounts };
+    }
+
+    function getBoxDetails(cajaStr) {
+        let details = { linea: "", proveedor: "", fecha: "" };
+        if(!baseDataCache || !baseDataCache.facturas) return details;
+        
+        let cleanCaja = cajaStr.toString().replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+        let parsed = parseFacturasSheet(baseDataCache.facturas);
+
+        let match = parsed.items.find(it => it.caja.replace(/[^a-zA-Z0-9]/g, '') === cleanCaja || cleanCaja.includes(it.caja.replace(/[^a-zA-Z0-9]/g, '')));
+        if(match) {
+            details.linea = match.linea;
+            details.proveedor = match.proveedor;
+            details.fecha = match.fecha;
+        }
+        return details;
+    }
+
+    let baseDataCache = null;
+    window.estadoAlertas = {}; 
+    let filtroVacioPeriodoActual = 'diario';
+    let filtroDescargasVendorPeriodo = 'diario';
+    
+    let audioActivado = false;
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContext();
+    let alertQueue = Promise.resolve();
+
+    let vozHumana = null;
+    function cargarVocesPremium() {
+        let voces = window.speechSynthesis.getVoices();
+        vozHumana = voces.find(v => v.name.includes('Google español') || v.name.includes('Google Español')) || 
+                    voces.find(v => v.name.includes('Sabina') || v.name.includes('Paulina')) ||
+                    voces.find(v => v.name.includes('Microsoft') && v.lang === 'es-MX') ||
+                    voces.find(v => v.lang === 'es-MX') || 
+                    voces.find(v => v.lang.startsWith('es'));
+    }
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = cargarVocesPremium;
+        cargarVocesPremium(); 
+    }
+
+    function playToneAsync(freq, type, duration, vol) {
+        return new Promise(resolve => {
+            if (!audioActivado || audioCtx.state !== 'running') { resolve(); return; }
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+            setTimeout(resolve, duration * 1000);
+        });
+    }
+
+    function queueAlert(textoVoz) {
+        if (!audioActivado) return;
+        alertQueue = alertQueue.then(async () => {
+            await playToneAsync(800, 'square', 0.2, 0.1);
+            await playToneAsync(1000, 'square', 0.2, 0.1);
+            
+            return new Promise(resolve => {
+                if ('speechSynthesis' in window) {
+                    let utterance = new SpeechSynthesisUtterance(textoVoz);
+                    if (vozHumana) utterance.voice = vozHumana;
+                    utterance.lang = 'es-MX';
+                    utterance.rate = 0.88; 
+                    utterance.pitch = 1.0; 
+                    utterance.onend = resolve;
+                    utterance.onerror = resolve;
+                    window.speechSynthesis.speak(utterance);
+                } else { resolve(); }
+            });
+        });
+    }
+
+    window.toggleAudio = function() {
+      audioActivado = !audioActivado;
+      const btn = document.getElementById('btnAudioToggle');
+      if(audioActivado) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        btn.innerText = "🔊 Alertas Activadas"; btn.classList.add("active");
+        playToneAsync(20000, 'sine', 0.01, 0.01); 
+        if('speechSynthesis' in window) { let s = new SpeechSynthesisUtterance(""); s.volume = 0; window.speechSynthesis.speak(s); }
+      } else {
+        btn.innerText = "🔇 Activar Alertas y Voz"; btn.classList.remove("active");
+        if('speechSynthesis' in window) window.speechSynthesis.cancel();
+      }
+    };
+
+    // REQUISITO 3: REDIBUJO AUTOMÁTICO EN CAMBIO DE PESTAÑA Y REDIMENSIONADO
+    const redrawAllCharts = () => {
+        if(!baseDataCache) return;
+        if(baseDataCache.salidas) dibujarDonutStatus(baseDataCache.salidas.slice(1));
+        if(baseDataCache.descargas) procesarDescargas(baseDataCache.descargas);
+        if(baseDataCache.equipoVacio) procesarEquipoVacio(baseDataCache.equipoVacio);
+        if(baseDataCache.facturas) procesarProveedores(baseDataCache.facturas);
+    };
+
+    window.addEventListener('resize', redrawAllCharts);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        let tabsMap = {
+            'proveedores-tab': function() { setTimeout(() => { if(baseDataCache && baseDataCache.facturas) procesarProveedores(baseDataCache.facturas); }, 50); },
+            'descargas-tab': function() { setTimeout(() => { if(baseDataCache && baseDataCache.descargas) procesarDescargas(baseDataCache.descargas); }, 50); },
+            'equipovacio-tab': function() { setTimeout(() => { if(baseDataCache && baseDataCache.equipoVacio) procesarEquipoVacio(baseDataCache.equipoVacio); }, 50); }
+        };
+
+        Object.keys(tabsMap).forEach(tabId => {
+            let btn = document.getElementById(tabId);
+            if(btn) btn.addEventListener('shown.bs.tab', tabsMap[tabId]);
+        });
+    });
+
+    window.onload = function() {
+      actualizarReloj();
+      construirMapaBase(); 
+      cargarDatosBase(); 
+      setInterval(cargarDatosBase, 30000); 
+      setInterval(actualizarCronometrosYAlarmas, 1000); 
+      document.getElementById('registroForm').addEventListener('submit', enviarFormulario);
+    };
+
+    function actualizarReloj() { setInterval(() => { document.getElementById('reloj').innerText = new Date().toLocaleString(); }, 1000); }
+    window.setHora = function(inputId) { document.getElementById(inputId).value = new Date().toLocaleTimeString('es-MX', { hour12: false }); };
+    window.setNA = function(inputId) { document.getElementById(inputId).value = "N/A"; };
+    window.setRetiraValue = function(val) { document.getElementById('retira').value = val; };
+
+    function construirMapaBase() {
+      const crearGrupo = (titulo, idGrupo, arrayRampas) => {
+        let html = `<div class="ramp-group"><span class="ramp-group-title">${titulo}</span>`;
+        arrayRampas.forEach(r => { html += `<div class="ramp-box" data-rampa="${r}" onclick="seleccionarRampa('${r}')"><span class="title">${r}</span><span class="badge mt-auto">Vacía</span></div>`; });
+        html += `</div>`; return html;
+      };
+
+      let mapaHtml = "";
+      mapaHtml += `<div class="d-flex justify-content-between align-items-start w-100">`;
+      mapaHtml += crearGrupo("Curva EV", "curvaev", ["Cu.EV 1","Cu.EV 2","Cu.EV 3","Cu.EV 4","Cu.EV 5","Cu.EV 6"]);
+      mapaHtml += crearGrupo("Rampas Recibo Sur", "sur", ["Sur 1","Sur 2","Sur 3","Sur 4","Sur 5","Sur 6","Sur 7","Sur 8","Sur 9","Sur 10","Sur 11","Sur 12","Sur 13","Sur 14","Sur 15"]);
+      mapaHtml += crearGrupo("Servicios", "serv1", ["Serv 1"]);
+      mapaHtml += `</div><div class="d-flex justify-content-between align-items-center w-100"><div class="d-flex flex-column gap-4">`;
+      mapaHtml += crearGrupo("Eq. Vacío", "eqv", ["RVP 1","RVP 2"]);
+      mapaHtml += crearGrupo("Calle EV", "calleev", ["C.EV 1","C.EV 2","C.EV 3","C.EV 4"]);
+      mapaHtml += `<div class="d-flex gap-3">` + crearGrupo("R. Servicios", "serv8", ["Serv 8"]) + `</div></div><div class="flex-grow-1"></div>`;
+      
+      mapaHtml += `<div class="d-flex gap-3 align-items-center"><div class="d-flex flex-column gap-2">`;
+      mapaHtml += `<div class="d-flex gap-2">` + crearGrupo("Pte 16-19", "pte16_19", ["Pte 16","Pte 17","Pte 18","Pte 19"]) + crearGrupo("Serv 2", "serv2", ["Serv 2"]) + `</div>`;
+      mapaHtml += `<div class="d-flex gap-2">` + crearGrupo("Pte 20-21", "pte20_21", ["Pte 20","Pte 21"]) + crearGrupo("Serv 3", "serv3", ["Serv 3"]) + `</div>`;
+      mapaHtml += `<div class="d-flex gap-2">` + crearGrupo("Pte 22-24", "pte22_24", ["Pte 22","Pte 23","Pte 24"]) + crearGrupo("Serv 4-5", "serv4_5", ["Serv 4","Serv 5"]) + `</div>`;
+      mapaHtml += `</div><div class="ramp-group" style="height:280px; width:55px; writing-mode: vertical-rl; text-align:center; color:#f39c12; font-weight:bold; letter-spacing:2px; padding:8px;">RAMPAS RECIBO PONIENTE</div></div></div>`;
+      
+      mapaHtml += `<div class="d-flex justify-content-between align-items-end w-100">`;
+      mapaHtml += `<div class="d-flex flex-column gap-2">` + crearGrupo("OTE / Serv 7", "ote_s7", ["OTE 41","Serv 7","OTE 40","OTE 39"]) + `</div>`;
+      mapaHtml += crearGrupo("Norte", "norte", ["Nte 38","Nte 37","Nte 36","Nte 35"]);
+      mapaHtml += crearGrupo("Postes HF", "hf", ["HF 34","HF 33","HF 32","HF 31","HF 30","HF 29"]);
+      mapaHtml += crearGrupo("Recibo Poniente", "pte25_34", ["Pte 28","Pte 27","Pte 26","Pte 25","Pte 32","Pte 33","Pte 34"]);
+      mapaHtml += `</div>`;
+
+      document.getElementById('mapa-rampas').innerHTML = mapaHtml;
+    }
+
+    window.seleccionarRampa = function(nombreRampa) {
+        let rampaInput = document.getElementById('rampa'); rampaInput.value = nombreRampa;
+        document.getElementById('zonaFormulario').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        rampaInput.style.backgroundColor = '#f39c12'; rampaInput.style.color = '#000';
+        setTimeout(() => { rampaInput.style.backgroundColor = ''; rampaInput.style.color = ''; }, 1000);
+    };
+
+    function actualizarMapaRampas(filas) {
+      document.querySelectorAll('.ramp-box').forEach(b => {
+          b.className = 'ramp-box'; 
+          let rampaName = b.getAttribute('data-rampa');
+          b.innerHTML = `<span class="title">${rampaName}</span><span class="badge mt-auto">Vacía</span>`;
+      });
+
+      filas.forEach(f => {
+          let caja = f[0], rampa = f[2], status = f[13], mulero = f[3];
+          if (caja && rampa && (status === "En Proceso" || status === "Fuera de Tiempo")) {
+              let box = document.querySelector(`.ramp-box[data-rampa="${rampa}"]`);
+              if (box) {
+                  box.classList.add('ocupada');
+                  let sinMulero = (!mulero || mulero.trim() === "" || mulero.trim() === "N/A");
+                  
+                  let state = window.estadoAlertas[caja] || {diff: 0};
+                  if (state.diff >= 3600) box.classList.add('nivel-4'); 
+                  else if (state.diff >= 2400) box.classList.add('nivel-3'); 
+                  else if (state.diff >= 1800) box.classList.add('nivel-2'); 
+                  else if (state.diff >= 1200) box.classList.add('nivel-1'); 
+                  else if (sinMulero) box.classList.add('alerta-sin-mulero');
+                  
+                  let det = getBoxDetails(caja);
+                  let lineaStr = det.linea ? det.linea + ' ' : '';
+                  let provStr = det.proveedor ? det.proveedor : 'Sin Prov.';
+                  let rampaName = box.getAttribute('data-rampa');
+                  
+                  box.innerHTML = `<span class="title">${rampaName}</span>
+                                   <div class="caja-tag">${lineaStr}${caja}</div>
+                                   <div class="prov-tag" title="${provStr}">${provStr}</div>`;
+              }
+          }
+      });
+    }
+
+    function cargarDatosBase() {
+      fetch(WEB_APP_URL + '?action=getDatosCompletos')
+        .then(response => response.json())
+        .then(dataObj => procesarDatos(dataObj))
+        .catch(err => console.error('Error cargando datos:', err));
+    }
+
+    function procesarDatos(dataObj) {
+      if (!dataObj) return;
+      baseDataCache = dataObj; 
+      
+      if (dataObj.salidas && dataObj.salidas.length > 0) {
+        const filasSalidas = dataObj.salidas.slice(1); 
+        poblarDatalistCajas(dataObj);
+        dibujarCajasActivas(filasSalidas);
+        actualizarMapaRampas(filasSalidas);
+        google.charts.setOnLoadCallback(() => { dibujarDonutStatus(filasSalidas); });
+      }
+      if (dataObj.patios && dataObj.patios.length > 0) dibujarTablaGenerica('patios-container', dataObj.patios);
+      if (dataObj.facturas && dataObj.facturas.length > 0) {
+        dibujarFacturasGroups('facturas-group-container', dataObj.facturas);
+      }
+      if (dataObj.descargas && dataObj.descargas.length > 0) {
+        google.charts.setOnLoadCallback(() => { procesarDescargas(dataObj.descargas); });
+      }
+      if (dataObj.equipoVacio && dataObj.equipoVacio.length > 0) {
+        google.charts.setOnLoadCallback(() => { procesarEquipoVacio(dataObj.equipoVacio); });
+      }
+    }
+
+    // --- REQUISITOS 1, 2, 3 Y 4: DESCARGAS CON FILTRO ESTRICTO AÑO 2026 ---
+    function procesarDescargas(descargasData) {
+        let tendencias = {}; 
+        let totalDiario = 0, diarioA = 0, diarioB = 0;
+
+        let fechasList = descargasData.slice(1)
+            .map(f => f[2])
+            .filter(f => esFechaValida2026(f));
+
+        let latestDate = fechasList.length > 0 ? fechasList[fechasList.length - 1] : "";
+
+        descargasData.forEach((fila, i) => {
+            if(i < 1) return; 
+            let fecha = fila[2], horaSube = fila[10]; 
+            
+            if(esFechaValida2026(fecha)) {
+                if(!tendencias[fecha]) tendencias[fecha] = { A: 0, B: 0 };
+                let turno = 'B'; 
+                if(horaSube && horaSube.trim() !== "") {
+                    let match = horaSube.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+                    if(match) {
+                        let h = parseInt(match[1]), ampm = match[3] ? match[3].toUpperCase() : null;
+                        if (ampm === 'PM' && h < 12) h += 12;
+                        if (ampm === 'AM' && h === 12) h = 0;
+                        if(h >= 6 && h < 18) turno = 'A';
+                    }
+                }
+                tendencias[fecha][turno]++;
+
+                if(fecha === latestDate) {
+                    totalDiario++;
+                    if(turno === 'A') diarioA++; else diarioB++;
+                }
+            }
+        });
+
+        document.getElementById('kpi_total_descargas').innerText = totalDiario;
+        document.getElementById('kpi_turno_a').innerText = diarioA;
+        document.getElementById('kpi_turno_b').innerText = diarioB;
+
+        let chartData = [['Fecha', 'Turno A', 'Turno B']];
+        let fechasOrdenadasDesc = Object.keys(tendencias).reverse();
+        let resumenHtml = '<table class="table table-dark table-sm text-center"><thead><tr><th class="bg-dark text-warning border-dark">Fecha</th><th class="bg-dark text-warning border-dark">Turno A</th><th class="bg-dark text-warning border-dark">Turno B</th><th class="bg-dark text-warning border-dark">Total</th></tr></thead><tbody>';
+        
+        fechasOrdenadasDesc.forEach(fecha => {
+            let tA = tendencias[fecha].A, tB = tendencias[fecha].B;
+            resumenHtml += `<tr><td>${fecha}</td><td class="text-info fw-bold">${tA}</td><td class="text-success fw-bold">${tB}</td><td class="fw-bold text-warning">${tA+tB}</td></tr>`;
+        });
+        resumenHtml += '</tbody></table>';
+
+        Object.keys(tendencias).forEach(fecha => {
+            chartData.push([fecha, tendencias[fecha].A, tendencias[fecha].B]);
+        });
+
+        let data = google.visualization.arrayToDataTable(chartData);
+        let options = { backgroundColor: 'transparent', legend: {textStyle: {color: 'white'}, position: 'top'}, hAxis: {textStyle: {color: 'white'}, slantedText: true}, vAxis: {textStyle: {color: 'white'}, gridlines: {color: '#444'}}, colors: ['#3498db', '#2ecc71'], chartArea: {width:'85%', height:'70%'}, isStacked: true };
+        new google.visualization.ColumnChart(document.getElementById('chart_descargas')).draw(data, options);
+        document.getElementById('tabla-descargas-container').innerHTML = resumenHtml;
+
+        renderDescargasProveedor(filtroDescargasVendorPeriodo);
+        filtrarTablaDescargasUI();
+    }
+
+    function cambiarFiltroDescargasVendor(periodo, btnElem) {
+        filtroDescargasVendorPeriodo = periodo;
+        if (btnElem) {
+            let parent = btnElem.parentElement;
+            parent.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+            btnElem.classList.add('active');
+        }
+        renderDescargasProveedor(periodo);
+    }
+
+    // REQUISITO 2: DESCARGAS POR PROVEEDOR (ESTILO BARRAS HORIZONTALES MULTICOLOR CON UMBRAL TEMPORAL)
+    function renderDescargasProveedor(periodo) {
+        if (!baseDataCache || !baseDataCache.descargas) return;
+        let descargasData = baseDataCache.descargas;
+        
+        let fechasList = descargasData.slice(1).map(f => f[2]).filter(f => esFechaValida2026(f));
+        let latestDateStr = fechasList.length > 0 ? fechasList[fechasList.length - 1] : "";
+
+        const parseDate = (dStr) => {
+            let p = dStr.split('-');
+            if(p.length === 3) return new Date(p[2], p[1]-1, p[0]);
+            return new Date(dStr);
+        };
+
+        let refDate = parseDate(latestDateStr);
+        let counts = {};
+
+        descargasData.forEach((fila, i) => {
+            if(i < 1) return;
+            let fechaStr = fila[2], prov = fila[6];
+            if(esFechaValida2026(fechaStr) && prov && prov.trim() !== "") {
+                let rowDate = parseDate(fechaStr);
+                let pClean = prov.trim().toUpperCase();
+                let match = false;
+
+                if (periodo === 'diario') match = (fechaStr === latestDateStr);
+                else if (periodo === 'semanal') {
+                    let diffDays = (refDate - rowDate) / (1000 * 3600 * 24);
+                    match = (diffDays >= 0 && diffDays <= 7);
+                }
+                else if (periodo === 'mensual') match = (rowDate.getMonth() === refDate.getMonth() && rowDate.getFullYear() === refDate.getFullYear());
+                else if (periodo === 'anual') match = (rowDate.getFullYear() === refDate.getFullYear());
+
+                if (match) {
+                    counts[pClean] = (counts[pClean] || 0) + 1;
+                }
+            }
+        });
+
+        let arrProv = Object.keys(counts).map(k => [k, counts[k]]).sort((a,b) => b[1] - a[1]).slice(0, 10);
+        let vendorChartData = [['Proveedor', 'Descargas', { role: 'style' }, { role: 'annotation' }]];
+        
+        if (arrProv.length === 0) {
+            vendorChartData.push(['Sin Datos en Periodo', 0, 'color: #7f8c8d', '0']);
+        } else {
+            arrProv.forEach(v => {
+                vendorChartData.push([v[0], v[1], getVendorColor(v[0]), v[1].toString()]);
+            });
+        }
+
+        let vData = google.visualization.arrayToDataTable(vendorChartData);
+        let vOptions = { 
+            backgroundColor: 'transparent', 
+            legend: 'none', 
+            hAxis: {textStyle: {color: 'white'}}, 
+            vAxis: {textStyle: {color: 'white', fontSize: 10}}, 
+            chartArea: {width:'65%', height:'80%'}, 
+            annotations: { textStyle: { color: 'white', bold: true } } 
+        };
+        new google.visualization.BarChart(document.getElementById('chart_descargas_vendor')).draw(vData, vOptions);
+    }
+
+    function filtrarTablaDescargasUI() {
+        if(!baseDataCache || !baseDataCache.descargas) return;
+        let query = document.getElementById('searchDescargasTable') ? document.getElementById('searchDescargasTable').value.toLowerCase().trim() : "";
+        
+        let rawData = baseDataCache.descargas;
+        if(rawData.length < 2) return;
+
+        let headers = rawData[0];
+        let filas = rawData.slice(1).reverse().filter(row => {
+            if(!esFechaValida2026(row[2])) return false;
+            if(!query) return true;
+            return row.some(cell => cell && cell.toString().toLowerCase().includes(query));
+        });
+
+        let html = '<table class="table table-dark table-bordered table-sm table-hover align-middle text-center"><thead><tr>';
+        headers.forEach(h => html += `<th class="bg-warning text-dark border-dark fw-bold">${h}</th>`);
+        html += '</tr></thead><tbody>';
+
+        if(filas.length === 0) {
+            html += `<tr><td colspan="${headers.length}" class="text-muted py-3">No se encontraron registros de descargas para 2026.</td></tr>`;
+        } else {
+            filas.forEach(row => {
+                html += '<tr>';
+                row.forEach((cell, idx) => {
+                    if(idx === 6 && cell) html += `<td>${checkVendorBadge(cell)}</td>`;
+                    else html += `<td>${cell || ''}</td>`;
+                });
+                html += '</tr>';
+            });
+        }
+        html += '</tbody></table>';
+        document.getElementById('tabla-descargas-detalle-container').innerHTML = html;
+    }
+
+    function procesarEquipoVacio(vacioData) {
+        if (!vacioData || vacioData.length < 2) return;
+
+        let fechasList = vacioData.slice(1)
+            .map(f => f[0])
+            .filter(f => esFechaValida2026(f));
+            
+        let latestDate = fechasList.length > 0 ? fechasList[fechasList.length - 1] : "";
+
+        let tendenciaFecha = {};
+        let totalDiario = 0, vacioA = 0, vacioB = 0;
+
+        vacioData.forEach((fila, i) => {
+            if(i < 1) return; 
+            let fecha = fila[0], grupo = fila[7];
+            
+            if(esFechaValida2026(fecha)) {
+                let tGrupo = (grupo && grupo.trim().toUpperCase() === 'A') ? 'A' : 'B';
+
+                if(!tendenciaFecha[fecha]) tendenciaFecha[fecha] = { A: 0, B: 0 };
+                tendenciaFecha[fecha][tGrupo]++;
+
+                if(fecha === latestDate) {
+                    totalDiario++;
+                    if(tGrupo === 'A') vacioA++; else vacioB++;
+                }
+            }
+        });
+
+        document.getElementById('kpi_vacio_total').innerText = totalDiario;
+        document.getElementById('kpi_vacio_a').innerText = vacioA;
+        document.getElementById('kpi_vacio_b').innerText = vacioB;
+
+        let chartData = [['Fecha', 'Turno A', 'Turno B']];
+        Object.keys(tendenciaFecha).forEach(f => {
+            chartData.push([f, tendenciaFecha[f].A, tendenciaFecha[f].B]);
+        });
+        let dataTrend = google.visualization.arrayToDataTable(chartData);
+        let optsTrend = { backgroundColor: 'transparent', legend: {textStyle: {color: 'white'}, position: 'top'}, hAxis: {textStyle: {color: 'white'}, slantedText: true}, vAxis: {textStyle: {color: 'white'}, gridlines: {color: '#444'}}, colors: ['#00cec9', '#e84393'], chartArea: {width:'85%', height:'70%'}, isStacked: true };
+        new google.visualization.ColumnChart(document.getElementById('chart_vacio_tendencia')).draw(dataTrend, optsTrend);
+
+        renderTopProveedoresVacio(filtroVacioPeriodoActual);
+        filtrarTablaVacioUI();
+    }
+
+    function cambiarFiltroTopVacio(periodo, btnElem) {
+        filtroVacioPeriodoActual = periodo;
+        if (btnElem) {
+            let parent = btnElem.parentElement;
+            parent.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+            btnElem.classList.add('active');
+        }
+        renderTopProveedoresVacio(periodo);
+    }
+
+    function renderTopProveedoresVacio(periodo) {
+        if (!baseDataCache || !baseDataCache.equipoVacio) return;
+        let vacioData = baseDataCache.equipoVacio;
+        
+        let fechasList = vacioData.slice(1).map(f => f[0]).filter(f => esFechaValida2026(f));
+        let latestDateStr = fechasList.length > 0 ? fechasList[fechasList.length - 1] : "";
+
+        const parseDate = (dStr) => {
+            let p = dStr.split('-');
+            if(p.length === 3) return new Date(p[2], p[1]-1, p[0]);
+            return new Date(dStr);
+        };
+
+        let refDate = parseDate(latestDateStr);
+        let counts = {};
+
+        vacioData.forEach((fila, i) => {
+            if(i < 1) return;
+            let fechaStr = fila[0], prov = fila[3];
+            if(esFechaValida2026(fechaStr) && prov && prov.trim() !== "") {
+                let rowDate = parseDate(fechaStr);
+                let pClean = prov.trim().toUpperCase();
+                let match = false;
+
+                if (periodo === 'diario') match = (fechaStr === latestDateStr);
+                else if (periodo === 'semanal') {
+                    let diffDays = (refDate - rowDate) / (1000 * 3600 * 24);
+                    match = (diffDays >= 0 && diffDays <= 7);
+                } 
+                else if (periodo === 'mensual') match = (rowDate.getMonth() === refDate.getMonth() && rowDate.getFullYear() === refDate.getFullYear());
+                else if (periodo === 'anual') match = (rowDate.getFullYear() === refDate.getFullYear());
+
+                if (match) {
+                    counts[pClean] = (counts[pClean] || 0) + 1;
+                }
+            }
+        });
+
+        let arrProv = Object.keys(counts).map(k => [k, counts[k]]).sort((a,b) => b[1] - a[1]).slice(0, 10);
+        let chartProvData = [['Proveedor', 'Salidas RRVP', { role: 'style' }, { role: 'annotation' }]];
+        
+        if(arrProv.length === 0) {
+            chartProvData.push(['Sin Registros', 0, 'color: #7f8c8d', '0']);
+        } else {
+            arrProv.forEach(p => {
+                chartProvData.push([p[0], p[1], getVendorColor(p[0]), p[1].toString()]);
+            });
+        }
+
+        let dataProv = google.visualization.arrayToDataTable(chartProvData);
+        let optsProv = { backgroundColor: 'transparent', legend: 'none', hAxis: {textStyle: {color: 'white'}}, vAxis: {textStyle: {color: 'white', fontSize: 10}}, chartArea: {width:'65%', height:'80%'}, annotations: { textStyle: { color: 'white', bold: true } } };
+        new google.visualization.BarChart(document.getElementById('chart_vacio_proveedores')).draw(dataProv, optsProv);
+    }
+
+    function filtrarTablaVacioUI() {
+        if(!baseDataCache || !baseDataCache.equipoVacio) return;
+        let query = document.getElementById('searchVacioTable') ? document.getElementById('searchVacioTable').value.toLowerCase().trim() : "";
+        
+        let rawData = baseDataCache.equipoVacio;
+        if(rawData.length < 2) return;
+
+        let headers = rawData[0];
+        let filas = rawData.slice(1).reverse().filter(row => {
+            if(!esFechaValida2026(row[0])) return false;
+            if(!query) return true;
+            return row.some(cell => cell && cell.toString().toLowerCase().includes(query));
+        });
+
+        let html = '<table class="table table-dark table-bordered table-sm table-hover align-middle text-center"><thead><tr>';
+        headers.forEach(h => html += `<th class="bg-warning text-dark border-dark fw-bold">${h}</th>`);
+        html += '</tr></thead><tbody>';
+
+        if(filas.length === 0) {
+            html += `<tr><td colspan="${headers.length}" class="text-muted py-3">No se encontraron registros de equipo vacío en 2026.</td></tr>`;
+        } else {
+            filas.forEach(row => {
+                html += '<tr>';
+                row.forEach((cell, idx) => {
+                    if(idx === 3 && cell) html += `<td>${checkVendorBadge(cell)}</td>`;
+                    else html += `<td>${cell || ''}</td>`;
+                });
+                html += '</tr>';
+            });
+        }
+        html += '</tbody></table>';
+        document.getElementById('tabla-vacio-container').innerHTML = html;
+    }
+
+    function filtrarFacturasUI() {
+        if(!baseDataCache || !baseDataCache.facturas) return;
+        let query = document.getElementById('searchFacturas').value.toLowerCase().trim();
+        dibujarFacturasGroups('facturas-group-container', baseDataCache.facturas, query);
+    }
+
+    function dibujarFacturasGroups(containerId, data, query = "") {
+        let parsed = parseFacturasSheet(data);
+
+        const renderCol = (secName) => {
+            let list = parsed.grupos[secName] || [];
+            let html = `<div class="col-md-4"><div class="card-terminal p-3" style="max-height: 800px; overflow-y: auto;"><h5 class="text-center text-warning mb-3 border-bottom border-warning pb-2">${secName}</h5><div class="facturas-list">`;
+            
+            let currentHeaderHtml = "";
+            let currentHeaderMatches = false;
+
+            list.forEach(item => {
+                if(item.isHeader) {
+                    currentHeaderMatches = item.vendor.toLowerCase().includes(query);
+                    currentHeaderHtml = `<div class="mt-3 mb-1"><span class="badge w-100 text-start py-2 fs-6 shadow-sm d-flex justify-content-between align-items-center" style="background-color: ${item.color};">${item.vendor} <span class="badge bg-dark text-white border border-secondary">${item.qty || ''}</span></span></div>`;
+                } else {
+                    let cajaMatch = item.caja.toLowerCase().includes(query);
+                    let fechaMatch = item.fecha.toLowerCase().includes(query);
+                    let vendorMatch = item.vendor.toLowerCase().includes(query);
+
+                    if (query === "" || currentHeaderMatches || cajaMatch || fechaMatch || vendorMatch) {
+                        if (currentHeaderHtml) {
+                            html += currentHeaderHtml;
+                            currentHeaderHtml = ""; 
+                        }
+                        html += `<div class="d-flex justify-content-between align-items-center mb-1 px-2 py-1.5 rounded border border-secondary" style="background-color: #141b22;">
+                                    <span class="badge" style="background-color: #7b2cbf; color: white; font-size: 0.75rem;">${item.caja}</span>
+                                    <span class="fw-bold text-warning" style="font-size: 0.75rem; letter-spacing: 0.5px;">📅 ${item.fecha || 'Sin Fecha'}</span>
+                                 </div>`;
+                    }
+                }
+            });
+            html += `</div></div></div>`;
+            return html;
+        };
+
+        let finalHtml = renderCol("RECIBO SUR") + renderCol("RECIBO PONIENTE") + renderCol("RECIBO ORIENTE");
+        document.getElementById(containerId).innerHTML = finalHtml;
+
+        if(!query) {
+            procesarProveedores(data);
+        }
+    }
+
+    function dibujarTablaGenerica(containerId, matrizDatos) {
+        let html = '<table class="table table-dark table-bordered table-sm table-hover align-middle text-center">';
+        matrizDatos.forEach((fila, i) => {
+            html += '<tr>';
+            fila.forEach((celda, colIndex) => {
+                if(i < 2) html += `<th class="bg-warning text-dark text-center fw-bold border-dark">${celda}</th>`;
+                else if ([0, 3, 6].includes(colIndex) && celda !== "") html += `<td>${checkVendorBadge(celda)}</td>`;
+                else html += `<td>${celda}</td>`;
+            });
+            html += '</tr>';
+        });
+        html += '</table>';
+        document.getElementById(containerId).innerHTML = html;
+    }
+
+    function procesarProveedores(facturasData) {
+        let parsed = parseFacturasSheet(facturasData);
+        let arregloOrdenado = Object.keys(parsed.vendorCounts).map(k => [k, parsed.vendorCounts[k]]).sort((a,b) => b[1] - a[1]);
+        
+        let chartData = [['Proveedor', 'Cajas', { role: 'style' }, {role: 'annotation'}]];
+        let top10 = arregloOrdenado.slice(0, 10);
+        
+        if (top10.length === 0) {
+            chartData.push(['Sin Datos', 0, 'color: #7f8c8d', '0']);
+        } else {
+            top10.forEach(item => { 
+                let barColor = getVendorColor(item[0]);
+                chartData.push([item[0], item[1], barColor, item[1].toString()]); 
+            });
+        }
+
+        let data = google.visualization.arrayToDataTable(chartData);
+        let options = { 
+            backgroundColor: 'transparent', 
+            legend: 'none', 
+            hAxis: {textStyle: {color: 'white'}}, 
+            vAxis: {textStyle: {color: 'white', fontSize: 11}}, 
+            chartArea: {width:'65%', height:'85%'}, 
+            annotations: { textStyle: { color: 'white', bold: true, fontSize: 12 } } 
+        };
+        
+        new google.visualization.BarChart(document.getElementById('bar_vendors')).draw(data, options);
+
+        let htmlTabla = '<table class="table table-dark table-hover table-sm align-middle text-center"><thead><tr><th class="bg-dark text-warning border-dark">Vendor ID</th><th class="bg-dark text-warning border-dark">Nombre</th><th class="bg-dark text-warning border-dark">Total Cajas</th></tr></thead><tbody>';
+        if(arregloOrdenado.length === 0) htmlTabla += '<tr><td colspan="3" class="text-muted py-4">No se encontraron cajas registradas.</td></tr>';
+        else {
+            arregloOrdenado.forEach(item => {
+                let vData = VENDORS.find(v => v.name === item[0]);
+                htmlTabla += `<tr><td class="text-secondary">${vData ? vData.id : 'S/N'}</td><td><span class="vendor-badge" style="background-color: ${getVendorColor(item[0])}">${item[0]}</span></td><td class="text-warning fw-bold fs-6">${item[1]}</td></tr>`;
+            });
+        }
+        htmlTabla += '</tbody></table>';
+        document.getElementById('tabla-vendors-container').innerHTML = htmlTabla;
+    }
+
+    function poblarDatalistCajas(dataObj) {
+        let html = "";
+        
+        if (dataObj.facturas && dataObj.facturas.length > 0) {
+            let parsed = parseFacturasSheet(dataObj.facturas);
+            parsed.items.forEach(it => {
+                let fullDisplay = `${it.caja} | Prov: ${it.proveedor} | Linea: ${it.linea} | Fecha: ${it.fecha}`;
+                html += `<option value="${fullDisplay}">`;
+            });
+        }
+        
+        if(dataObj.salidas) {
+            dataObj.salidas.forEach((f,i) => { 
+                if(i>0 && f[0] && !html.includes(f[0])) {
+                    html += `<option value="${f[0]}">`; 
+                }
+            });
+        }
+
+        document.getElementById('lista-cajas').innerHTML = html;
+    }
+
+    window.buscarDatosCaja = function() {
+      const rawVal = document.getElementById('caja').value.trim();
+      if(rawVal === "") return;
+      
+      let cajaVal = rawVal.split('|')[0].trim();
+
+      document.getElementById('busquedaLoader').style.display = 'block';
+      fetch(`${WEB_APP_URL}?action=buscarCaja&caja=${encodeURIComponent(cajaVal)}`)
+        .then(res => res.json())
+        .then(datosFila => {
+          document.getElementById('busquedaLoader').style.display = 'none';
+          if(datosFila) {
+            document.getElementById('retira').value = datosFila[1] || "";
+            document.getElementById('rampa').value = datosFila[2] || "";
+            document.getElementById('mulero').value = datosFila[3] || "";
+            document.getElementById('paso1').value = datosFila[4] || "";
+            document.getElementById('paso2').value = datosFila[5] || "";
+            document.getElementById('paso3').value = datosFila[6] || "";
+            document.getElementById('paso4').value = datosFila[7] || "";
+            document.getElementById('paso5').value = datosFila[8] || "";
+            document.getElementById('paso6').value = datosFila[9] || "";
+            document.getElementById('usuario').value = datosFila[12] || "";
+            if(datosFila[13]) document.getElementById('status').value = datosFila[13];
+          }
+        });
+    };
+
+    function enviarFormulario(e) {
+      e.preventDefault(); 
+      const usuarioVal = document.getElementById('usuario').value.trim();
+      if (!usuarioVal || isNaN(usuarioVal)) { alert("⚠️ ATENCIÓN: No has cargado usuario o contiene letras."); return; }
+      const btn = document.getElementById('btnGuardar');
+      btn.innerText = "Guardando..."; btn.disabled = true;
+
+      let rawCaja = document.getElementById('caja').value;
+      let cajaClean = rawCaja.split('|')[0].trim();
+
+      const datos = {
+        caja: cajaClean,
+        retira: document.getElementById('retira').value,
+        rampa: document.getElementById('rampa').value,
+        mulero: document.getElementById('mulero').value,
+        paso1: document.getElementById('paso1').value,
+        paso2: document.getElementById('paso2').value,
+        paso3: document.getElementById('paso3').value,
+        paso4: document.getElementById('paso4').value,
+        paso5: document.getElementById('paso5').value,
+        paso6: document.getElementById('paso6').value,
+        paso7: "", paso8: "", usuario: usuarioVal,
+        status: document.getElementById('status').value
+      };
+
+      const payload = encodeURIComponent(JSON.stringify(datos));
+      fetch(`${WEB_APP_URL}?action=guardarRegistro&datos=${payload}`)
+        .then(res => res.json())
+        .then(res => {
+          document.getElementById('mensajeExito').style.display = 'block';
+          setTimeout(() => { document.getElementById('mensajeExito').style.display = 'none'; }, 4000);
+          btn.innerText = "GUARDAR REGISTRO O ACTUALIZAR"; btn.disabled = false;
+          document.getElementById('registroForm').reset();
+          cargarDatosBase(); 
+        })
+        .catch(err => {
+          console.error('Error al guardar:', err);
+          btn.innerText = "GUARDAR REGISTRO O ACTUALIZAR"; btn.disabled = false;
+        });
+    }
+
+    function dibujarCajasActivas(filas) {
+      let container = document.getElementById('cajas-activas-container');
+      
+      let clavesActivas = filas.filter(f => f[13] === "En Proceso" || f[13] === "Fuera de Tiempo").map(f => f[0]);
+      Object.keys(window.estadoAlertas).forEach(k => { if(!clavesActivas.includes(k)) delete window.estadoAlertas[k]; });
+
+      let html = "";
+      filas.forEach(f => {
+        let caja = f[0], rampa = f[2], mulero = f[3], horaInicio = f[4], status = f[13]; 
+        if(caja && caja.toString().trim() !== "" && (status === "En Proceso" || status === "Fuera de Tiempo")) {
+          
+          if (!window.estadoAlertas[caja]) {
+              window.estadoAlertas[caja] = { 
+                  timeStr: horaInicio, 
+                  diff: 0, 
+                  m20: false, 
+                  m40: false, 
+                  m60: false, 
+                  lastOver60Min: 60,
+                  sinMulero: false 
+              };
+          }
+          
+          let state = window.estadoAlertas[caja];
+          if (horaInicio) { state.timeStr = horaInicio; }
+
+          let sinMulero = (!mulero || mulero.trim() === "" || mulero.trim() === "N/A");
+          
+          let cssClass = "";
+          if (state.diff >= 3600) cssClass = "nivel-4";
+          else if (state.diff >= 2400) cssClass = "nivel-3";
+          else if (state.diff >= 1800) cssClass = "nivel-2";
+          else if (state.diff >= 1200) cssClass = "nivel-1";
+          else if (sinMulero) cssClass = "alerta-sin-mulero";
+
+          let det = getBoxDetails(caja);
+          let provTxt = det.proveedor ? det.proveedor : 'Sin Prov.';
+
+          html += `<div class="caja-activa ${cssClass} d-flex justify-content-between align-items-center" id="box_${caja}">
+              <div>
+                <h5 class="mb-1 text-white">📦 Caja: <strong>${caja}</strong> <span class="badge" style="background-color:${getVendorColor(provTxt)}; font-size:0.6rem;">${provTxt}</span></h5>
+                <small class="text-muted">Mulero: ${mulero || 'Sin Asignar'} | Rampa: ${rampa || 'N/A'} | Status: ${status}</small>
+              </div>
+              <div class="text-end">
+                <div class="timer" id="timer_${caja}">00:00:00</div>
+                <small class="text-muted">Tiempo Transcurrido</small>
+              </div>
+            </div>`;
+        }
+      });
+      
+      container.innerHTML = html === "" ? "<p class='text-muted'>No hay cajas activas en este momento.</p>" : html;
+    }
+
+    function actualizarCronometrosYAlarmas() {
+      const ahora = new Date(); 
+      for(let caja in window.estadoAlertas) {
+        let spanTime = document.getElementById('timer_' + caja);
+        let state = window.estadoAlertas[caja];
+        let tStr = state.timeStr ? state.timeStr.toString().trim() : "";
+        
+        let match = tStr.match(/(\d+):(\d+)(?::(\d+))?\s*(AM|PM)?/i);
+        
+        if(match) {
+           let h = parseInt(match[1], 10);
+           let m = parseInt(match[2], 10);
+           let s = parseInt(match[3], 10) || 0;
+           let ampm = match[4] ? match[4].toUpperCase() : null;
+
+           if(ampm === 'PM' && h < 12) h += 12;
+           if(ampm === 'AM' && h === 12) h = 0;
+
+           let inicio = new Date(); 
+           inicio.setHours(h, m, s, 0);
+           
+           if (inicio > ahora) { inicio.setDate(inicio.getDate() - 1); }
+           
+           let diff = Math.floor((ahora - inicio) / 1000); 
+           if(diff < 0) diff = 0; 
+           state.diff = diff; 
+           
+           if(spanTime) {
+               let resH = Math.floor(diff / 3600).toString().padStart(2, '0');
+               let resM = Math.floor((diff % 3600) / 60).toString().padStart(2, '0');
+               let resS = (diff % 60).toString().padStart(2, '0');
+               
+               let newText = `${resH}:${resM}:${resS}`;
+               if(spanTime.innerText !== newText) spanTime.innerText = newText;
+
+               let boxDiv = spanTime.closest('.caja-activa');
+               if (boxDiv) {
+                   boxDiv.classList.remove('nivel-1', 'nivel-2', 'nivel-3', 'nivel-4', 'alerta-sin-mulero');
+                   
+                   let muleroText = boxDiv.querySelector('small').innerText;
+                   let sinMulero = muleroText.includes('Mulero: Sin Asignar');
+
+                   if (diff >= 3600) boxDiv.classList.add('nivel-4');
+                   else if (diff >= 2400) boxDiv.classList.add('nivel-3');
+                   else if (diff >= 1800) boxDiv.classList.add('nivel-2');
+                   else if (diff >= 1200) boxDiv.classList.add('nivel-1');
+                   else if (sinMulero) boxDiv.classList.add('alerta-sin-mulero');
+               }
+           }
+
+           let det = getBoxDetails(caja);
+           let provFormatted = toTitleCase(det.proveedor);
+           let provTxt = provFormatted ? " del proveedor " + provFormatted : "";
+           
+           let cajaLower = caja.toLowerCase();
+           let lineaLower = det.linea ? det.linea.toLowerCase() : "";
+           let lineaTxt = "";
+           if (lineaLower && !cajaLower.includes(lineaLower)) {
+               lineaTxt = " de la línea " + toTitleCase(det.linea);
+           }
+
+           let boxDiv = spanTime ? spanTime.closest('.caja-activa') : null;
+           let esSinMulero = boxDiv && boxDiv.classList.contains('alerta-sin-mulero');
+           let min = Math.floor(diff / 60);
+
+           if (esSinMulero && !state.sinMulero) {
+               state.sinMulero = true;
+               queueAlert(`Alerta. Se solicita mulero para la caja ${caja}${lineaTxt}${provTxt}.`);
+           } 
+           else if (!esSinMulero) {
+               if (min >= 20 && min < 40 && !state.m20) {
+                   state.m20 = true;
+                   queueAlert(`Aviso. La caja ${caja}${lineaTxt}${provTxt}, lleva veinte minutos en proceso.`);
+               } 
+               else if (min >= 40 && min < 60 && !state.m40) {
+                   state.m40 = true;
+                   queueAlert(`Alerta. La caja ${caja}${lineaTxt}${provTxt}, lleva cuarenta minutos en proceso.`);
+               } 
+               else if (min >= 60) {
+                   if (!state.m60) {
+                       state.m60 = true;
+                       state.lastOver60Min = 60;
+                       queueAlert(`Alerta Crítica. La caja ${caja}${lineaTxt}${provTxt}, lleva sesenta minutos en proceso.`);
+                   } else {
+                       let currentStep = Math.floor(min / 5) * 5;
+                       if (currentStep > state.lastOver60Min) {
+                           state.lastOver60Min = currentStep;
+                           queueAlert(`Alerta Crítica. La caja ${caja}${lineaTxt}${provTxt}, lleva ${currentStep} minutos en proceso.`);
+                       }
+                   }
+               }
+           }
+        }
+      }
+    }
+
+    function dibujarDonutStatus(filas) {
+      let conteo = {"En Proceso": 0, "Finalizado": 0, "Fuera de Tiempo": 0};
+      filas.forEach(f => { let s = f[13]; if(s && conteo[s] !== undefined) conteo[s]++; });
+      let data = google.visualization.arrayToDataTable([['Status', 'Cantidad'], ['En Proceso', conteo['En Proceso']], ['Finalizado', conteo['Finalizado']], ['Fuera de Tiempo', conteo['Fuera de Tiempo']]]);
+      let options = { backgroundColor: 'transparent', legend: {textStyle: {color: 'white'}, position: 'bottom'}, pieHole: 0.45, colors: ['#f1c40f', '#82e0aa', '#e74c3c'], pieSliceBorderColor: '#1c252e', chartArea: {width:'90%', height:'80%'} };
+      new google.visualization.PieChart(document.getElementById('donut_status')).draw(data, options);
+    }
+  </script>
+</body>
+</html>
