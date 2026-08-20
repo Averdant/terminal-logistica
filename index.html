@@ -94,7 +94,6 @@
     .filter-btn-group .btn { font-size: 0.75rem; font-weight: bold; border-color: #444; color: #bdc3c7; }
     .filter-btn-group .btn.active { background-color: #f39c12; color: #000; border-color: #f39c12; }
 
-    /* ESTILOS DE LA NUEVA CAPTURA DE LLEGADAS DE CAJAS */
     .btn-option-group .btn { background-color: #0b0e14; color: #ecf0f1; border: 1px solid #444; font-weight: bold; }
     .btn-option-group .btn.active { background-color: #3498db; color: #fff; border-color: #2980b9; }
   </style>
@@ -257,7 +256,7 @@
         </div>
       </div>
 
-      <!-- NUEVA PESTAÑA: CAPTURA E HISTÓRICO DE LLEGADAS -->
+      <!-- PESTAÑA: CAPTURA E HISTÓRICO DE LLEGADAS -->
       <div class="tab-pane fade" id="llegadas" role="tabpanel">
         <div class="card-terminal">
           <h4 class="text-warning mb-4">📥 Captura de Llegadas de Cajas</h4>
@@ -281,9 +280,10 @@
 
               <div class="row mb-3">
                 <div class="col-md-6">
-                  <label class="form-label">Línea de Transporte</label>
-                  <input type="text" class="form-control" id="llegada_linea" list="list-lineas" placeholder="Escribe o selecciona la línea...">
-                  <datalist id="list-lineas"></datalist>
+                  <label class="form-label">Línea de Transporte (Selección Restringida)</label>
+                  <select class="form-select" id="llegada_linea" required>
+                    <option value="">Seleccionar Línea...</option>
+                  </select>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label">Número de Caja</label>
@@ -305,14 +305,22 @@
               </div>
 
               <div class="row mb-3">
-                <div class="col-md-4">
+                <div class="col-md-3">
                   <label class="form-label">Factura</label>
                   <input type="text" class="form-control" id="llegada_factura" placeholder="# Factura">
                 </div>
-                <div class="col-md-5">
-                  <label class="form-label">Vendor / Proveedor</label>
-                  <select class="form-select" id="llegada_vendor" required>
-                    <option value="">Seleccionar Vendor...</option>
+                <div class="col-md-3">
+                  <label class="form-label">Vendor / Proveedor (Busca por ID o Nombre)</label>
+                  <input type="text" class="form-control" id="llegada_vendor" list="list-vendors" placeholder="Teclea ID o Nombre..." required>
+                  <datalist id="list-vendors"></datalist>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Área de Descarga</label>
+                  <select class="form-select" id="llegada_area" required>
+                    <option value="PENDIENTE POR DEFINIR">PENDIENTE POR DEFINIR</option>
+                    <option value="RECIBO SUR">RECIBO SUR</option>
+                    <option value="RECIBO PONIENTE">RECIBO PONIENTE</option>
+                    <option value="RECIBO ORIENTE">RECIBO ORIENTE</option>
                   </select>
                 </div>
                 <div class="col-md-3">
@@ -344,7 +352,7 @@
           <div class="d-flex justify-content-center mb-3">
             <div style="width: 70%; max-width: 650px;">
               <input type="text" id="searchLlegadasTable" class="form-control text-center shadow" 
-                     placeholder="🔍 Buscar por Folio, Línea, Caja, Contenido, Ubicación, Facturas..." 
+                     placeholder="🔍 Buscar por Folio, Línea, Caja, Contenido, Ubicación, Facturas, Área..." 
                      onkeyup="filtrarTablaLlegadasUI()" 
                      style="border: 2px solid #3498db; background-color: #0b0e14; color: #33ff33; font-weight: bold; font-size: 0.95rem;">
             </div>
@@ -520,7 +528,6 @@
 
     const WEB_APP_URL = 'https://script.google.com/a/macros/whirlpool.com/s/AKfycbwUd3uSl2VL1gkonhz7xcUChAQnaH3mMQcL4esKMWUIN7Srlty4vEET5INhzk5_Ddfy/exec';
 
-    // PRE-CARGA DE LÍNEAS DE TRANSPORTE
     const LINEAS_TRANSPORTE = [
       "HG", "CANTU", "CB CARRIERS", "TGN", "QUANTUM", "ETF", "RUTMEX", "VILLAGON",
       "EXPRESS LINE", "TORVA", "AEROVI", "FERRA", "JENMSA", "GUZMAN", "TRAMOSSA",
@@ -528,7 +535,6 @@
       "RODEX", "KUBIKA", "FORZA", "MASTER", "JAGUAR", "TREGASA"
     ];
 
-    // VENDORS CON VENDORS EXTRA
     const VENDORS = [
       {id: "47083", name: "IDENTI"},
       {id: "208167", name: "GOODTIME MANUFACTURING"},
@@ -556,7 +562,7 @@
         if (!fechaStr) return false;
         let str = fechaStr.toString().trim();
         if (str.includes('1900') || str.includes('2025')) return false;
-        return str.includes('2026');
+        return str.includes('2026') || str.includes('/26') || str.includes('-26');
     }
 
     function toTitleCase(str) {
@@ -580,21 +586,20 @@
         return `<span class="vendor-badge" style="background-color: ${getVendorColor(colorName)}">${celda}</span>`;
     }
 
-    // POBLAR SELECT DE VENDORS Y DATALIST DE LÍNEAS
     function inicializarFormularioLlegadas() {
-        let selectVendor = document.getElementById('llegada_vendor');
-        if(selectVendor) {
-            selectVendor.innerHTML = '<option value="">Seleccionar Vendor...</option>';
+        let datalistVendors = document.getElementById('list-vendors');
+        if(datalistVendors) {
+            datalistVendors.innerHTML = '';
             VENDORS.forEach(v => {
-                selectVendor.innerHTML += `<option value="${v.id}: ${v.name}">${v.id}: ${v.name}</option>`;
+                datalistVendors.innerHTML += `<option value="${v.id}: ${v.name}">`;
             });
         }
 
-        let datalistLineas = document.getElementById('list-lineas');
-        if(datalistLineas) {
-            datalistLineas.innerHTML = '';
+        let selectLineas = document.getElementById('llegada_linea');
+        if(selectLineas) {
+            selectLineas.innerHTML = '<option value="">Seleccionar Línea...</option>';
             LINEAS_TRANSPORTE.forEach(l => {
-                datalistLineas.innerHTML += `<option value="${l}">`;
+                selectLineas.innerHTML += `<option value="${l}">${l}</option>`;
             });
         }
 
@@ -637,11 +642,7 @@
     function toggleUbicacionRampas() {
         let tipo = document.getElementById('llegada_tipo_ubicacion').value;
         let rowRampa = document.getElementById('row_rampa_select');
-        if(tipo === 'Rampa') {
-            rowRampa.style.display = 'flex';
-        } else {
-            rowRampa.style.display = 'none';
-        }
+        rowRampa.style.display = (tipo === 'Rampa') ? 'flex' : 'none';
     }
 
     function parseFacturasSheet(facturasData) {
@@ -835,12 +836,20 @@
       cargarDatosBase(); 
       inicializarFormularioLlegadas();
 
+      // ESCUCHADOR EN VIVO PARA FACTURAS CAPTURADAS EN LLEGADAS
+      db.collection("facturas_llegadas").onSnapshot((snapshot) => {
+          let extraFacturas = [];
+          snapshot.forEach((doc) => { extraFacturas.push(doc.data()); });
+          window.facturasFirestoreCache = extraFacturas;
+          if(baseDataCache && baseDataCache.facturas) {
+              dibujarFacturasGroups('facturas-group-container', baseDataCache.facturas);
+          }
+      });
+
       // ESCUCHADOR EN VIVO PARA CAPTURA DE LLEGADAS DE CAJAS
       db.collection("llegadas").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
           let llegadasList = [];
-          snapshot.forEach((doc) => {
-              llegadasList.push(doc.data());
-          });
+          snapshot.forEach((doc) => { llegadasList.push(doc.data()); });
           renderTablaLlegadasHistorico(llegadasList);
       });
 
@@ -975,7 +984,7 @@
       }
     }
 
-    // PROCESAMIENTO Y GUARDADO DE NUEVAS LLEGADAS
+    // PROCESAMIENTO Y IMPACTO AUTOMÁTICO DE LLEGADAS EN FACTURAS
     function guardarCapturaLlegada(e) {
         e.preventDefault();
         let folio = document.getElementById('llegada_folio').value;
@@ -983,6 +992,7 @@
         let caja = document.getElementById('llegada_caja').value;
         let factura = document.getElementById('llegada_factura').value;
         let vendor = document.getElementById('llegada_vendor').value;
+        let area = document.getElementById('llegada_area').value;
         let tipoUbicacion = document.getElementById('llegada_tipo_ubicacion').value;
         let rampaDestino = document.getElementById('llegada_rampa_destino').value;
 
@@ -996,6 +1006,7 @@
             linea: linea,
             caja: caja,
             contenido: contenidoSeleccionado,
+            areaDescarga: area,
             tipoUbicacion: tipoUbicacion,
             ubicacion: (tipoUbicacion === 'Rampa') ? rampaDestino : 'Patio',
             factura: factura,
@@ -1005,16 +1016,23 @@
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         };
 
-        // Guardar en Firestore
-        db.collection("llegadas").doc(folio).set(registroLlegada)
-          .then(() => {
-              alert("✅ Llegada capturada exitosamente con Folio: " + folio);
-              document.getElementById('llegada_folio').value = parseInt(folio) + 1;
-              document.getElementById('formCapturaLlegadas').reset();
-          })
-          .catch((err) => {
-              console.error("Error guardando llegada:", err);
-          });
+        // Guardar en Firestore LLEGADAS
+        db.collection("llegadas").doc(folio).set(registroLlegada);
+
+        // IMPACTAR AUTOMÁTICAMENTE EN INVENTARIO FACTURAS
+        if(area !== "PENDIENTE POR DEFINIR") {
+            db.collection("facturas_llegadas").add({
+                recibo: area,
+                caja: `${linea} ${caja}`,
+                vendor: vendor,
+                fecha: fechaStr,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        }
+
+        alert("✅ Llegada capturada exitosamente con Folio: " + folio);
+        document.getElementById('llegada_folio').value = parseInt(folio) + 1;
+        document.getElementById('formCapturaLlegadas').reset();
     }
 
     function renderTablaLlegadasHistorico(llegadasList) {
@@ -1029,7 +1047,7 @@
               <th class="bg-warning text-dark border-dark">Línea transporte</th>
               <th class="bg-warning text-dark border-dark">Número de caja</th>
               <th class="bg-warning text-dark border-dark">Contenido</th>
-              <th class="bg-warning text-dark border-dark">Tipo ubicación</th>
+              <th class="bg-warning text-dark border-dark">Área Descarga</th>
               <th class="bg-warning text-dark border-dark">Ubicación</th>
               <th class="bg-warning text-dark border-dark">Fecha</th>
               <th class="bg-warning text-dark border-dark">Hora</th>
@@ -1047,7 +1065,7 @@
                     <td>${item.linea || ''}</td>
                     <td class="fw-bold text-warning">${item.caja || ''}</td>
                     <td>${item.contenido || ''}</td>
-                    <td>${item.tipoUbicacion || ''}</td>
+                    <td class="fw-bold text-primary">${item.areaDescarga || 'PENDIENTE'}</td>
                     <td class="fw-bold text-success">${item.ubicacion || 'Patio'}</td>
                     <td>${item.fecha || ''}</td>
                     <td>${item.hora || ''}</td>
@@ -1386,6 +1404,21 @@
 
     function dibujarFacturasGroups(containerId, data, query = "") {
         let parsed = parseFacturasSheet(data);
+
+        // MEZCLAR CON FACTURAS CAPTURADAS DESDE EL FORMULARIO DE LLEGADAS EN FIRESTORE
+        if(window.facturasFirestoreCache && window.facturasFirestoreCache.length > 0) {
+            window.facturasFirestoreCache.forEach(fExtra => {
+                if(parsed.grupos[fExtra.recibo]) {
+                    parsed.grupos[fExtra.recibo].unshift({
+                        isHeader: false,
+                        caja: fExtra.caja,
+                        fecha: fExtra.fecha,
+                        vendor: fExtra.vendor,
+                        color: getVendorColor(fExtra.vendor)
+                    });
+                }
+            });
+        }
 
         const renderCol = (secName) => {
             let list = parsed.grupos[secName] || [];
