@@ -111,20 +111,20 @@
     .btn-submit { background-color: #f39c12; color: black; font-weight: bold; width: 100%; border: none; padding: 10px; font-size: 1.1rem; border-radius: 5px; margin-top: 15px;}
     .btn-submit:hover { background-color: #d68910; }
 
-    /* DISTRIBUCIÓN DEL MAPA DE RAMPAS */
+    /* ESTILOS Y DISTRIBUCIÓN DEL MAPA DE RAMPAS (SEGÚN IMAGEN 5) */
     .map-layout { background-color: #0b0e14; padding: 20px; border-radius: 8px; border: 1px dashed #f39c12; }
     .ramp-group { border: 1px solid #444; border-radius: 6px; padding: 8px; background-color: #141b22; display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; position: relative; margin-top: 10px;}
     .ramp-group-title { position: absolute; top: -12px; background: #141b22; padding: 0 5px; font-size: 0.7rem; color: #3498db; font-weight: bold; border-radius:3px; }
     
-    .ramp-box { background-color: #2c3e50; border: 2px solid #7f8c8d; border-radius: 4px; padding: 3px; width: 62px; height: 58px; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between; align-items: center; font-size: 0.65rem;}
+    .ramp-box { background-color: #2c3e50; border: 2px solid #7f8c8d; border-radius: 4px; padding: 3px; width: 60px; height: 56px; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between; align-items: center; font-size: 0.65rem;}
     .ramp-box:hover { border-color: #f39c12; transform: scale(1.1); z-index: 10;}
     .ramp-box.ocupada { border-color: #f39c12; background-color: #d35400; }
     
-    .ramp-box span.title { color: #fff; font-weight: bold; font-size: 0.7rem; margin-bottom: 1px;}
-    .ramp-box span.badge { background: #000; color: #bdc3c7; padding: 2px; border-radius: 3px; font-size: 0.6rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+    .ramp-box span.title { color: #fff; font-weight: bold; font-size: 0.68rem; margin-bottom: 1px;}
+    .ramp-box span.badge { background: #000; color: #bdc3c7; padding: 2px; border-radius: 3px; font-size: 0.58rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
     
-    .caja-tag { background: #f39c12; color: #000; font-weight: bold; border-radius: 2px; padding: 2px 4px; font-size: 0.6rem; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-    .prov-tag { background: #ecf0f1; color: #2c3e50; border-radius: 2px; padding: 1px 4px; font-size: 0.5rem; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+    .caja-tag { background: #f39c12; color: #000; font-weight: bold; border-radius: 2px; padding: 1px 3px; font-size: 0.58rem; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+    .prov-tag { background: #ecf0f1; color: #2c3e50; border-radius: 2px; padding: 1px 3px; font-size: 0.5rem; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
     
     .table-dark { background-color: #1c252e; font-size: 0.85rem; }
     .table-dark th { color: #f39c12; border-color: #444; }
@@ -146,17 +146,13 @@
 </head>
 <body>
 
-  <!-- MODAL DE LOGIN -->
+  <!-- MODAL LOGIN -->
   <div id="loginOverlay">
     <div class="login-card row g-0">
       <div class="col-md-6 d-none d-md-block login-left-img"></div>
       <div class="col-md-6 login-right-content">
-        <div class="whirlpool-logo-text">
-          Whirlpool <span class="whirlpool-orange">CORPORATION</span>
-        </div>
-        <div class="login-title">
-          RVP - Equipo Vacío <span class="whirlpool-orange">Materiales</span>
-        </div>
+        <div class="whirlpool-logo-text">Whirlpool <span class="whirlpool-orange">CORPORATION</span></div>
+        <div class="login-title">RVP - Equipo Vacío <span class="whirlpool-orange">Materiales</span></div>
         <h4 class="mt-4 mb-3 fw-bold" id="authModeTitle">Iniciar sesión</h4>
 
         <form class="login-form" id="loginForm">
@@ -168,7 +164,6 @@
             <label class="form-label text-dark small mb-1">Contraseña</label>
             <input type="password" id="authPassword" class="form-control" placeholder="•••••••• (Min. 6 caracteres)" required>
           </div>
-
           <button type="submit" class="btn-login-submit" id="btnAuthSubmit">Login</button>
         </form>
 
@@ -183,9 +178,7 @@
           <button type="button" class="admin-bypass-btn" onclick="accesoDirectoAdmin()">🔓 Acceso Directo Administrador (Sin Login)</button>
         </div>
 
-        <div class="mt-4 text-muted" style="font-size: 0.72rem;">
-          Desarrollado por Materiales WRA. Contactanos
-        </div>
+        <div class="mt-4 text-muted" style="font-size: 0.72rem;">Desarrollado por Materiales WRA. Contactanos</div>
       </div>
     </div>
   </div>
@@ -223,24 +216,21 @@
     </div>
 
     <div class="container-fluid">
-      
       <ul class="nav nav-tabs justify-content-center" id="mainTabs" role="tablist">
-        <li class="nav-item" role="presentation"><button class="nav-link active" id="rampas-tab" data-bs-toggle="tab" data-bs-target="#rampas" type="button">🚚 Movimientos y Rampas</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" id="llegadas-tab" data-bs-toggle="tab" data-bs-target="#llegadas" type="button">📥 Captura de Llegadas</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" id="descargas-tab" data-bs-toggle="tab" data-bs-target="#descargas" type="button">📉 Descargas x Turno</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" id="equipovacio-tab" data-bs-toggle="tab" data-bs-target="#equipovacio" type="button">🚛 Equipo Vacío</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" id="facturas-tab" data-bs-toggle="tab" data-bs-target="#facturas" type="button">📑 Inventario Facturas</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" id="patios-tab" data-bs-toggle="tab" data-bs-target="#patios" type="button">📦 Inventario Patios</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" id="proveedores-tab" data-bs-toggle="tab" data-bs-target="#proveedores" type="button">🏢 Cajas x Proveedor</button></li>
+        <li class="nav-item"><button class="nav-link active" id="rampas-tab" data-bs-toggle="tab" data-bs-target="#rampas" type="button">🚚 Movimientos y Rampas</button></li>
+        <li class="nav-item"><button class="nav-link" id="llegadas-tab" data-bs-toggle="tab" data-bs-target="#llegadas" type="button">📥 Captura de Llegadas</button></li>
+        <li class="nav-item"><button class="nav-link" id="descargas-tab" data-bs-toggle="tab" data-bs-target="#descargas" type="button">📉 Descargas x Turno</button></li>
+        <li class="nav-item"><button class="nav-link" id="equipovacio-tab" data-bs-toggle="tab" data-bs-target="#equipovacio" type="button">🚛 Equipo Vacío</button></li>
+        <li class="nav-item"><button class="nav-link" id="facturas-tab" data-bs-toggle="tab" data-bs-target="#facturas" type="button">📑 Inventario Facturas</button></li>
+        <li class="nav-item"><button class="nav-link" id="patios-tab" data-bs-toggle="tab" data-bs-target="#patios" type="button">📦 Inventario Patios</button></li>
+        <li class="nav-item"><button class="nav-link" id="proveedores-tab" data-bs-toggle="tab" data-bs-target="#proveedores" type="button">🏢 Cajas x Proveedor</button></li>
       </ul>
 
       <div class="tab-content" id="mainTabsContent">
-        
         <!-- TAB RAMPAS -->
         <div class="tab-pane fade show active" id="rampas" role="tabpanel">
           <div class="card-terminal mb-4">
             <h4 class="text-warning text-center mb-4">🗺️ Layout de Patios y Rampas</h4>
-            <p class="text-center text-muted small">Selecciona una rampa para cargar la información.</p>
             <div class="map-layout d-flex flex-column gap-3" id="mapa-rampas"></div>
           </div>
 
@@ -262,7 +252,7 @@
                       </div>
                       <div class="col-md-6">
                         <label class="form-label">Rampa Ingreso</label>
-                        <input type="text" class="form-control" id="rampa" style="transition: background-color 0.5s;">
+                        <input type="text" class="form-control" id="rampa">
                       </div>
                     </div>
                     <div class="row mb-2">
@@ -272,7 +262,7 @@
                           <button type="button" class="btn-status-retira btn-libre" onclick="setRetiraValue('Rampa Libre')">Rampa Libre</button>
                           <button type="button" class="btn-status-retira btn-pendiente" onclick="setRetiraValue('Caja Vacía Pendiente')">Caja Vacía Pend.</button>
                         </label>
-                        <input type="text" class="form-control" id="retira" placeholder="Selecciona una opción o escribe">
+                        <input type="text" class="form-control" id="retira">
                       </div>
                       <div class="col-md-6">
                         <label class="form-label">1. Contador Inicial Solicitud Mulero <button type="button" class="btn-time ms-2" onclick="setHora('paso1')">⏱️</button></label>
@@ -289,7 +279,7 @@
                       </div>
                       <div class="col-md-6">
                         <label class="form-label">Realizado Por (Usuario Pedido / Usuario Báscula)</label>
-                        <input type="text" class="form-control text-warning fw-bold" id="usuario" readonly placeholder="Usuario Pide | Usuario Confirms">
+                        <input type="text" class="form-control text-warning fw-bold" id="usuario" readonly placeholder="Usuario Pide | Usuario Confirma">
                       </div>
                     </div>
                   </div>
@@ -349,7 +339,7 @@
           </div>
         </div>
 
-        <!-- PESTAÑA: CAPTURA E HISTÓRICO DE LLEGADAS -->
+        <!-- TAB CAPTURA DE LLEGADAS -->
         <div class="tab-pane fade" id="llegadas" role="tabpanel">
           <div class="card-terminal">
             <h4 class="text-warning mb-4">📥 Captura de Llegadas de Cajas</h4>
@@ -358,7 +348,7 @@
                 <div class="row mb-3">
                   <div class="col-md-3">
                     <label class="form-label">Folio Automático</label>
-                    <input type="text" class="form-control fw-bold text-warning" id="llegada_folio" readonly value="337648">
+                    <input type="text" class="form-control fw-bold text-warning" id="llegada_folio" readonly value="337652">
                   </div>
                   <div class="col-md-9">
                     <label class="form-label">Tamaño de Caja</label>
@@ -373,7 +363,7 @@
 
                 <div class="row mb-3">
                   <div class="col-md-6">
-                    <label class="form-label">Línea de Transporte (Selección Restringida)</label>
+                    <label class="form-label">Línea de Transporte</label>
                     <select class="form-select" id="llegada_linea" required>
                       <option value="">Seleccionar Línea...</option>
                     </select>
@@ -403,7 +393,7 @@
                     <input type="text" class="form-control" id="llegada_factura" placeholder="# Factura">
                   </div>
                   <div class="col-md-3">
-                    <label class="form-label">Vendor / Proveedor (Busca por ID o Nombre)</label>
+                    <label class="form-label">Vendor / Proveedor</label>
                     <input type="text" class="form-control" id="llegada_vendor" list="list-vendors" placeholder="Teclea ID o Nombre..." required>
                     <datalist id="list-vendors"></datalist>
                   </div>
@@ -439,7 +429,6 @@
             </form>
           </div>
 
-          <!-- HISTÓRICO DE LLEGADAS -->
           <div class="card-terminal mt-4">
             <h4 class="text-warning mb-3">📜 Histórico de Llegadas</h4>
             <div class="d-flex justify-content-center mb-3">
@@ -447,7 +436,7 @@
                 <input type="text" id="searchLlegadasTable" class="form-control text-center shadow" 
                        placeholder="🔍 Buscar por Folio, Línea, Caja, Contenido, Ubicación, Facturas, Área..." 
                        onkeyup="filtrarTablaLlegadasUI()" 
-                       style="border: 2px solid #3498db; background-color: #0b0e14; color: #33ff33; font-weight: bold; font-size: 0.95rem;">
+                       style="border: 2px solid #3498db; background-color: #0b0e14; color: #33ff33; font-weight: bold;">
               </div>
             </div>
             <div id="tabla-llegadas-historico-container" class="table-responsive" style="max-height: 600px; overflow-y: auto;">
@@ -470,7 +459,6 @@
                 <h5 class="text-warning text-center mb-3">📉 Tendencia Diaria de Descargas por Turno</h5>
                 <div id="chart_descargas" style="width: 100%; height: 350px;"></div>
               </div>
-              
               <div class="card-chart">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                   <h5 class="text-warning mb-0">🏢 Descargas por Proveedor</h5>
@@ -496,16 +484,14 @@
 
           <div class="card-terminal mt-3">
             <h5 class="text-warning text-center mb-3">📋 Registro de Descargas Realizadas</h5>
-            
             <div class="d-flex justify-content-center mb-3">
               <div style="width: 60%; max-width: 550px;">
                 <input type="text" id="searchDescargasTable" class="form-control text-center shadow" 
                        placeholder="🔍 Buscar por Día, Fecha, Línea, Caja, Proveedor, Mulero..." 
                        onkeyup="filtrarTablaDescargasUI()" 
-                       style="border: 2px solid #f39c12; background-color: #0b0e14; color: #33ff33; font-weight: bold; font-size: 0.95rem;">
+                       style="border: 2px solid #f39c12; background-color: #0b0e14; color: #33ff33; font-weight: bold;">
               </div>
             </div>
-
             <div id="tabla-descargas-detalle-container" class="table-responsive" style="max-height: 500px; overflow-y: auto;">
                <p class="text-muted text-center">Cargando registros de descargas...</p>
             </div>
@@ -545,16 +531,14 @@
 
           <div class="card-terminal">
             <h5 class="text-warning text-center mb-3">📋 Registros de Salidas de Equipo Vacío</h5>
-            
             <div class="d-flex justify-content-center mb-3">
               <div style="width: 70%; max-width: 650px;">
                 <input type="text" id="searchVacioTable" class="form-control text-center shadow" 
-                       placeholder="🔍 Buscar por FECHA, LINEA, CAJA, PROVEEDOR, TRACTOR, TRANSPORTISTA, HORA, GRUPO..." 
+                       placeholder="🔍 Buscar por FECHA, LINEA, CAJA, PROVEEDOR, TRACTOR, TRANSPORTISTA..." 
                        onkeyup="filtrarTablaVacioUI()" 
-                       style="border: 2px solid #f39c12; background-color: #0b0e14; color: #33ff33; font-weight: bold; font-size: 0.95rem;">
+                       style="border: 2px solid #f39c12; background-color: #0b0e14; color: #33ff33; font-weight: bold;">
               </div>
             </div>
-
             <div id="tabla-vacio-container" class="table-responsive" style="max-height: 500px; overflow-y: auto;">
                <p class="text-muted text-center">Cargando equipo vacío...</p>
             </div>
@@ -565,29 +549,31 @@
         <div class="tab-pane fade" id="facturas" role="tabpanel">
           <div class="card-terminal">
             <h4 class="text-warning text-center mb-3">📑 Inventario y Status de Facturas</h4>
-            
             <div class="d-flex justify-content-center mb-4">
               <div style="width: 60%; max-width: 550px;">
                 <input type="text" id="searchFacturas" class="form-control text-center shadow" 
                        placeholder="🔍 Buscar por Proveedor, # Caja o Fecha..." 
                        onkeyup="filtrarFacturasUI()" 
-                       style="border: 2px solid #f39c12; background-color: #0b0e14; color: #33ff33; font-weight: bold; font-size: 1rem;">
+                       style="border: 2px solid #f39c12; background-color: #0b0e14; color: #33ff33; font-weight: bold;">
               </div>
             </div>
-
             <div class="row" id="facturas-group-container">
                <p class="text-muted text-center">Cargando inventario de facturas...</p>
             </div>
           </div>
         </div>
 
+        <!-- TAB PATIOS -->
         <div class="tab-pane fade" id="patios" role="tabpanel">
           <div class="card-terminal">
             <h4 class="text-warning text-center mb-4">📦 Inventario de Cajas en Patios</h4>
-            <div id="patios-container" class="table-responsive" style="max-height: 800px; overflow-y: auto;"><p class="text-muted text-center">Cargando...</p></div>
+            <div id="patios-container" class="table-responsive" style="max-height: 800px; overflow-y: auto;">
+              <p class="text-muted text-center">Cargando inventario de patios...</p>
+            </div>
           </div>
         </div>
 
+        <!-- TAB PROVEEDORES -->
         <div class="tab-pane fade" id="proveedores" role="tabpanel">
           <div class="row">
             <div class="col-lg-6">
@@ -607,7 +593,7 @@
   <script>
     google.charts.load('current', {'packages':['corechart', 'bar']});
     
-    // CONFIGURACIÓN FIREBASE
+    // CONFIGURACIÓN FIREBASE NATIVA
     const firebaseConfig = {
       apiKey: "AIzaSyAkD3YB8WkEtpCzYNPDdwnmiSkY9kzG5GU",
       authDomain: "terminal-logistica.firebaseapp.com",
@@ -622,6 +608,7 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
+    // DATOS HISTÓRICOS INTEGRADOS DE FORMA PERMANENTE
     const HISTORICO_EQUIPO_VACIO = [
       ["FECHA", "LINEA", "CAJA", "PROVEEDOR", "TRACTOR", "TRANSPORTISTA", "HORA SALIDA", "GRUPO"],
       ["02-01-2026", "HG", "53104000", "HUNTINGTON", "7923", "CARLOS SANCHEZ", "11:14AM", "A"],
@@ -1041,9 +1028,18 @@
     let isRegisterMode = false;
     let tamanoSeleccionado = '3.5 Tons';
     let contenidoSeleccionado = 'Importación';
-    let currentUserEmail = "Inivitado/Báscula";
+    let currentUserEmail = "Invitado/Báscula";
+    let baseDataCache = { descargas: [], equipoVacio: [], facturas: [] };
+    window.estadoAlertas = {}; 
+    let filtroVacioPeriodoActual = 'diario';
+    let filtroDescargasVendorPeriodo = 'diario';
+    
+    let audioActivado = false;
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContext();
+    let alertQueue = Promise.resolve();
+    let vozHumana = null;
 
-    // AUTENTICACIÓN Y LOGIN DE FIREBASE
     auth.onAuthStateChanged((user) => {
       if (user) {
         currentUserEmail = user.email || "Usuario";
@@ -1094,9 +1090,7 @@
 
       if (isRegisterMode) {
         auth.createUserWithEmailAndPassword(email, password)
-          .then((userCredential) => {
-            alert("✅ ¡Usuario registrado con éxito! Bienvenido.");
-          })
+          .then(() => alert("✅ ¡Usuario registrado con éxito! Bienvenido."))
           .catch((err) => { 
             let msg = err.message;
             if (err.code === 'auth/email-already-in-use') msg = "El correo ya está registrado. Inicia sesión.";
@@ -1185,9 +1179,7 @@
           }
           document.getElementById('llegada_folio').value = maxFolio + 1;
         })
-        .catch(() => {
-          document.getElementById('llegada_folio').value = 337648;
-        });
+        .catch(() => { document.getElementById('llegada_folio').value = 337648; });
     }
 
     function poblarRampasDestinoSelect() {
@@ -1223,217 +1215,7 @@
       rowRampa.style.display = (tipo === 'Rampa') ? 'flex' : 'none';
     }
 
-    function parseFacturasSheet(facturasData) {
-      let items = []; 
-      let grupos = { "RECIBO SUR": [], "RECIBO PONIENTE": [], "RECIBO ORIENTE": [] }; 
-      let vendorCounts = {};
-
-      if (!facturasData || facturasData.length < 3) return { items, grupos, vendorCounts };
-
-      const secciones = [
-        { name: "RECIBO SUR", col: 0 },
-        { name: "RECIBO PONIENTE", col: 3 },
-        { name: "RECIBO ORIENTE", col: 6 }
-      ];
-
-      secciones.forEach(sec => {
-        let currentVendor = "S/N";
-        let currentVendorColor = "#7f8c8d";
-
-        for (let i = 2; i < facturasData.length; i++) {
-          let row = facturasData[i];
-          if (!row) continue;
-
-          let cell0 = row[sec.col] ? row[sec.col].toString().trim() : "";     
-          let cell1 = row[sec.col+1] ? row[sec.col+1].toString().trim() : ""; 
-          let cell2 = row[sec.col+2] ? row[sec.col+2].toString().trim() : ""; 
-
-          if (!cell0) continue;
-
-          if (cell1 === "" && cell2 !== "") {
-            currentVendor = cell0.toUpperCase();
-            currentVendorColor = getVendorColor(currentVendor);
-            grupos[sec.name].push({ isHeader: true, vendor: currentVendor, qty: cell2, color: currentVendorColor });
-            if (!vendorCounts[currentVendor]) { vendorCounts[currentVendor] = 0; }
-          } else if (cell1 !== "") {
-            let cajaName = cell0.toUpperCase();
-            let fecha = cell1;
-            let matchLinea = cajaName.match(/^[A-Z\s]+/i);
-            let linea = matchLinea ? matchLinea[0].trim() : cajaName;
-
-            items.push({ caja: cajaName, proveedor: currentVendor, fecha: fecha, linea: linea, recibo: sec.name });
-            grupos[sec.name].push({ isHeader: false, caja: cajaName, fecha: fecha, linea: linea, vendor: currentVendor, color: currentVendorColor });
-            vendorCounts[currentVendor] = (vendorCounts[currentVendor] || 0) + 1;
-          }
-        }
-      });
-
-      return { items, grupos, vendorCounts };
-    }
-
-    function getBoxDetails(cajaStr) {
-      let details = { linea: "", proveedor: "", fecha: "" };
-      if(!baseDataCache || !baseDataCache.facturas) return details;
-      
-      let cleanCaja = cajaStr.toString().replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-      let parsed = parseFacturasSheet(baseDataCache.facturas);
-
-      let match = parsed.items.find(it => it.caja.replace(/[^a-zA-Z0-9]/g, '') === cleanCaja || cleanCaja.includes(it.caja.replace(/[^a-zA-Z0-9]/g, '')));
-      if(match) {
-        details.linea = match.linea;
-        details.proveedor = match.proveedor;
-        details.fecha = match.fecha;
-      }
-      return details;
-    }
-
-    let baseDataCache = null;
-    window.estadoAlertas = {}; 
-    let filtroVacioPeriodoActual = 'diario';
-    let filtroDescargasVendorPeriodo = 'diario';
-    
-    let audioActivado = false;
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    const audioCtx = new AudioContext();
-    let alertQueue = Promise.resolve();
-    let vozHumana = null;
-
-    function cargarVocesPremium() {
-      let voces = window.speechSynthesis.getVoices();
-      vozHumana = voces.find(v => v.name.includes('Google español') || v.name.includes('Google Español')) || 
-                  voces.find(v => v.name.includes('Sabina') || v.name.includes('Paulina')) ||
-                  voces.find(v => v.name.includes('Microsoft') && v.lang === 'es-MX') ||
-                  voces.find(v => v.lang === 'es-MX') || 
-                  voces.find(v => v.lang.startsWith('es'));
-    }
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.onvoiceschanged = cargarVocesPremium;
-      cargarVocesPremium(); 
-    }
-
-    function playToneAsync(freq, type, duration, vol) {
-      return new Promise(resolve => {
-        if (!audioActivado || audioCtx.state !== 'running') { resolve(); return; }
-        const osc = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-        osc.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-        setTimeout(resolve, duration * 1000);
-      });
-    }
-
-    function queueAlert(textoVoz) {
-      if (!audioActivado) return;
-      alertQueue = alertQueue.then(async () => {
-        await playToneAsync(800, 'square', 0.2, 0.1);
-        await playToneAsync(1000, 'square', 0.2, 0.1);
-        return new Promise(resolve => {
-          if ('speechSynthesis' in window) {
-            let utterance = new SpeechSynthesisUtterance(textoVoz);
-            if (vozHumana) utterance.voice = vozHumana;
-            utterance.lang = 'es-MX';
-            utterance.rate = 0.88; 
-            utterance.pitch = 1.0; 
-            utterance.onend = resolve;
-            utterance.onerror = resolve;
-            window.speechSynthesis.speak(utterance);
-          } else { resolve(); }
-        });
-      });
-    }
-
-    window.toggleAudio = function() {
-      audioActivado = !audioActivado;
-      const btn = document.getElementById('btnAudioToggle');
-      if(audioActivado) {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        btn.innerText = "🔊 Alertas Activadas"; btn.classList.add("active");
-        playToneAsync(20000, 'sine', 0.01, 0.01); 
-        if('speechSynthesis' in window) { let s = new SpeechSynthesisUtterance(""); s.volume = 0; window.speechSynthesis.speak(s); }
-      } else {
-        btn.innerText = "🔇 Activar Alertas y Voz"; btn.classList.remove("active");
-        if('speechSynthesis' in window) window.speechSynthesis.cancel();
-      }
-    };
-
-    const redrawAllCharts = () => {
-      if(!baseDataCache) return;
-      if(baseDataCache.salidas) dibujarDonutStatus(baseDataCache.salidas.slice(1));
-      if(baseDataCache.descargas) procesarDescargas(baseDataCache.descargas);
-      if(baseDataCache.equipoVacio) procesarEquipoVacio(baseDataCache.equipoVacio);
-      if(baseDataCache.facturas) procesarProveedores(baseDataCache.facturas);
-    };
-
-    window.addEventListener('resize', redrawAllCharts);
-
-    document.addEventListener('DOMContentLoaded', function() {
-      let tabsMap = {
-        'facturas-tab': function() { setTimeout(() => { renderFacturasCompletas(); }, 50); },
-        'proveedores-tab': function() { setTimeout(() => { if(baseDataCache && baseDataCache.facturas) procesarProveedores(baseDataCache.facturas); }, 50); },
-        'descargas-tab': function() { setTimeout(() => { if(baseDataCache && baseDataCache.descargas) procesarDescargas(baseDataCache.descargas); }, 50); },
-        'equipovacio-tab': function() { setTimeout(() => { if(baseDataCache && baseDataCache.equipoVacio) procesarEquipoVacio(baseDataCache.equipoVacio); }, 50); },
-        'llegadas-tab': function() { setTimeout(() => { inicializarFormularioLlegadas(); }, 50); }
-      };
-
-      Object.keys(tabsMap).forEach(tabId => {
-        let btn = document.getElementById(tabId);
-        if(btn) btn.addEventListener('shown.bs.tab', tabsMap[tabId]);
-      });
-    });
-
-    window.onload = function() {
-      actualizarReloj();
-      construirMapaBase(); 
-      cargarDatosBase(); 
-      inicializarFormularioLlegadas();
-
-      // ESCUCHADOR EN VIVO PARA CAPTURAS QUE VAN AL INVENTARIO DE FACTURAS
-      db.collection("facturas_llegadas").onSnapshot((snapshot) => {
-        let extraFacturas = [];
-        snapshot.forEach((doc) => { extraFacturas.push(doc.data()); });
-        window.facturasFirestoreCache = extraFacturas;
-        renderFacturasCompletas();
-        poblarDatalistCajas(baseDataCache || {});
-      });
-
-      db.collection("llegadas").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
-        let llegadasList = [];
-        snapshot.forEach((doc) => { llegadasList.push(doc.data()); });
-        renderTablaLlegadasHistorico(llegadasList);
-        actualizarFolioAutomatico();
-      });
-
-      db.collection("salidas").onSnapshot((snapshot) => {
-        if (!snapshot.empty) {
-          let liveSalidas = [];
-          snapshot.forEach((doc) => { liveSalidas.push(doc.data()); });
-          if (liveSalidas.length > 0) {
-            if(!baseDataCache) baseDataCache = {};
-            baseDataCache.salidas = liveSalidas;
-            dibujarCajasActivas(liveSalidas);
-            actualizarMapaRampas(liveSalidas);
-            dibujarDonutStatus(liveSalidas);
-          }
-        }
-      });
-
-      setInterval(actualizarCronometrosYAlarmas, 1000); 
-      document.getElementById('registroForm').addEventListener('submit', enviarFormulario);
-      document.getElementById('formCapturaLlegadas').addEventListener('submit', guardarCapturaLlegada);
-    };
-
-    function actualizarReloj() { setInterval(() => { document.getElementById('reloj').innerText = new Date().toLocaleString(); }, 1000); }
-    window.setHora = function(inputId) { document.getElementById(inputId).value = new Date().toLocaleTimeString('es-MX', { hour12: false }); };
-    window.setNA = function(inputId) { document.getElementById(inputId).value = "N/A"; };
-    window.setRetiraValue = function(val) { document.getElementById('retira').value = val; };
-
-    // CONSTRUCCIÓN DEL MAPA DE RAMPAS SEGÚN EL DIAGRAMA DE LA IMAGEN 7
+    // CONSTRUCCIÓN DEL MAPA DE RAMPAS (IMAGEN 5)
     function construirMapaBase() {
       const crearGrupo = (titulo, idGrupo, arrayRampas) => {
         let html = `<div class="ramp-group"><span class="ramp-group-title">${titulo}</span>`;
@@ -1443,27 +1225,30 @@
 
       let mapaHtml = "";
       mapaHtml += `<div class="d-flex justify-content-between align-items-start w-100 mb-2">`;
-      mapaHtml += crearGrupo("CURVA EV", "curvaev", ["1","2","3","4","5","6"]);
-      mapaHtml += crearGrupo("Rampas Recibo Sur", "sur", ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"]);
+      mapaHtml += crearGrupo("CURVA EQUIPO VACIO", "curvaev", ["1","2","3","4","5","6"]);
+      mapaHtml += crearGrupo("Rampas Recibo Sur (1x15)", "sur", ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"]);
       mapaHtml += crearGrupo("Servicios", "serv1", ["Serv 1"]);
       mapaHtml += `</div>`;
 
       mapaHtml += `<div class="d-flex justify-content-between align-items-center w-100 mb-2">
                      <div class="d-flex flex-column gap-3">`;
       mapaHtml += crearGrupo("EQUIPO VACIO", "eqv", ["RVP 1","RVP 2"]);
-      mapaHtml += crearGrupo("CALLE EV", "calleev", ["1","2","3"]);
+      mapaHtml += crearGrupo("CALLE EV (1x3)", "calleev", ["1","2","3"]);
       mapaHtml += crearGrupo("R. Servicios", "serv8", ["Serv 8"]);
+      mapaHtml += crearGrupo("OTE / Serv 7", "ote_s7", ["OTE 41","Serv 7","OTE 40","OTE 39"]);
       mapaHtml += `</div><div class="flex-grow-1"></div>`;
       
       mapaHtml += `<div class="d-flex gap-3 align-items-center">
                     <div class="d-flex flex-column gap-2">`;
-      mapaHtml += `<div class="d-flex gap-2">` + crearGrupo("Rampa de Servicios", "serv_top_right", ["Serv 2"]) + crearGrupo("Pte 16-19", "pte16_19", ["16","17","18","19"]) + `</div>`;
-      mapaHtml += `<div class="d-flex gap-2">` + crearGrupo("Serv 3", "serv3", ["Serv 3"]) + crearGrupo("Pte 20-21", "pte20_21", ["20","21"]) + `</div>`;
-      mapaHtml += `<div class="d-flex gap-2">` + crearGrupo("Serv 4-5", "serv4_5", ["Serv 4","Serv 5"]) + crearGrupo("Pte 22-24", "pte22_24", ["22","23","24"]) + `</div>`;
-      mapaHtml += `</div><div class="ramp-group" style="height:250px; width:50px; writing-mode: vertical-rl; text-align:center; color:#f39c12; font-weight:bold; letter-spacing:2px; padding:6px;">RAMPAS RECIBO PONIENTE</div></div></div>`;
+      mapaHtml += crearGrupo("Rampa de Servicios", "serv_top_right", ["Serv 2"]);
+      mapaHtml += crearGrupo("Pte 16-19", "pte16_19", ["16","17","18","19"]);
+      mapaHtml += crearGrupo("Serv 3", "serv3", ["Serv 3"]);
+      mapaHtml += crearGrupo("Pte 20-21", "pte20_21", ["20","21"]);
+      mapaHtml += crearGrupo("Serv 4-5", "serv4_5", ["Serv 4","Serv 5"]);
+      mapaHtml += crearGrupo("Pte 22-24", "pte22_24", ["22","23","24"]);
+      mapaHtml += `</div><div class="ramp-group" style="height:280px; width:45px; writing-mode: vertical-rl; text-align:center; color:#f39c12; font-weight:bold; letter-spacing:2px; padding:6px;">RAMPAS RECIBO PONIENTE</div></div></div>`;
       
       mapaHtml += `<div class="d-flex justify-content-between align-items-end w-100">`;
-      mapaHtml += crearGrupo("OTE / Serv 7", "ote_s7", ["OTE 41","Serv 7","OTE 40","OTE 39"]);
       mapaHtml += crearGrupo("NORTE", "norte", ["38","37","36","35"]);
       mapaHtml += crearGrupo("POSTES HF", "hf", ["34","33","32","31","30","29"]);
       mapaHtml += crearGrupo("Rampas Recibo Poniente", "pte25_34", ["28","27","26","25","34"]);
@@ -1489,10 +1274,10 @@
       filas.forEach(f => {
         let caja = f[0], rampa = f[2], status = f[13], mulero = f[3];
         if (caja && rampa && (status === "En Proceso" || status === "Fuera de Tiempo")) {
-          let box = document.querySelector(`.ramp-box[data-rampa="${rampa}"]`);
+          let box = document.querySelector(`.ramp-box[data-rampa="${rampa}"]`) || document.querySelector(`.ramp-box[data-rampa="${rampa.replace(/[^0-9]/g, '')}"]`);
           if (box) {
             box.classList.add('ocupada');
-            let sinMulero = (!mulero || mulero.trim() === "" || mulero.trim() === "N/A");
+            let sinMulero = (!mulero || mulero.trim() === "" || mulero.trim() === "N/A" || mulero.includes("Pendiente"));
             let state = window.estadoAlertas[caja] || {diff: 0};
 
             if (state.diff >= 3600) box.classList.add('nivel-4'); 
@@ -1501,24 +1286,33 @@
             else if (state.diff >= 1200) box.classList.add('nivel-1'); 
             else if (sinMulero) box.classList.add('alerta-sin-mulero');
             
-            let det = getBoxDetails(caja);
-            let lineaStr = det.linea ? det.linea + ' ' : '';
-            let provStr = det.proveedor ? det.proveedor : 'Sin Prov.';
             let rampaName = box.getAttribute('data-rampa');
-            
             box.innerHTML = `<span class="title">${rampaName}</span>
-                             <div class="caja-tag">${lineaStr}${caja}</div>
-                             <div class="prov-tag" title="${provStr}">${provStr}</div>`;
+                             <div class="caja-tag">${caja}</div>
+                             <div class="prov-tag" title="${f[1] || 'Ocupado'}">${f[1] || 'Ocupado'}</div>`;
           }
         }
       });
     }
 
-    // CARGA DE DATOS CENTRALIZADA DESDE FIREBASE FIRESTORE
+    // CARGA DE DATOS DESDE FIREBASE FIRESTORE
     function cargarDatosBase() {
-      if(!baseDataCache) baseDataCache = {};
+      // 1. Escuchar salidas / rampas
+      db.collection("salidas").onSnapshot(snapshot => {
+        let liveSalidas = [];
+        snapshot.forEach(doc => {
+          let d = doc.data();
+          liveSalidas.push([d.caja, d.retira || '', d.rampa || '', d.mulero || '', d.paso1 || '', d.paso2 || '', d.paso3 || '', d.paso4 || '', d.paso5 || '', d.paso6 || '', '', '', d.usuario || '', d.status || 'En Proceso']);
+        });
+        baseDataCache.salidas = liveSalidas;
+        dibujarCajasActivas(liveSalidas);
+        actualizarMapaRampas(liveSalidas);
+        if (typeof google !== 'undefined' && google.charts) { dibujarDonutStatus(liveSalidas); }
+        poblarDatalistCajas();
+        calcularMetricasProveedores();
+      });
 
-      // 1. Escuchar descargas desde Firestore
+      // 2. Escuchar descargas desde Firestore
       db.collection("descargas").onSnapshot(snapshot => {
         let descargasList = [HISTORICO_DESCARGAS[0]];
         if (!snapshot.empty) {
@@ -1531,9 +1325,10 @@
         }
         baseDataCache.descargas = descargasList;
         procesarDescargas(descargasList);
+        calcularMetricasProveedores();
       });
 
-      // 2. Escuchar equipo vacío desde Firestore
+      // 3. Escuchar equipo vacío desde Firestore
       db.collection("equipo_vacio").onSnapshot(snapshot => {
         let vacioList = [HISTORICO_EQUIPO_VACIO[0]];
         if (!snapshot.empty) {
@@ -1546,28 +1341,29 @@
         }
         baseDataCache.equipoVacio = vacioList;
         procesarEquipoVacio(vacioList);
+        calcularMetricasProveedores();
       });
 
-      // 3. Renderizar inventario de facturas
-      renderFacturasCompletas();
+      // 4. Escuchar Patios
+      db.collection("patios").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+        let patiosList = [];
+        snapshot.forEach(doc => { patiosList.push(doc.data()); });
+        renderInventarioPatios(patiosList);
+        calcularMetricasProveedores();
+      });
+
+      // 5. Escuchar Facturas
+      db.collection("facturas_llegadas").onSnapshot(snapshot => {
+        let extraFacturas = [];
+        snapshot.forEach(doc => { extraFacturas.push(doc.data()); });
+        window.facturasFirestoreCache = extraFacturas;
+        renderFacturasCompletas();
+        poblarDatalistCajas();
+        calcularMetricasProveedores();
+      });
     }
 
-    function procesarDatos(dataObj) {
-      if (!dataObj) return;
-      baseDataCache = dataObj; 
-      
-      if (dataObj.salidas && dataObj.salidas.length > 0) {
-        const filasSalidas = dataObj.salidas.slice(1); 
-        poblarDatalistCajas(dataObj);
-        dibujarCajasActivas(filasSalidas);
-        actualizarMapaRampas(filasSalidas);
-        google.charts.setOnLoadCallback(() => { dibujarDonutStatus(filasSalidas); });
-      }
-      if (dataObj.patios && dataObj.patios.length > 0) dibujarTablaGenerica('patios-container', dataObj.patios);
-      renderFacturasCompletas();
-    }
-
-    // CAPTURA DE LLEGADA CON IMPACTO EN FIRESTORE (LLEGADAS, RAMPAS E INVENTARIO FACTURAS)
+    // CAPTURA DE LLEGADAS (SOLUCIONA IMÁGENES 1, 2, 3 Y 4)
     function guardarCapturaLlegada(e) {
       e.preventDefault();
       let folio = document.getElementById('llegada_folio').value;
@@ -1582,12 +1378,14 @@
       let now = new Date();
       let fechaStr = now.toLocaleDateString('es-MX');
       let horaStr = now.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+      let cajaFull = `${linea} ${caja}`;
 
       let registroLlegada = {
         folio: folio,
         tamanoCaja: tamanoSeleccionado,
         linea: linea,
         caja: caja,
+        cajaFull: cajaFull,
         contenido: contenidoSeleccionado,
         areaDescarga: area,
         tipoUbicacion: tipoUbicacion,
@@ -1600,12 +1398,11 @@
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       };
 
-      // 1. Guardar en Firestore LLEGADAS
+      // 1. Guardar en Histórico de Llegadas
       db.collection("llegadas").doc(folio).set(registroLlegada);
 
-      // 2. Si va a Rampa, reflejar directamente en RAMPAS / SALIDAS
-      if(tipoUbicacion === 'Rampa' && rampaDestino) {
-        let cajaFull = `${linea} ${caja}`;
+      // 2. SI VA A RAMPA -> Asignar e iluminar rampa inmediatamente
+      if (tipoUbicacion === 'Rampa' && rampaDestino) {
         db.collection("salidas").doc(cajaFull).set({
           caja: cajaFull,
           rampa: rampaDestino,
@@ -1613,31 +1410,86 @@
           mulero: "Pendiente Mulero",
           paso1: horaStr,
           usuarioSolicita: currentUserEmail,
-          usuario: currentUserEmail,
+          usuario: `Pide: ${currentUserEmail} | Confirma: Pendiente`,
           status: "En Proceso",
           updatedAt: new Date().toISOString()
         });
       }
 
-      // 3. Asignar e impactar en INVENTARIO FACTURAS
-      let destinoFacturas = area;
-      if (area === "PENDIENTE POR DEFINIR" || !area) { destinoFacturas = "RECIBO SUR"; }
+      // 3. SI VA A PATIO -> Agregar al Inventario de Patios
+      if (tipoUbicacion === 'Patio') {
+        db.collection("patios").doc(cajaFull).set({
+          folio: folio,
+          caja: cajaFull,
+          linea: linea,
+          cajaNumero: caja,
+          proveedor: vendor || 'PROVEEDOR GENERAL',
+          contenido: contenidoSeleccionado,
+          area: area,
+          factura: factura || 'S/F',
+          fecha: fechaStr,
+          hora: horaStr,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      }
 
+      // 4. Agregar a Inventario de Facturas
+      let destinoFacturas = (area === "PENDIENTE POR DEFINIR" || !area) ? "RECIBO SUR" : area;
       db.collection("facturas_llegadas").add({
         recibo: destinoFacturas,
-        caja: `${linea} ${caja}`,
+        caja: cajaFull,
         vendor: vendor || 'PROVEEDOR GENERAL',
         factura: factura || 'S/F',
         usuarioSolicita: currentUserEmail,
         fecha: fechaStr,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       }).then(() => {
-        alert("✅ Llegada registrada exitosamente con Folio: " + folio);
+        alert(`✅ Llegada registrada exitosamente (Folio: ${folio}). Ubicación: ${tipoUbicacion} ${rampaDestino || ''}`);
         document.getElementById('formCapturaLlegadas').reset();
         actualizarFolioAutomatico();
       });
     }
 
+    // RENDERIZAR PATIOS (SOLUCIONA IMÁGENES 3 Y 4)
+    function renderInventarioPatios(patiosList) {
+      let container = document.getElementById('patios-container');
+      if (!container) return;
+
+      if (patiosList.length === 0) {
+        container.innerHTML = `<div class="text-muted text-center py-4">No hay cajas actualmente registradas en Patios.</div>`;
+        return;
+      }
+
+      let html = `<table class="table table-dark table-bordered table-hover align-middle text-center">
+        <thead>
+          <tr>
+            <th class="bg-warning text-dark border-dark"># Caja</th>
+            <th class="bg-warning text-dark border-dark">Proveedor</th>
+            <th class="bg-warning text-dark border-dark">Línea</th>
+            <th class="bg-warning text-dark border-dark">Contenido</th>
+            <th class="bg-warning text-dark border-dark">Área Asignada</th>
+            <th class="bg-warning text-dark border-dark">Factura</th>
+            <th class="bg-warning text-dark border-dark">Fecha / Hora</th>
+          </tr>
+        </thead><tbody>`;
+
+      patiosList.forEach(p => {
+        html += `<tr>
+          <td class="fw-bold text-warning">${p.caja || ''}</td>
+          <td>${checkVendorBadge(p.proveedor || '')}</td>
+          <td>${p.linea || ''}</td>
+          <td>${p.contenido || ''}</td>
+          <td class="fw-bold text-info">${p.area || ''}</td>
+          <td>${p.factura || 'S/F'}</td>
+          <td>${p.fecha || ''} ${p.hora || ''}</td>
+        </tr>`;
+      });
+
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+
+    // RENDERIZAR TABLA HISTÓRICO LLEGADAS
     function renderTablaLlegadasHistorico(llegadasList) {
       let container = document.getElementById('tabla-llegadas-historico-container');
       if(!container) return;
@@ -1690,30 +1542,21 @@
     }
 
     function renderFacturasCompletas() {
-      let data = (baseDataCache && baseDataCache.facturas) ? baseDataCache.facturas : [];
       let query = document.getElementById('searchFacturas') ? document.getElementById('searchFacturas').value.toLowerCase().trim() : "";
-      dibujarFacturasGroups('facturas-group-container', data, query);
+      dibujarFacturasGroups('facturas-group-container', query);
     }
 
-    function filtrarFacturasUI() {
-      renderFacturasCompletas();
-    }
+    function filtrarFacturasUI() { renderFacturasCompletas(); }
 
-    function dibujarFacturasGroups(containerId, data, query = "") {
-      let parsed = parseFacturasSheet(data);
+    function dibujarFacturasGroups(containerId, query = "") {
+      let grupos = { "RECIBO SUR": [], "RECIBO PONIENTE": [], "RECIBO ORIENTE": [] };
 
-      if(!parsed.grupos["RECIBO SUR"]) parsed.grupos["RECIBO SUR"] = [];
-      if(!parsed.grupos["RECIBO PONIENTE"]) parsed.grupos["RECIBO PONIENTE"] = [];
-      if(!parsed.grupos["RECIBO ORIENTE"]) parsed.grupos["RECIBO ORIENTE"] = [];
-
-      // MEZCLAR CON FIRESTORE
       if(window.facturasFirestoreCache && window.facturasFirestoreCache.length > 0) {
         window.facturasFirestoreCache.forEach(fExtra => {
           let recName = fExtra.recibo || "RECIBO SUR";
-          if(!parsed.grupos[recName]) parsed.grupos[recName] = [];
+          if(!grupos[recName]) grupos[recName] = [];
           
-          parsed.grupos[recName].unshift({
-            isHeader: false,
+          grupos[recName].unshift({
             caja: fExtra.caja,
             fecha: fExtra.fecha,
             vendor: fExtra.vendor,
@@ -1724,40 +1567,26 @@
       }
 
       const renderCol = (secName) => {
-        let list = parsed.grupos[secName] || [];
+        let list = grupos[secName] || [];
         let html = `<div class="col-md-4"><div class="card-terminal p-3" style="max-height: 800px; overflow-y: auto;"><h5 class="text-center text-warning mb-3 border-bottom border-warning pb-2">${secName}</h5><div class="facturas-list">`;
         
         if (list.length === 0) {
           html += `<div class="text-muted text-center py-4 small">Sin facturas o cajas registradas en esta área.</div>`;
         } else {
-          let currentHeaderHtml = "";
-          let currentHeaderMatches = false;
-
           list.forEach(item => {
-            if(item.isHeader) {
-              currentHeaderMatches = item.vendor.toLowerCase().includes(query);
-              currentHeaderHtml = `<div class="mt-3 mb-1"><span class="badge w-100 text-start py-2 fs-6 shadow-sm d-flex justify-content-between align-items-center" style="background-color: ${item.color};">${item.vendor} <span class="badge bg-dark text-white border border-secondary">${item.qty || ''}</span></span></div>`;
-            } else {
-              let cajaMatch = item.caja.toLowerCase().includes(query);
-              let fechaMatch = item.fecha.toLowerCase().includes(query);
-              let vendorMatch = item.vendor ? item.vendor.toLowerCase().includes(query) : false;
+            let cajaMatch = item.caja.toLowerCase().includes(query);
+            let fechaMatch = item.fecha.toLowerCase().includes(query);
+            let vendorMatch = item.vendor ? item.vendor.toLowerCase().includes(query) : false;
 
-              if (query === "" || currentHeaderMatches || cajaMatch || fechaMatch || vendorMatch) {
-                if (currentHeaderHtml) {
-                  html += currentHeaderHtml;
-                  currentHeaderHtml = ""; 
-                }
-
-                let facturaStr = item.factura ? ` (${item.factura})` : '';
-
-                html += `<div class="d-flex justify-content-between align-items-center mb-2 px-2 py-2 rounded border border-secondary" style="background-color: #141b22;">
-                            <div class="d-flex flex-column text-start">
-                              <span class="badge mb-1" style="background-color: #7b2cbf; color: white; font-size: 0.78rem; width: fit-content;">${item.caja}</span>
-                              <span class="card-prov-text">Prov: ${item.vendor || 'N/A'}${facturaStr}</span>
-                            </div>
-                            <span class="fw-bold text-warning" style="font-size: 0.75rem;">📅 ${item.fecha || 'Sin Fecha'}</span>
-                         </div>`;
-              }
+            if (query === "" || cajaMatch || fechaMatch || vendorMatch) {
+              let facturaStr = item.factura ? ` (${item.factura})` : '';
+              html += `<div class="d-flex justify-content-between align-items-center mb-2 px-2 py-2 rounded border border-secondary" style="background-color: #141b22;">
+                          <div class="d-flex flex-column text-start">
+                            <span class="badge mb-1" style="background-color: #7b2cbf; color: white; font-size: 0.78rem; width: fit-content;">${item.caja}</span>
+                            <span class="card-prov-text">Prov: ${item.vendor || 'N/A'}${facturaStr}</span>
+                          </div>
+                          <span class="fw-bold text-warning" style="font-size: 0.75rem;">📅 ${item.fecha || 'Sin Fecha'}</span>
+                       </div>`;
             }
           });
         }
@@ -1768,8 +1597,70 @@
       let finalHtml = renderCol("RECIBO SUR") + renderCol("RECIBO PONIENTE") + renderCol("RECIBO ORIENTE");
       let container = document.getElementById(containerId);
       if(container) container.innerHTML = finalHtml;
+    }
 
-      if(!query && data && data.length > 0) { procesarProveedores(data); }
+    // CÁLCULO DE CAJAS X PROVEEDOR (SOLUCIONA IMAGEN 6)
+    function calcularMetricasProveedores() {
+      let vendorCounts = {};
+
+      // 1. Contar desde Facturas / Llegadas
+      if (window.facturasFirestoreCache) {
+        window.facturasFirestoreCache.forEach(f => {
+          let v = (f.vendor || 'GENERAL').toUpperCase();
+          vendorCounts[v] = (vendorCounts[v] || 0) + 1;
+        });
+      }
+
+      // 2. Contar desde Rampas / Salidas Activas
+      if (baseDataCache.salidas) {
+        baseDataCache.salidas.forEach(f => {
+          let prov = f[1] || '';
+          if (prov && prov.trim() !== '') {
+            let v = prov.toUpperCase();
+            vendorCounts[v] = (vendorCounts[v] || 0) + 1;
+          }
+        });
+      }
+
+      let arregloOrdenado = Object.keys(vendorCounts).map(k => [k, vendorCounts[k]]).sort((a,b) => b[1] - a[1]);
+      
+      // Dibujar Gráfica de Barras
+      if (typeof google !== 'undefined' && google.charts && document.getElementById('bar_vendors')) {
+        let chartData = [['Proveedor', 'Cajas', { role: 'style' }, {role: 'annotation'}]];
+        let top10 = arregloOrdenado.slice(0, 10);
+        
+        if (top10.length === 0) {
+          chartData.push(['Sin Datos', 0, 'color: #7f8c8d', '0']);
+        } else {
+          top10.forEach(item => { 
+            chartData.push([item[0], item[1], getVendorColor(item[0]), item[1].toString()]); 
+          });
+        }
+
+        let data = google.visualization.arrayToDataTable(chartData);
+        let options = { 
+          backgroundColor: 'transparent', legend: 'none', 
+          hAxis: {textStyle: {color: 'white'}}, 
+          vAxis: {textStyle: {color: 'white', fontSize: 11}}, 
+          chartArea: {width:'60%', height:'85%'}, 
+          annotations: { textStyle: { color: 'white', bold: true, fontSize: 12 } } 
+        };
+        new google.visualization.BarChart(document.getElementById('bar_vendors')).draw(data, options);
+      }
+
+      // Dibujar Directorio y Tabla de Conteo
+      let htmlTabla = '<table class="table table-dark table-hover table-sm align-middle text-center"><thead><tr><th class="bg-dark text-warning border-dark">Vendor ID</th><th class="bg-dark text-warning border-dark">Nombre</th><th class="bg-dark text-warning border-dark">Total Cajas</th></tr></thead><tbody>';
+      if(arregloOrdenado.length === 0) {
+        htmlTabla += '<tr><td colspan="3" class="text-muted py-4">No se encontraron cajas registradas.</td></tr>';
+      } else {
+        arregloOrdenado.forEach(item => {
+          let vData = VENDORS.find(v => v.name === item[0]);
+          htmlTabla += `<tr><td class="text-secondary">${vData ? vData.id : 'S/N'}</td><td><span class="vendor-badge" style="background-color: ${getVendorColor(item[0])}">${item[0]}</span></td><td class="text-warning fw-bold fs-6">${item[1]}</td></tr>`;
+        });
+      }
+      htmlTabla += '</tbody></table>';
+      let tableContainer = document.getElementById('tabla-vendors-container');
+      if (tableContainer) tableContainer.innerHTML = htmlTabla;
     }
 
     function procesarDescargas(descargasData) {
@@ -1822,9 +1713,11 @@
         chartData.push([fecha, tendencias[fecha].A, tendencias[fecha].B]);
       });
 
-      let data = google.visualization.arrayToDataTable(chartData);
-      let options = { backgroundColor: 'transparent', legend: {textStyle: {color: 'white'}, position: 'top'}, hAxis: {textStyle: {color: 'white'}, slantedText: true}, vAxis: {textStyle: {color: 'white'}, gridlines: {color: '#444'}}, colors: ['#3498db', '#2ecc71'], chartArea: {width:'85%', height:'70%'}, isStacked: true };
-      new google.visualization.ColumnChart(document.getElementById('chart_descargas')).draw(data, options);
+      if (typeof google !== 'undefined' && google.charts && document.getElementById('chart_descargas')) {
+        let data = google.visualization.arrayToDataTable(chartData);
+        let options = { backgroundColor: 'transparent', legend: {textStyle: {color: 'white'}, position: 'top'}, hAxis: {textStyle: {color: 'white'}, slantedText: true}, vAxis: {textStyle: {color: 'white'}, gridlines: {color: '#444'}}, colors: ['#3498db', '#2ecc71'], chartArea: {width:'85%', height:'70%'}, isStacked: true };
+        new google.visualization.ColumnChart(document.getElementById('chart_descargas')).draw(data, options);
+      }
       document.getElementById('tabla-descargas-container').innerHTML = resumenHtml;
 
       renderDescargasProveedor(filtroDescargasVendorPeriodo);
@@ -1888,15 +1781,17 @@
         });
       }
 
-      let vData = google.visualization.arrayToDataTable(vendorChartData);
-      let vOptions = { 
-        backgroundColor: 'transparent', legend: 'none', 
-        hAxis: {textStyle: {color: 'white'}}, 
-        vAxis: {textStyle: {color: 'white', fontSize: 10}}, 
-        chartArea: {width:'65%', height:'80%'}, 
-        annotations: { textStyle: { color: 'white', bold: true } } 
-      };
-      new google.visualization.BarChart(document.getElementById('chart_descargas_vendor')).draw(vData, vOptions);
+      if (typeof google !== 'undefined' && google.charts && document.getElementById('chart_descargas_vendor')) {
+        let vData = google.visualization.arrayToDataTable(vendorChartData);
+        let vOptions = { 
+          backgroundColor: 'transparent', legend: 'none', 
+          hAxis: {textStyle: {color: 'white'}}, 
+          vAxis: {textStyle: {color: 'white', fontSize: 10}}, 
+          chartArea: {width:'65%', height:'80%'}, 
+          annotations: { textStyle: { color: 'white', bold: true } } 
+        };
+        new google.visualization.BarChart(document.getElementById('chart_descargas_vendor')).draw(vData, vOptions);
+      }
     }
 
     function filtrarTablaDescargasUI() {
@@ -1967,9 +1862,12 @@
       Object.keys(tendenciaFecha).forEach(f => {
         chartData.push([f, tendenciaFecha[f].A, tendenciaFecha[f].B]);
       });
-      let dataTrend = google.visualization.arrayToDataTable(chartData);
-      let optsTrend = { backgroundColor: 'transparent', legend: {textStyle: {color: 'white'}, position: 'top'}, hAxis: {textStyle: {color: 'white'}, slantedText: true}, vAxis: {textStyle: {color: 'white'}, gridlines: {color: '#444'}}, colors: ['#00cec9', '#e84393'], chartArea: {width:'85%', height:'70%'}, isStacked: true };
-      new google.visualization.ColumnChart(document.getElementById('chart_vacio_tendencia')).draw(dataTrend, optsTrend);
+
+      if (typeof google !== 'undefined' && google.charts && document.getElementById('chart_vacio_tendencia')) {
+        let dataTrend = google.visualization.arrayToDataTable(chartData);
+        let optsTrend = { backgroundColor: 'transparent', legend: {textStyle: {color: 'white'}, position: 'top'}, hAxis: {textStyle: {color: 'white'}, slantedText: true}, vAxis: {textStyle: {color: 'white'}, gridlines: {color: '#444'}}, colors: ['#00cec9', '#e84393'], chartArea: {width:'85%', height:'70%'}, isStacked: true };
+        new google.visualization.ColumnChart(document.getElementById('chart_vacio_tendencia')).draw(dataTrend, optsTrend);
+      }
 
       renderTopProveedoresVacio(filtroVacioPeriodoActual);
       filtrarTablaVacioUI();
@@ -2032,9 +1930,11 @@
         });
       }
 
-      let dataProv = google.visualization.arrayToDataTable(chartProvData);
-      let optsProv = { backgroundColor: 'transparent', legend: 'none', hAxis: {textStyle: {color: 'white'}}, vAxis: {textStyle: {color: 'white', fontSize: 10}}, chartArea: {width:'65%', height:'80%'}, annotations: { textStyle: { color: 'white', bold: true } } };
-      new google.visualization.BarChart(document.getElementById('chart_vacio_proveedores')).draw(dataProv, optsProv);
+      if (typeof google !== 'undefined' && google.charts && document.getElementById('chart_vacio_proveedores')) {
+        let dataProv = google.visualization.arrayToDataTable(chartProvData);
+        let optsProv = { backgroundColor: 'transparent', legend: 'none', hAxis: {textStyle: {color: 'white'}}, vAxis: {textStyle: {color: 'white', fontSize: 10}}, chartArea: {width:'65%', height:'80%'}, annotations: { textStyle: { color: 'white', bold: true } } };
+        new google.visualization.BarChart(document.getElementById('chart_vacio_proveedores')).draw(dataProv, optsProv);
+      }
     }
 
     function filtrarTablaVacioUI() {
@@ -2071,90 +1971,22 @@
       document.getElementById('tabla-vacio-container').innerHTML = html;
     }
 
-    function dibujarTablaGenerica(containerId, matrizDatos) {
-      let html = '<table class="table table-dark table-bordered table-sm table-hover align-middle text-center">';
-      matrizDatos.forEach((fila, i) => {
-        html += '<tr>';
-        fila.forEach((celda, colIndex) => {
-          if(i < 2) html += `<th class="bg-warning text-dark text-center fw-bold border-dark">${celda}</th>`;
-          else if ([0, 3, 6].includes(colIndex) && celda !== "") html += `<td>${checkVendorBadge(celda)}</td>`;
-          else html += `<td>${celda}</td>`;
-        });
-        html += '</tr>';
-      });
-      html += '</table>';
-      document.getElementById(containerId).innerHTML = html;
-    }
-
-    function procesarProveedores(facturasData) {
-      let parsed = parseFacturasSheet(facturasData);
-      let arregloOrdenado = Object.keys(parsed.vendorCounts).map(k => [k, parsed.vendorCounts[k]]).sort((a,b) => b[1] - a[1]);
-      
-      let chartData = [['Proveedor', 'Cajas', { role: 'style' }, {role: 'annotation'}]];
-      let top10 = arregloOrdenado.slice(0, 10);
-      
-      if (top10.length === 0) {
-        chartData.push(['Sin Datos', 0, 'color: #7f8c8d', '0']);
-      } else {
-        top10.forEach(item => { 
-          let barColor = getVendorColor(item[0]);
-          chartData.push([item[0], item[1], barColor, item[1].toString()]); 
-        });
-      }
-
-      let data = google.visualization.arrayToDataTable(chartData);
-      let options = { 
-        backgroundColor: 'transparent', 
-        legend: 'none', 
-        hAxis: {textStyle: {color: 'white'}}, 
-        vAxis: {textStyle: {color: 'white', fontSize: 11}}, 
-        chartArea: {width:'65%', height:'85%'}, 
-        annotations: { textStyle: { color: 'white', bold: true, fontSize: 12 } } 
-      };
-      
-      new google.visualization.BarChart(document.getElementById('bar_vendors')).draw(data, options);
-
-      let htmlTabla = '<table class="table table-dark table-hover table-sm align-middle text-center"><thead><tr><th class="bg-dark text-warning border-dark">Vendor ID</th><th class="bg-dark text-warning border-dark">Nombre</th><th class="bg-dark text-warning border-dark">Total Cajas</th></tr></thead><tbody>';
-      if(arregloOrdenado.length === 0) htmlTabla += '<tr><td colspan="3" class="text-muted py-4">No se encontraron cajas registradas.</td></tr>';
-      else {
-        arregloOrdenado.forEach(item => {
-          let vData = VENDORS.find(v => v.name === item[0]);
-          htmlTabla += `<tr><td class="text-secondary">${vData ? vData.id : 'S/N'}</td><td><span class="vendor-badge" style="background-color: ${getVendorColor(item[0])}">${item[0]}</span></td><td class="text-warning fw-bold fs-6">${item[1]}</td></tr>`;
-        });
-      }
-      htmlTabla += '</tbody></table>';
-      document.getElementById('tabla-vendors-container').innerHTML = htmlTabla;
-    }
-
-    // AUTOCOMPLETADO DE CAJAS ALIMENTADO DESDE FIRESTORE
-    function poblarDatalistCajas(dataObj) {
+    function poblarDatalistCajas() {
       let html = "";
       let cajasAgregadas = new Set();
 
-      if (dataObj.facturas && dataObj.facturas.length > 0) {
-        let parsed = parseFacturasSheet(dataObj.facturas);
-        parsed.items.forEach(it => {
-          let fullDisplay = `${it.caja} | Prov: ${it.proveedor} | Linea: ${it.linea} | Fecha: ${it.fecha}`;
-          if(!cajasAgregadas.has(it.caja)) {
-            cajasAgregadas.add(it.caja);
-            html += `<option value="${fullDisplay}">`;
-          }
-        });
-      }
-
-      if(window.facturasFirestoreCache && window.facturasFirestoreCache.length > 0) {
+      if (window.facturasFirestoreCache) {
         window.facturasFirestoreCache.forEach(it => {
-          let fullDisplay = `${it.caja} | Prov: ${it.vendor} | Fecha: ${it.fecha}`;
           if(!cajasAgregadas.has(it.caja)) {
             cajasAgregadas.add(it.caja);
-            html += `<option value="${fullDisplay}">`;
+            html += `<option value="${it.caja} | Prov: ${it.vendor} | Fecha: ${it.fecha}">`;
           }
         });
       }
 
-      if(dataObj.salidas) {
-        dataObj.salidas.forEach((f,i) => { 
-          if(i>0 && f[0] && !cajasAgregadas.has(f[0])) { 
+      if(baseDataCache.salidas) {
+        baseDataCache.salidas.forEach(f => { 
+          if(f[0] && !cajasAgregadas.has(f[0])) { 
             cajasAgregadas.add(f[0]);
             html += `<option value="${f[0]}">`; 
           }
@@ -2164,7 +1996,7 @@
       document.getElementById('lista-cajas').innerHTML = html;
     }
 
-    // BÚSQUEDA DE CAJAS DIRECTA EN FIRESTORE
+    // BÚSQUEDA BÁSCULA
     window.buscarDatosCaja = function() {
       const rawVal = document.getElementById('caja').value.trim();
       if(rawVal === "") return;
@@ -2198,7 +2030,7 @@
       });
     };
 
-    // ENVÍO DE FORMULARIO DIRECTO A FIRESTORE
+    // ENVÍO DE REGISTRO BÁSCULA
     function enviarFormulario(e) {
       e.preventDefault(); 
       const btn = document.getElementById('btnGuardar');
@@ -2227,7 +2059,7 @@
       };
 
       db.collection("salidas").doc(cajaClean).set(datos).then(() => {
-        // Registrar en historial de descargas si se finalizó
+        // Registrar descargas automáticamente al finalizar
         if (datos.status === "Finalizado") {
           let now = new Date();
           db.collection("descargas").add({
@@ -2236,7 +2068,7 @@
             linea: cajaClean.split(' ')[0] || "LOGISTICA",
             caja: cajaClean,
             factura: "S/F",
-            proveedor: "PROVEEDOR",
+            proveedor: "PROVEEDOR GENERAL",
             folio: "337" + Math.floor(Math.random()*1000),
             rampa: datos.rampa,
             muleroSube: datos.mulero,
@@ -2272,15 +2104,13 @@
         if(caja && caja.toString().trim() !== "" && (status === "En Proceso" || status === "Fuera de Tiempo")) {
           
           if (!window.estadoAlertas[caja]) {
-            window.estadoAlertas[caja] = { 
-              timeStr: horaInicio, diff: 0, m20: false, m40: false, m60: false, lastOver60Min: 60, sinMulero: false 
-            };
+            window.estadoAlertas[caja] = { timeStr: horaInicio, diff: 0, m20: false, m40: false, m60: false, lastOver60Min: 60, sinMulero: false };
           }
           
           let state = window.estadoAlertas[caja];
           if (horaInicio) { state.timeStr = horaInicio; }
 
-          let sinMulero = (!mulero || mulero.trim() === "" || mulero.trim() === "N/A");
+          let sinMulero = (!mulero || mulero.trim() === "" || mulero.trim() === "N/A" || mulero.includes("Pendiente"));
           let cssClass = "";
           if (state.diff >= 3600) cssClass = "nivel-4";
           else if (state.diff >= 2400) cssClass = "nivel-3";
@@ -2288,8 +2118,7 @@
           else if (state.diff >= 1200) cssClass = "nivel-1";
           else if (sinMulero) cssClass = "alerta-sin-mulero";
 
-          let det = getBoxDetails(caja);
-          let provTxt = det.proveedor ? det.proveedor : 'Sin Prov.';
+          let provTxt = f[1] || 'Sin Prov.';
 
           html += `<div class="caja-activa ${cssClass} d-flex justify-content-between align-items-center" id="box_${caja}">
               <div>
@@ -2338,59 +2167,6 @@
              let resS = (diff % 60).toString().padStart(2, '0');
              let newText = `${resH}:${resM}:${resS}`;
              if(spanTime.innerText !== newText) spanTime.innerText = newText;
-
-             let boxDiv = spanTime.closest('.caja-activa');
-             if (boxDiv) {
-               boxDiv.classList.remove('nivel-1', 'nivel-2', 'nivel-3', 'nivel-4', 'alerta-sin-mulero');
-               let muleroText = boxDiv.querySelector('small').innerText;
-               let sinMulero = muleroText.includes('Mulero: Sin Asignar');
-
-               if (diff >= 3600) boxDiv.classList.add('nivel-4');
-               else if (diff >= 2400) boxDiv.classList.add('nivel-3');
-               else if (diff >= 1800) boxDiv.classList.add('nivel-2');
-               else if (diff >= 1200) boxDiv.classList.add('nivel-1');
-               else if (sinMulero) boxDiv.classList.add('alerta-sin-mulero');
-             }
-           }
-
-           let det = getBoxDetails(caja);
-           let provFormatted = toTitleCase(det.proveedor);
-           let provTxt = provFormatted ? " del proveedor " + provFormatted : "";
-           
-           let cajaLower = caja.toLowerCase();
-           let lineaLower = det.linea ? det.linea.toLowerCase() : "";
-           let lineaTxt = (lineaLower && !cajaLower.includes(lineaLower)) ? " de la línea " + toTitleCase(det.linea) : "";
-
-           let boxDiv = spanTime ? spanTime.closest('.caja-activa') : null;
-           let esSinMulero = boxDiv && boxDiv.classList.contains('alerta-sin-mulero');
-           let min = Math.floor(diff / 60);
-
-           if (esSinMulero && !state.sinMulero) {
-             state.sinMulero = true;
-             queueAlert(`Alerta. Se solicita mulero para la caja ${caja}${lineaTxt}${provTxt}.`);
-           } 
-           else if (!esSinMulero) {
-             if (min >= 20 && min < 40 && !state.m20) {
-               state.m20 = true;
-               queueAlert(`Aviso. La caja ${caja}${lineaTxt}${provTxt}, lleva veinte minutos en proceso.`);
-             } 
-             else if (min >= 40 && min < 60 && !state.m40) {
-               state.m40 = true;
-               queueAlert(`Alerta. La caja ${caja}${lineaTxt}${provTxt}, lleva cuarenta minutos en proceso.`);
-             } 
-             else if (min >= 60) {
-               if (!state.m60) {
-                 state.m60 = true;
-                 state.lastOver60Min = 60;
-                 queueAlert(`Alerta Crítica. La caja ${caja}${lineaTxt}${provTxt}, lleva sesenta minutos en proceso.`);
-               } else {
-                 let currentStep = Math.floor(min / 5) * 5;
-                 if (currentStep > state.lastOver60Min) {
-                   state.lastOver60Min = currentStep;
-                   queueAlert(`Alerta Crítica. La caja ${caja}${lineaTxt}${provTxt}, lleva ${currentStep} minutos en proceso.`);
-                 }
-               }
-             }
            }
         }
       }
@@ -2399,10 +2175,27 @@
     function dibujarDonutStatus(filas) {
       let conteo = {"En Proceso": 0, "Finalizado": 0, "Fuera de Tiempo": 0};
       filas.forEach(f => { let s = f[13]; if(s && conteo[s] !== undefined) conteo[s]++; });
-      let data = google.visualization.arrayToDataTable([['Status', 'Cantidad'], ['En Proceso', conteo['En Proceso']], ['Finalizado', conteo['Finalizado']], ['Fuera de Tiempo', conteo['Fuera de Tiempo']]]);
-      let options = { backgroundColor: 'transparent', legend: {textStyle: {color: 'white'}, position: 'bottom'}, pieHole: 0.45, colors: ['#f1c40f', '#82e0aa', '#e74c3c'], pieSliceBorderColor: '#1c252e', chartArea: {width:'90%', height:'80%'} };
-      new google.visualization.PieChart(document.getElementById('donut_status')).draw(data, options);
+      if (typeof google !== 'undefined' && google.charts && document.getElementById('donut_status')) {
+        let data = google.visualization.arrayToDataTable([['Status', 'Cantidad'], ['En Proceso', conteo['En Proceso']], ['Finalizado', conteo['Finalizado']], ['Fuera de Tiempo', conteo['Fuera de Tiempo']]]);
+        let options = { backgroundColor: 'transparent', legend: {textStyle: {color: 'white'}, position: 'bottom'}, pieHole: 0.45, colors: ['#f1c40f', '#82e0aa', '#e74c3c'], pieSliceBorderColor: '#1c252e', chartArea: {width:'90%', height:'80%'} };
+        new google.visualization.PieChart(document.getElementById('donut_status')).draw(data, options);
+      }
     }
+
+    window.onload = function() {
+      actualizarReloj();
+      construirMapaBase(); 
+      cargarDatosBase(); 
+      inicializarFormularioLlegadas();
+      setInterval(actualizarCronometrosYAlarmas, 1000); 
+      document.getElementById('registroForm').addEventListener('submit', enviarFormulario);
+      document.getElementById('formCapturaLlegadas').addEventListener('submit', guardarCapturaLlegada);
+    };
+
+    function actualizarReloj() { setInterval(() => { document.getElementById('reloj').innerText = new Date().toLocaleString(); }, 1000); }
+    window.setHora = function(inputId) { document.getElementById(inputId).value = new Date().toLocaleTimeString('es-MX', { hour12: false }); };
+    window.setNA = function(inputId) { document.getElementById(inputId).value = "N/A"; };
+    window.setRetiraValue = function(val) { document.getElementById('retira').value = val; };
   </script>
 </body>
 </html>
