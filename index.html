@@ -111,12 +111,12 @@
     .btn-submit { background-color: #f39c12; color: black; font-weight: bold; width: 100%; border: none; padding: 10px; font-size: 1.1rem; border-radius: 5px; margin-top: 15px;}
     .btn-submit:hover { background-color: #d68910; }
 
-    /* ESTILOS Y DISTRIBUCIÓN DEL MAPA DE RAMPAS (SEGÚN IMAGEN 5) */
+    /* ESTILOS Y DISTRIBUCIÓN DEL MAPA DE RAMPAS */
     .map-layout { background-color: #0b0e14; padding: 20px; border-radius: 8px; border: 1px dashed #f39c12; }
     .ramp-group { border: 1px solid #444; border-radius: 6px; padding: 8px; background-color: #141b22; display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; position: relative; margin-top: 10px;}
     .ramp-group-title { position: absolute; top: -12px; background: #141b22; padding: 0 5px; font-size: 0.7rem; color: #3498db; font-weight: bold; border-radius:3px; }
     
-    .ramp-box { background-color: #2c3e50; border: 2px solid #7f8c8d; border-radius: 4px; padding: 3px; width: 60px; height: 56px; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between; align-items: center; font-size: 0.65rem;}
+    .ramp-box { background-color: #2c3e50; border: 2px solid #7f8c8d; border-radius: 4px; padding: 3px; width: 58px; height: 54px; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between; align-items: center; font-size: 0.65rem;}
     .ramp-box:hover { border-color: #f39c12; transform: scale(1.1); z-index: 10;}
     .ramp-box.ocupada { border-color: #f39c12; background-color: #d35400; }
     
@@ -279,7 +279,7 @@
                       </div>
                       <div class="col-md-6">
                         <label class="form-label">Realizado Por (Usuario Pedido / Usuario Báscula)</label>
-                        <input type="text" class="form-control text-warning fw-bold" id="usuario" readonly placeholder="Usuario Pide | Usuario Confirma">
+                        <input type="text" class="form-control text-warning fw-bold" id="usuario" readonly placeholder="Usuario Pide | Usuario Confirms">
                       </div>
                     </div>
                   </div>
@@ -608,7 +608,7 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    // DATOS HISTÓRICOS INTEGRADOS DE FORMA PERMANENTE
+    // REGISTROS HISTÓRICOS EXTRAÍDOS DE ARCHIVOS Y PRECARGADOS DE FORMA PERMANENTE
     const HISTORICO_EQUIPO_VACIO = [
       ["FECHA", "LINEA", "CAJA", "PROVEEDOR", "TRACTOR", "TRANSPORTISTA", "HORA SALIDA", "GRUPO"],
       ["02-01-2026", "HG", "53104000", "HUNTINGTON", "7923", "CARLOS SANCHEZ", "11:14AM", "A"],
@@ -617,15 +617,38 @@
       ["02-01-2026", "HG", "524", "UNICAR", "37617", "RUBEN TOVAR", "4:59PM", "A"],
       ["02-01-2026", "CANTU", "48", "TAESUNG", "46", "ALAN COLORADO", "6:37PM", "A"],
       ["02-01-2026", "CANTU", "24", "PLASTIEXPORTS", "41", "JORGE HERNANDEZ", "6:48PM", "A"],
-      ["05-01-2026", "HG", "1484", "REHAU", "27217", "ARMANDO CHAVEZ", "12:32AM", "B"]
+      ["05-01-2026", "HG", "1484", "REHAU", "27217", "ARMANDO CHAVEZ", "12:32AM", "B"],
+      ["05-01-2026", "HG", "1075", "JIAXIPERA", "177", "ANGEL RODRIGUEZ", "9:26AM", "A"],
+      ["05-01-2026", "HG", "872", "ESTROSA", "79915", "MIGUEL AVITIA", "11:51AM", "A"],
+      ["05-01-2026", "HG", "1129", "GEMTRON", "14217", "CARLOS CAMPOS", "11:52AM", "A"],
+      ["05-01-2026", "GUZMAN", "152", "CHEONG WOON", "18", "ISMAEL FIGUEROA", "11:14AM", "A"],
+      ["05-01-2026", "GUZMAN", "142", "CHEONG WOON", "9", "JONATHAN RODRIGUEZ", "12:00PM", "A"],
+      ["05-01-2026", "CANTU", "79", "TAESUNG", "97", "VICTOR DIAZ", "1:32PM", "A"],
+      ["05-01-2026", "CANTU", "22", "PLASTIEXPORTS", "48", "RUBEN CASTRO", "2:24PM", "A"],
+      ["05-01-2026", "HG", "2127", "UNICAR", "14117", "GERARDO SAMPAYO", "3:44PM", "A"],
+      ["05-01-2026", "HG", "523", "WHIRLPOOL", "3917", "OBED SALAZAR", "4:28PM", "A"],
+      ["05-01-2026", "GUZMAN", "167", "HENAN NEW KELONG", "15", "CARLOS MANCILLA", "5:36PM", "A"],
+      ["05-01-2026", "CANTU", "82", "WHIRLPOOL", "28", "ALAN LEDEZMA", "6:03PM", "B"],
+      ["05-01-2026", "CANTU", "21", "PLASTIEXPORTS", "92", "OSCAR MORENO", "7:05PM", "B"],
+      ["05-01-2026", "GUZMAN", "171", "ILPEA", "28", "LUIS DE HOYOS", "7:23PM", "B"],
+      ["05-01-2026", "TRAMOSSA", "97", "GLASSER", "48", "GERARDO REYES", "7:36PM", "B"],
+      ["05-01-2026", "FERRA", "312381", "ISE METAL", "177", "ANGEL RODRIGUEZ", "7:45PM", "B"],
+      ["05-01-2026", "CANTU", "53", "STARION", "1", "JUAN VILLANUEVA", "8:29PM", "B"]
     ];
 
     const HISTORICO_DESCARGAS = [
       ["DIA", "FECHA", "LINEA", "CAJA", "FACTURA", "PROVEEDOR", "FOLIO SIE", "RAMPA", "MULERO", "HORA QUE SUBE", "RETIRAR", "MULERO QUE RETIRA", "HORA QUE BAJA", "GRUPO", "TURNO", "ALMACEN"],
-      ["miércoles", "08-07-2026", "FERRA", "916551", "M589477", "ISE METAL", "334253", "3", "AVILA", "7:08AM", "REQV", "KIKE", "7:00AM", "B", "PRIMERO", "SUR"],
-      ["miércoles", "08-07-2026", "CANTU", "54", "MTY001480PL", "SATURNO", "334238", "5", "KIKE", "7:04AM", "R3AEQVYREQV", "MARIO", "6:59AM", "B", "PRIMERO", "SUR"],
+      ["miércoles", "08-07-2026", "CANTU", "6", "66213", "HORIZON", "334192", "4", "GERARDO", "6:43AM", "REQV", "MARIO", "6:35AM", "B", "PRIMERO", "SUR"],
       ["miércoles", "08-07-2026", "HG", "5315213", "6342", "KX TECHNOLOGIES", "334234", "7", "AVILA", "6:52AM", "REQV", "AVILA", "6:47AM", "B", "PRIMERO", "SUR"],
-      ["miércoles", "08-07-2026", "CANTU", "6", "66213", "HORIZON", "334192", "4", "GERARDO", "6:43AM", "REQV", "MARIO", "6:35AM", "B", "PRIMERO", "SUR"]
+      ["miércoles", "08-07-2026", "CANTU", "54", "MTY001480PL", "SATURNO", "334238", "5", "KIKE", "7:04AM", "R3AEQVYREQV", "MARIO", "6:59AM", "B", "PRIMERO", "SUR"],
+      ["miércoles", "08-07-2026", "FERRA", "916551", "M589477", "ISE METAL", "334253", "3", "AVILA", "7:08AM", "REQV", "KIKE", "7:00AM", "B", "PRIMERO", "SUR"],
+      ["miércoles", "08-07-2026", "CANTU", "87", "PX474901", "LECHERA", "334274", "1", "GERARDO", "7:08AM", "R1AEQVYR30", "GERARDO", "7:04AM", "B", "PRIMERO", "SUR"],
+      ["miércoles", "08-07-2026", "CANTU", "78", "YDG56352", "TAESUNG", "334187", "4", "GERARDO", "7:19AM", "R8", "AVILA", "7:05AM", "B", "PRIMERO", "SUR"],
+      ["miércoles", "08-07-2026", "TRAMOSSA", "39", "162422", "GLASSER", "334162", "9", "KIKE", "7:28AM", "R30", "GERARDO", "7:05AM", "B", "PRIMERO", "SUR"],
+      ["miércoles", "08-07-2026", "HG", "2905", "G-20330", "UNICAR", "208631", "8", "AVILA", "7:32AM", "R4 AL MOL YR5", "KIKE", "7:24AM", "B", "PRIMERO", "SUR"],
+      ["miércoles", "08-07-2026", "HG", "1362", "ASN0012869", "HUNTINGTON", "332811", "30", "KIKE", "7:40AM", "R9", "AVILA", "7:28AM", "B", "PRIMERO", "POSTE HF"],
+      ["miércoles", "08-07-2026", "MEXPRESS", "5302", "1:56AM", "BASAL", "334248", "5", "GERARDO", "7:42AM", "R26", "GERARDO", "7:37AM", "B", "PRIMERO", "SUR"],
+      ["miércoles", "08-07-2026", "GUZMAN", "38", "17020", "CHEONG WOON", "334229", "15", "KIKE", "8:10AM", "R3", "AVILA", "7:52AM", "B", "PRIMERO", "SUR"]
     ];
 
     const LINEAS_TRANSPORTE = [
@@ -730,293 +753,292 @@
       {id: "46999", name: "SCOTT TECHNOLOGY LTD"}, {id: "47001", name: "SERVICE TOOL & DIE"},
       {id: "47011", name: "OUTOKUMPU MEXINOX SA DE CV"}, {id: "47015", name: "TROQUELES ELIZONDO SA DE CV"},
       {id: "47021", name: "ACME SCREW CO"}, {id: "47032", name: "FORTIS PLASTICS LLC"},
-      {id: "47035", name: "BASF MEXICANA SA DE CV"}, {id: "47040", name: "CAPLUGS LLC"},
+      {id: "47035", name: "BASAF MEXICANA SA DE CV"}, {id: "47040", name: "CAPLUGS LLC"},
       {id: "47045", name: "COLLIS DE MEXICO S DE RL DE CV"}, {id: "47046", name: "COMPUTIME LTD"},
       {id: "47051", name: "THE LUBRIZOL CORP"}, {id: "47052", name: "CRESCENT PLASTICS INC"},
       {id: "47054", name: "DEVAN SEALANTS INC"}, {id: "47056", name: "DUDEK & BOCK"},
       {id: "47057", name: "DUDEK AND BOCK R DE R L DE CV"}, {id: "47062", name: "EMB CORPORATION"},
       {id: "47064", name: "NIDEC GLOBAL APPLIANCE NORTH AMERIC"}, {id: "47067", name: "EMICOL ELECTRO ELETRONICA LTDA"},
       {id: "47070", name: "FERRO CORP"}, {id: "47078", name: "GENERAL ELECTRIC CO"},
-      {id: "47083", name: "IDENTI"}, {id: "47086", name: "INDIANA TUBE CO"},
-      {id: "47089", name: "INLAND CORRUGADOS DE MONTERREY SA D"}, {id: "47095", name: "ILLINOIS TOOL WORKS, INC"},
-      {id: "47098", name: "JABIL CIRCUIT INC"}, {id: "47100", name: "JONES PLASTIC & ENGINEERING DE"},
-      {id: "47103", name: "ALPHA ASSEMBLY SOLUTIONS INC."}, {id: "47105", name: "INEOS ABS USA CORP"},
-      {id: "47106", name: "LIMEX FORMADO Y DECORADO S RL DE CV"}, {id: "47108", name: "MANSFIELD ENGINEERED COMPONENTS INC"},
-      {id: "47110", name: "MASTER MANUFACTURING CO"}, {id: "47111", name: "MERCURY PLASTICS LLC"},
-      {id: "47112", name: "METALURGICA DUQUE S A"}, {id: "47120", name: "WHIRLPOOL SA"},
-      {id: "47122", name: "NORTHERN ENGRAVING CO"}, {id: "47126", name: "PANASONIC INDUSTRIAL CO"},
-      {id: "47127", name: "PANDUIT MEXICO S DE ENNC DE CV"}, {id: "47128", name: "POLY VINYL CO"},
-      {id: "47131", name: "UNIQUE PRESCOTECH INC"}, {id: "47134", name: "PSC FABRICATING CORP"},
-      {id: "47135", name: "REHAU SA DE CV"}, {id: "47140", name: "SERVICE TOOL & PLASTICS"},
-      {id: "47141", name: "SHAMROCK INTERNATIONAL FASTENER LLC"}, {id: "47143", name: "SOLVAY FLUOR MEXICO SA DE CV"},
-      {id: "47144", name: "SPARTECH DE MEXICO SA DE CV"}, {id: "47146", name: "BACKER EHP INC"},
-      {id: "47147", name: "SUNG SHIN CO LTD"}, {id: "47149", name: "SENSATA TECHNOLOGIES INC"},
-      {id: "47156", name: "TRIOWORLD NYBORG A/S"}, {id: "47157", name: "UNELKO CORP"},
-      {id: "47159", name: "UNIVERSAL METAL PRODUCTS INC"}, {id: "47163", name: "ELECTRICAL COMPONENTS INTERNATIONAL"},
-      {id: "47167", name: "WHIRLPOOL CORP"}, {id: "47169", name: "REVERE PLASTICS SYSTEMS LLC"},
-      {id: "47171", name: "WOLVERINE TUBE INC"}, {id: "47172", name: "VERITIV OPERATING COMPANY"},
-      {id: "47173", name: "ZOPPAS INDUSTRIES DE MEXICO SA DE C"}, {id: "47796", name: "UNICAR PLASTICS SA DE CV"},
-      {id: "47804", name: "MADERERIA Y FERRETERIA LOS ALPES SA"}, {id: "47806", name: "TERMOPLASTICOS DE MONTERREY SA DE C"},
-      {id: "47814", name: "CRISER SA DE CV"}, {id: "47815", name: "ELECTRONICOS ANIMADOS SA DE CV"},
-      {id: "47836", name: "REFRIGERACION Y AIRE ACONDICIONADO"}, {id: "47846", name: "LG CHEMICAL AMERICA INC"},
-      {id: "47852", name: "TASUS CANADA CORP"}, {id: "47866", name: "SISTEMAS DE FUERZA INDUSTRIAL SA"},
-      {id: "47958", name: "DUDEK & BOCK S DE RL DE CV"}, {id: "47979", name: "EMZ HANAUER GMBH & CO KGAA"},
-      {id: "48001", name: "MOLL MEXICO S DE RL DE CV"}, {id: "48007", name: "PAS APPLIANCE SYSTEMS S A DE C V"},
-      {id: "48118", name: "INFASTECH DECORAH LLC"}, {id: "48120", name: "ILPEA S DE R L DE C V"},
-      {id: "48132", name: "AWECO DE MEXICO S EN C DE CV"}, {id: "48282", name: "NEUMATICA PROFESIONAL SA DE CV"},
-      {id: "48284", name: "OMNI MANUFACTURING SERVICES SA DE"}, {id: "48315", name: "SOLUCIONES INTEGRADAS EN MANEJO DE"},
-      {id: "48319", name: "TECNO MONTAJES S A DE C V"}, {id: "48320", name: "TECNO TROQUELES S A DE C V"},
-      {id: "48325", name: "TYCO ELECTRONICS MEXICO S A"}, {id: "48440", name: "AIR POWER INC"},
-      {id: "48542", name: "EQUIPOS INDUSTRIALES DE CONTROL SA"}, {id: "48567", name: "POLIESTIRENO ALFA GAMMA S A DE C V"},
-      {id: "48604", name: "GRAINGER S A DE C V"}, {id: "48798", name: "OMEGA TOOL INC"},
-      {id: "48824", name: "LUIS BORIOLI S A DE C V"}, {id: "48834", name: "POLIENVASES S A DE C V"},
-      {id: "48923", name: "VAUGHN MANUFACTURING CO INC"}, {id: "48975", name: "INDUSTRIAS DINAMEK SA DE CV"},
-      {id: "48983", name: "TROQUELES ELIZONDO SA DE CV"}, {id: "48995", name: "PSION TEKLOGIX S A DE C V"},
-      {id: "49047", name: "HERRAMENTAL MONTERREY S A"}, {id: "49094", name: "HECTOR RODRIGUEZ MENDOZA"},
-      {id: "49329", name: "GLASSER SA DE CV"}, {id: "49344", name: "NATIONAL INSTRUMENTS DE MEX SA CV"},
-      {id: "49365", name: "SISTEMAS DE DESARROLLO Y LOGIST SA"}, {id: "49368", name: "DITEMSA S A DE C V"},
-      {id: "49391", name: "HUNTINGTON FOAM DE MEXICO"}, {id: "49517", name: "JARDEN PLASTICS SOLUTIONS"},
-      {id: "49581", name: "INGENIERIA Y DIS ELECTRICO Y DE CON"}, {id: "49612", name: "MLS SYSTEMS INC"},
-      {id: "49614", name: "THE CONAIR GROUP INC"}, {id: "49643", name: "FRANCISCO JAVIER GARCIA HERNANDEZ"},
-      {id: "49678", name: "USON LP"}, {id: "49719", name: "MANUFACTURAS Y DISEÑOS DE SALTILLO"},
-      {id: "49736", name: "NATIONAL COPPER & SMELTING CO"}, {id: "49738", name: "QUALITY SCREW & NUT CO INC"},
-      {id: "49741", name: "SERVIACERO PLANOS S DE R L DE C V"}, {id: "49744", name: "SNIDER BOLT & SCREW INC"},
-      {id: "49753", name: "WHIRLPOOL S.A."}, {id: "49834", name: "CASSIOLI SRL"},
-      {id: "49977", name: "CAMCAR DE MEXICO SA DE CV"}, {id: "50053", name: "MILLS PRODUCTS DE MEXICO SA DE CV"},
-      {id: "50137", name: "KOPAR S A DE C V"}, {id: "50307", name: "AUTOMATED DATA SYSTEMS S A DE C V"},
-      {id: "50313", name: "EVCO PLASTICS DE MEXICO S DE RL"}, {id: "50326", name: "EPM PLASTICS SA DE CV"},
-      {id: "50407", name: "BECKETT AIR, INC"}, {id: "50408", name: "US MINIATURE LAMPS"},
-      {id: "50409", name: "BAYER DE MEXICO"}, {id: "50571", name: "SENSORTROL S A DE C V"},
-      {id: "50578", name: "SCREENPRINT/DOW"}, {id: "50630", name: "INEOS STYRENICS LLC"},
-      {id: "50672", name: "COMERCIALIZADORA DE MANGUERAS Y ART"}, {id: "50721", name: "YI FONG MOLD LTD"},
-      {id: "50953", name: "CONAIR MEXICANA S A DE C V"}, {id: "51035", name: "CANNON LEGOS S.P.A"},
-      {id: "51235", name: "AUTOMATICA TECHNOLOGIES S A DE C V"}, {id: "51282", name: "MARTINIANO BERRONES CONTRERAS"},
-      {id: "51349", name: "PACE INDUSTRIES OF MEXICO L L C"}, {id: "51376", name: "ENGINEERED PRODUCTS INDUSTRIES LLC"},
-      {id: "51454", name: "KENMORE REFRIGERATION COMPONENTS"}, {id: "51479", name: "PERTEK ERLER S DE RL DE CV"},
-      {id: "51564", name: "EMZ HANAUER GMBH & CO KG AA"}, {id: "51567", name: "SERIGRAPH INC"},
-      {id: "51702", name: "EDGE ADHESIVES INC., DBA PARR"}, {id: "51737", name: "SP MANUFACTURAS S DE RL DE CV"},
-      {id: "51937", name: "ZHANGQIU HAIER ELECTROMOTOR CO LTD"}, {id: "52154", name: "MORRILL MOTORS INC"},
-      {id: "52182", name: "MT VERNON SCREW PROD"}, {id: "52212", name: "MAYTAG APPLIANCES SALES CO"},
-      {id: "52281", name: "MOONS' PRECISION PRODUCTS, INC."}, {id: "52302", name: "JAMAK INC"},
-      {id: "52366", name: "MILLS PRODUCTS LLC"}, {id: "52394", name: "NUEVA GENERACION MANUFACTURAS SA DE"},
-      {id: "52416", name: "NIDEC INSTRUMENTS (AMERICA) CORPORA"}, {id: "52420", name: "PLASTIC PRODUCTS COMPANY INC"},
-      {id: "52491", name: "GKN SINTER METALS"}, {id: "52626", name: "SFEG CORP"},
-      {id: "52679", name: "INTREX GLOBAL SOURCING"}, {id: "52792", name: "DESIGN SYSTEMS INC"},
-      {id: "52842", name: "IDTEC AUTOMATIZACION S A DE C V"}, {id: "52920", name: "INDUSTRIAL RAGUSA S A DE C V"},
-      {id: "52996", name: "ABRAHAM PUGA CASTAÑON"}, {id: "53040", name: "PLASTIEXPORTS SA DE CV"},
-      {id: "53115", name: "IMPRESOS TECNOGRAFICOS SA DE CV"}, {id: "53159", name: "SPARTECH DE MEXICO SA DE CV"},
-      {id: "53420", name: "VERITIV SA DE CV"}, {id: "53567", name: "NETWORK IMAGING SOLUTIONS LLC"},
-      {id: "53596", name: "ROSTI SEARCY INC"}, {id: "53649", name: "CHANNEL PRIME ALLIANCE"},
-      {id: "53765", name: "MEM COMERCIALIZADORA E IMPRESOS"}, {id: "53899", name: "INDUSTRIAL EQUIPMENT & ACCESORIES S"},
-      {id: "54326", name: "CHANGZHOU HUAWEI ARRK MOULD CO LTD"}, {id: "54386", name: "NATIONAL STARCH & CHEMICALS"},
-      {id: "54458", name: "INTERNATIONAL BUYING GROUP LTD"}, {id: "54466", name: "CCL LABEL, INC."},
-      {id: "54613", name: "ENGINEERED PLASTIC COMPONENTS INC"}, {id: "54622", name: "PERENNIAL USA INC"},
-      {id: "54624", name: "HIP YICK INDUSTRIAL COMPANY LTD"}, {id: "54660", name: "OPTIMAS OE SOLUTIONS LLC"},
-      {id: "54707", name: "TAYLOR CORPORATION"}, {id: "54718", name: "RIVER BEND INDUSTRIES LLC"},
-      {id: "54733", name: "PLASTIC PRODUCTS COMPANY INC"}, {id: "54756", name: "FOAM FABRICATORS INC"},
-      {id: "54758", name: "FLAIR MOLDED PLASTICS INC"}, {id: "54794", name: "PLASTIC PRODUCTS COMPANY INC"},
-      {id: "54812", name: "DERBY INDUSTRIES"}, {id: "54820", name: "HONEYWELL SENSING & CNTRL"},
-      {id: "54821", name: "NETWORK IMAGING SOLUTIONS"}, {id: "55086", name: "MAYTAG CORP"},
-      {id: "55098", name: "EQUIPOS E INSUMOS INDUSTLS PARA LIM"}, {id: "55268", name: "MOLON MOTORS & COIL CORP"},
-      {id: "55296", name: "HANKSCRAFT INC"}, {id: "55337", name: "DUROPLAST RAMOS ARIZPE SA DE CV"},
-      {id: "56001", name: "LEDFORD ENGINEERING CO IN"}, {id: "56169", name: "MAQUINADOS Y RECTIFICADOS LIBERTAD"},
-      {id: "56485", name: "TOUCH SENSOR TECHNOLOGIES"}, {id: "56573", name: "ILLINOIS TOOL WORKS, INC."},
-      {id: "56953", name: "BIKKOPLAST SP Z O O"}, {id: "57029", name: "ROBERTSHAW CONTROLS CO"},
-      {id: "57170", name: "MANTZ AUTOMATION INC"}, {id: "57502", name: "RIVER BEND INDUSTRIES"},
-      {id: "57503", name: "MANUEL HOLGUIN MELENDEZ"}, {id: "58239", name: "SUNRON INTL LLC"},
-      {id: "58553", name: "INTERDRYERS S R L"}, {id: "58568", name: "KEMFLO INT CO LTD"},
-      {id: "58754", name: "CENTRO DE ING Y MAQUINADOS ESP DE C"}, {id: "58827", name: "ASC CAPACITORS"},
-      {id: "59043", name: "SEIL S A DE C V"}, {id: "59200", name: "CONVEYORS Y ACCESORIOS REGIOMONTANO"},
-      {id: "59419", name: "PENTHA S R L"}, {id: "59698", name: "DISTRIBUCION DE PIEZAS METALICAS Y"},
-      {id: "59799", name: "FOAM FABRICATORS INC"}, {id: "59882", name: "FORTIS PLASTICS LLC"},
-      {id: "59974", name: "JING MEI INDUSTRIAL LTD"}, {id: "59978", name: "ARNOLDO MALACARA ALVAREZ"},
-      {id: "60129", name: "THERM-O-DISC (ASIA) LIMITED"}, {id: "60241", name: "HCL TECHNOLOGIES CORPORATE"},
-      {id: "60393", name: "COMMAI DE MONTERREY S A DE C V"}, {id: "60419", name: "TAE SUNG PRECISION CO LTD"},
-      {id: "60428", name: "VALLEY INTERNATIONAL CORP"}, {id: "60741", name: "COMERCIALIZADORA INDUSTRIAL DEL NOR"},
-      {id: "60752", name: "MAQUILADORA SYR S A DE C V"}, {id: "60869", name: "USEONG INTERNATIONAL LTD"},
-      {id: "60888", name: "HERNANDO MAURICIO GARZA MUZQUIZ"}, {id: "61179", name: "PNEUMATECNIA S A DE C V"},
-      {id: "61244", name: "ENGINEERED PLASTIC COMPONENTS INC"}, {id: "61393", name: "MOELLER MANUFACTURING DE MEXICO S D"},
-      {id: "61431", name: "SRG GLOBAL SUZHOU CO LTD"}, {id: "61438", name: "ITECH AUTOMATION SOLUTIONS INC."},
-      {id: "61461", name: "AUTOMATION CONSULTING GROUP S A D"}, {id: "61870", name: "PLASTIEQUIPOS DE MONTERREY S A"},
-      {id: "61882", name: "CICLOPLAFEST"}, {id: "61922", name: "CHANGZHOU LESHI LEILI MOTOR CO LTD"},
-      {id: "61944", name: "RWC SPARE PARTS, INC."}, {id: "61946", name: "RACKART DEL NORTE S A DE C V"},
-      {id: "61961", name: "INTERNATIONAL QUALITY PLASTICS S A"}, {id: "62194", name: "JUAN ALONSO ALVAREZ"},
-      {id: "62197", name: "COGNIS BRASIL L TDA"}, {id: "62300", name: "ASSEMBLY & TEST WORLWIDE INC"},
-      {id: "62345", name: "JING MEI INDUSTRIAL USA INC"}, {id: "62583", name: "PINTURA Y ENSAMBLES DE MEXICO SA"},
-      {id: "62680", name: "MARCEGAGLIA DO BRASIL LTC"}, {id: "62689", name: "FLEXTRONICS INTERNATIONAL LATIN"},
-      {id: "62723", name: "F LLI ROSSI S R L"}, {id: "62832", name: "ANIXTER FASTENERS DE MEXICO S DE R"},
-      {id: "62937", name: "GUANGHENG HEYOU INTERNATIONAL TRADI"}, {id: "63035", name: "MAQUINADOS Y DISPOSITIVOS MAREHC S"},
-      {id: "63326", name: "INGERSOLL RAND S A DE C V"}, {id: "63347", name: "PRESMEC INTERNATIONAL LLC"},
-      {id: "63415", name: "TUV RHEINLAND DE MEXICO S A DE C V"}, {id: "63437", name: "STAHL FASTENERS S A DE C V"},
-      {id: "63462", name: "STEEL TECHNOLOGIES DE MEXICO SA DE"}, {id: "63556", name: "SPG CO LTD"},
-      {id: "63567", name: "TS CONSULTORIA DE INFORMATICA"}, {id: "63579", name: "INSTALACIONES Y SERVICIOS INDLS REA"},
-      {id: "63580", name: "AVYDI S DE R L DE C V"}, {id: "63585", name: "XIAMEN RUNNER INDUSTRIAL CORPORATIO"},
-      {id: "63660", name: "AUTOMATIZACIONES E INSTALACIONES IN"}, {id: "63695", name: "GRO MAC ASSOC INC"},
-      {id: "63789", name: "NATIONAL MATERIAL OF MEXICO S DE R"}, {id: "63846", name: "TIN INC DBA TEMPLE INLAND"},
-      {id: "63853", name: "POLYMSA S A DE C V"}, {id: "63970", name: "TERNIUM MEXICO S A DE C V"},
-      {id: "63983", name: "LIBERTY MOLDS INC"}, {id: "64032", name: "SUPER ELECTRIC MOTOR LTD"},
-      {id: "64047", name: "CALVERT MCBRIDE INC"}, {id: "64247", name: "SABIC COMMERCIAL MATERIALS S DE R"},
-      {id: "64349", name: "GUANGDONG DAYA SMART KITCHEN"}, {id: "64361", name: "SHANGHAI TONGTAI PRECISE ALUMINUM A"},
-      {id: "64443", name: "APERAM STAINLESS EUROPE"}, {id: "64541", name: "ANSEN ELECTRONICS CO"},
-      {id: "64719", name: "SISTEMAS ELECTRONICOS DE MONTERREY"}, {id: "64790", name: "COMERCIALIZADORA BLH S A DE C V"},
-      {id: "64799", name: "DONGKUK STEEL MEXICO"}, {id: "64801", name: "BN STEELA CO LTD"},
-      {id: "64955", name: "COLLIS DE MEXICO LLC"}, {id: "65049", name: "SUZHOU HESHENG SPECIAL MATERIAL CO"},
-      {id: "65239", name: "IUSA S A DE C V"}, {id: "65283", name: "PROCESOS ELECTROFORETICOS S A"},
-      {id: "65354", name: "FIRST FILM EXTRUDING LLC"}, {id: "65368", name: "TP REFLEX GROUP S.P.A"},
-      {id: "65373", name: "EMPRESAS TITAN S A DE C V"}, {id: "65391", name: "MARMON RETAIL SERVICES ASIA CORPOR"},
-      {id: "65540", name: "ELECTRICAL COMPONENTS INTERNATIONAL"}, {id: "65604", name: "ENGINEERED PLASTIC COMPONENTS INC"},
-      {id: "65610", name: "D & S MACHINE PRODUCTS INC"}, {id: "65642", name: "AUTO&HYN S DE R L DE C V"},
-      {id: "65749", name: "TAE SUNG MEXICO S A DE C V"}, {id: "65784", name: "LESHI LEILI TRADE CO LIMITED"},
-      {id: "65858", name: "BACKER ALPE S DE R L DE C V"}, {id: "66047", name: "FORTIS PLASTICS LLC"},
-      {id: "66103", name: "REFRIGERACION Y AIRE ACONDICIONADO"}, {id: "66104", name: "SOLTEAM INCORPORATION"},
-      {id: "66142", name: "PAS APPLIANCE SYSTEMS S A DE C V"}, {id: "66221", name: "TEST TECHNOLOGIES DE MEXICO S A DE"},
-      {id: "66238", name: "INDUSTRIAS COLUNGA S A DE C V"}, {id: "66239", name: "CHICAGO MOLD ENGINEERING CO INC"},
-      {id: "66244", name: "MANGAS TOOL & DIE DIV OF PACER IND"}, {id: "66317", name: "HOFFER PLASTICS CORP"},
-      {id: "66338", name: "INDUSTRIAS EN SERVICIOS PLASTICOS"}, {id: "66434", name: "ESSENTRA COMPONENTS S DE RL DE CV"},
-      {id: "66456", name: "OETIKER INC"}, {id: "66457", name: "FORTIS PLASTICS LLC"},
-      {id: "66543", name: "SAINT GOBAIN MEXICO S A DE C V"}, {id: "66643", name: "MODELLERIA PIVA SRL"},
-      {id: "66684", name: "INTERNATIONAL QUALITY PLASTICS S A"}, {id: "66701", name: "HENAN NEW KELONG ELECT APPLIANCES"},
-      {id: "66778", name: "NISSHA USA INC"}, {id: "66779", name: "SIGMA ELECTRIC MFG CORP"},
-      {id: "66809", name: "LG HAUSYS AMERICA INC"}, {id: "66838", name: "KUNSHAN SPECIAL TECHNOLOGY PRECISIO"},
-      {id: "66849", name: "FPG MEXICO S DE R L DE C V"}, {id: "66928", name: "ATW LEBANON"},
-      {id: "66930", name: "M&M PRODUCTS AND SERVICES"}, {id: "67139", name: "TESERACTO S C"},
-      {id: "67175", name: "JIANGSU XIUQIANG GLASSWORK CO LTD"}, {id: "67224", name: "MSC LAMINATES & COMPOSITES EGV"},
-      {id: "67245", name: "PLASTEC USA INC"}, {id: "67253", name: "CIS GLOBAL LLC"},
-      {id: "67313", name: "HIRATA CORPORATION OF AMERICA"}, {id: "67315", name: "VOLTRAK S A DE C V"},
-      {id: "67323", name: "DITEK DE MEXICO S A DE CV"}, {id: "67446", name: "SOLTEAM INCORPORATION"},
-      {id: "67448", name: "POLYONE DISTRIBUTION"}, {id: "67456", name: "C&H DIE CASTING INC"},
-      {id: "67534", name: "EIMO TECHNOLOGIES INC"}, {id: "67564", name: "VISTA LIGHTING WORLDWIDE LLC"},
-      {id: "67630", name: "SPARTECH LLC"}, {id: "67692", name: "MODELOS INDUSTRIALES DEL NORTE S A"},
-      {id: "67764", name: "ENGINEERED PLASTIC COMPONENTS INC"}, {id: "67891", name: "GRACO MEXICANA S A DE C V"},
-      {id: "67929", name: "SHENZHEN MEIYAD OPTOELECTRONICS"}, {id: "67953", name: "QINGDAO HAIER MOULDS CO LTD"},
-      {id: "68006", name: "ATLAS INSTALADOR DE MAQUINARIA INDL"}, {id: "68110", name: "CUSTOM MECHANICAL CONSTRUCTION INC"},
-      {id: "68169", name: "GALVASID S A DE C V"}, {id: "68244", name: "STANDARD TOOL & DIE S DE R L DE C V"},
-      {id: "68359", name: "FLEXTRONICS INTERNATIONAL EUROPE"}, {id: "68594", name: "PUNE METAGRAPH"},
-      {id: "68759", name: "APPLIED MEXICO S A DE CV"}, {id: "68801", name: "COILPLUS TEXAS"},
-      {id: "68814", name: "SEALED AIR DE MEXICO OPERATIONS"}, {id: "68980", name: "FUJIAN SUPER TECH ADVANCED MATERIAL"},
-      {id: "68995", name: "BEMIS DE MEXICO S A DE C V"}, {id: "69115", name: "C&H DIE CASTING DE MONTERREY S DE"},
-      {id: "69184", name: "IMM INOX MARKET MESSICO SA DE CV"}, {id: "69223", name: "ISGO NA LLC"},
-      {id: "69253", name: "JMI"}, {id: "69286", name: "SUNRISE TOOL & DIE INC"},
-      {id: "69308", name: "CELESTICA CORP"}, {id: "69323", name: "POSCO MPPC S A DE C V"},
-      {id: "69361", name: "CHAU'S ELECTRICAL CO LTD"}, {id: "69455", name: "ABLE ONE TECHNOLOGY LTD"},
-      {id: "69506", name: "RUBEN MORENO ARIAS"}, {id: "69557", name: "ASCOMATICA S A DE C V"},
-      {id: "69680", name: "ARCHWAY MARKETING SERVICES"}, {id: "69699", name: "SIGNATURE PARTNERS INC"},
-      {id: "69774", name: "MILLER MOLD CO"}, {id: "69830", name: "JABIL CIRCUIT GUANGZHOU LTD"},
-      {id: "69845", name: "SABIC INNOVATIVE PLASTICS MEXICO"}, {id: "69850", name: "EPC COLUMBIA INC"},
-      {id: "70053", name: "NIDEC AMERICA CORP"}, {id: "70063", name: "ESTROSA"},
-      {id: "70147", name: "EXCELCUTS S DE R L DE C V"}, {id: "70154", name: "NEWARK CORP"},
-      {id: "70168", name: "NORDRI SOLUTIONS S C"}, {id: "70285", name: "NACIONAL DE COBRE S A DE C V"},
-      {id: "70333", name: "CRAIG MACHINERY & DESIGN INC"}, {id: "70356", name: "BRINDEC BRINDES PROMOCIONAIS LTDA"},
-      {id: "70466", name: "THERMAL VISIONS INC"}, {id: "70575", name: "LESHI LEILI TRADE CO LIMITED"},
-      {id: "70688", name: "SUZHOU PUDA PRECISE MOLD LTD"}, {id: "70695", name: "MEXICHEM FLUOR S A DE C V"},
-      {id: "70703", name: "GOSS AUTOMOTIVE S A DE C V"}, {id: "70801", name: "MAQUINADOS INDUSTRIALES TAMEZ S A D"},
-      {id: "70869", name: "LUVATA FRANKLIN INC"}, {id: "70921", name: "IMA ENTERPRISES LLC"},
-      {id: "70958", name: "MINTECH DE MEXICO S A DE C V"}, {id: "70992", name: "SIGLOC DE COAHUILA S A DE C V"},
-      {id: "71032", name: "ENSEL TECHNOLOGIES S A DE CV"}, {id: "71109", name: "UNION INDUSTRY HK HOLDING CO LTD"},
-      {id: "71142", name: "TECNOMECANICA PRIES"}, {id: "71143", name: "INTERNACIONAL DE PLASTICOS Y"},
-      {id: "71245", name: "JU YOUNG SERVICES SA DE CV"}, {id: "71267", name: "COILPLUS MEXICANA SA DE CV"},
-      {id: "71286", name: "SCANET SOLUTIONS S A DE C V"}, {id: "71392", name: "DIGA S A DE C V"},
-      {id: "71398", name: "DITEMSA PLASTICS S A DE C V"}, {id: "71538", name: "ERACOM SA DE CV"},
-      {id: "71580", name: "MARCEGAGLIA MEXICO, S DE RL DE CV"}, {id: "71606", name: "TORNEXPRESS SA DE CV"},
-      {id: "71724", name: "STARION MONTERREY MEXICO S A DE C"}, {id: "71791", name: "INGENIERIA METALICA Y PLASTICA DE M"},
-      {id: "72059", name: "BASF S A"}, {id: "72196", name: "ZHEJIANG KANGSHENG CO LTD"},
-      {id: "72209", name: "CORCAR MANUFACTURING SERVICES LLC"}, {id: "72247", name: "INTERNATIONAL AUTOMOTIVE COMPONENTS"},
-      {id: "72390", name: "KURZ MEXICO S DE RL DE CV"}, {id: "72618", name: "SOFTTEK SERVICIOS Y TECNOLOGIA SA"},
-      {id: "72628", name: "KEYENCE MEXICO SA DE CV"}, {id: "72684", name: "POLYONE DE MEXICO MANUFACTURING"},
-      {id: "72691", name: "ARMA FILTRE SISTEMLERI SANAYI VE TI"}, {id: "72799", name: "A B GRAPHICS SA DE CV"},
-      {id: "72937", name: "ILPEA INDUSTRIES"}, {id: "72958", name: "OPENSERVICE S A DE C V"},
-      {id: "72963", name: "REVERE INDUSTRIES"}, {id: "72975", name: "HENAN NEW KELONG ELECT APPLIANCES"},
-      {id: "73034", name: "ASCOMATICA S A DE C V"}, {id: "73098", name: "FOSHAN TONGBAO HUAYU INDUSTRIAL LTD"},
-      {id: "73300", name: "ACME MACHINE AUTOMATICS, INC"}, {id: "73371", name: "GLOBAL MOLD TECH MANAGEMENT LLC"},
-      {id: "73405", name: "JABIL CIRCUIT MEXICO"}, {id: "73442", name: "JABIL CIRCUIT GUANGZHOU LTD"},
-      {id: "73475", name: "INTERNATIONAL PAPER MONTERREY"}, {id: "73553", name: "SHENZHEN H&T INTELLIGENT CONTROL CO"},
-      {id: "73660", name: "FEINROHREN S P A"}, {id: "73695", name: "3D MEASUREMENT TECHNOLOGIES"},
-      {id: "73870", name: "MICRO PLASTICS INC"}, {id: "73884", name: "CCL LABEL INC"},
-      {id: "73886", name: "COSMA SRL"}, {id: "73889", name: "PSC S&S INDUSTRIES DE MEXICO"},
-      {id: "73936", name: "PRETTL HOME SOL MEX"}, {id: "73956", name: "PAS APPLIANCE SYSTEMS SA DE CV"},
-      {id: "74045", name: "WSP SOFTWARE FACTORY SA DE CV"}, {id: "74051", name: "SWANN INDUSTRIES PTE LTD"},
-      {id: "74098", name: "TOOLING SYSTEMS GROUP INC"}, {id: "74197", name: "ALMES NA INC"},
-      {id: "74268", name: "EMZ-HANAUER GMBH & CO. KGAA"}, {id: "74286", name: "GALVAPRIME SA DE CV"},
-      {id: "74338", name: "INTERNATIONAL PAPER MX CO, S DE RL"}, {id: "74351", name: "MATRIX WIRE MEXICO LLC"},
-      {id: "74389", name: "FORZA GLOBAL SOLUTIONS"}, {id: "74427", name: "ARCHER WIRE INTERNATIONAL CORP"},
-      {id: "74558", name: "POLYMSA SA DE CV"}, {id: "74581", name: "POLYEMPAQUES Y DERIVADOS MTY"},
-      {id: "74598", name: "MAQUILADORA SYR S A DE C V"}, {id: "74639", name: "HUANGSHI DONGBEI ELECTRICAL"},
-      {id: "74773", name: "JC GRAND CORPORATION"}, {id: "74903", name: "QUIMICA SAGITARIO S A DE C V"},
-      {id: "75228", name: "AISLANTES INDUSTRIALES MONTERREY"}, {id: "75318", name: "IDENTCO DE MEXICO S DE RL DE CV"},
-      {id: "75448", name: "WATERS SA DE CV"}, {id: "75624", name: "INTERNATIONAL PAPER MX CO S DE RL"},
-      {id: "75684", name: "UNION INDUSTRY HONG KONG HOLDING CO"}, {id: "75739", name: "ENGINEERING INTERNATIONAL INC"},
-      {id: "75815", name: "ANALISIS Y SOLUCIONES ELECTRICAS"}, {id: "75820", name: "COMERCIALIZADORA TEST TECHNOLOGIES"},
-      {id: "75831", name: "JIAXIPERA COMPRESSOR CO LTD"}, {id: "75895", name: "REPLASA ADVANCED MATERIALS, S.A."},
-      {id: "75928", name: "BIO PAPPEL PRODUCTS"}, {id: "76106", name: "POSCO AMERICA CORP"},
-      {id: "76268", name: "PROYECTOS INDUSTRIALES Y DE"}, {id: "76272", name: "GEXPRO SERVICES"},
-      {id: "76289", name: "APISA FASTENERS"}, {id: "76515", name: "SUZHOU GOODTIME TECH DEV CO LTD"},
-      {id: "76538", name: "ADRIANO ENGINEERING S DE RL DE CV"}, {id: "76551", name: "NANTONG ZHENQUN ELECTRONIC CO LTD"},
-      {id: "76577", name: "TEKMART INTEGRATED MANUFACTURING"}, {id: "76583", name: "COVESTRO S A DE C V"},
-      {id: "76736", name: "DONGGUAN KUMKANG LOTUS LIGHTING CO"}, {id: "76770", name: "HI TEC CNC MEXICO SA DE CV"},
-      {id: "76976", name: "BIO PAPPEL SAB DE CV"}, {id: "76982", name: "NANTONG SAFETY HARDWARE TECHNOLOGY"},
-      {id: "77015", name: "FOAM FABRICATORS SERVICES S DE RL D"}, {id: "77023", name: "TEST AND CONTROLS INTERNATIONAL, IN"},
-      {id: "77047", name: "GALILEO TP INC."}, {id: "77079", name: "GT PLASTICS NORTE"},
-      {id: "77138", name: "SONOCO OPERADORA S DE RL DE CV"}, {id: "77206", name: "HAINING HAIYUE ILLUMINATION CO, LTD"},
-      {id: "77220", name: "DANIEL FUENTES ELIZONDO"}, {id: "77644", name: "MICG SOLUCIONES SA DE CV"},
-      {id: "77722", name: "HOLM INDUSTRIES"}, {id: "77727", name: "ROBERT BOSCH LLC"},
-      {id: "77731", name: "COMMERCIAL TOOL & DIE"}, {id: "77786", name: "MECATRÓNICA E INTEGRACIÓN S.A. DE C"},
-      {id: "78157", name: "CONTROL AUTOMATIZACION Y PROYECTOS"}, {id: "78290", name: "ANSEN ELECTRONICS COMPANY"},
-      {id: "78349", name: "METAK INDUSTRIA E COMERCIO DE PEÇAS"}, {id: "78425", name: "FLUIDOS TECNICOS, S.A. DE C.V."},
-      {id: "78564", name: "JIANGSU KIND ELECTRIC CO., LTD"}, {id: "78703", name: "INDUMA S.A. DE C.V."},
-      {id: "78808", name: "SUZHOU V.I.P NEW MATERIAL CO. LTD."}, {id: "78870", name: "VENTURA MANUFACTURING"},
-      {id: "78927", name: "DISEÑOS METÁLICOS JMH SA DE CV"}, {id: "79037", name: "SUZHOU WEIXI WIRE ELECTRICAL APPLIA"},
-      {id: "79075", name: "WUXI JINHUA YIYUAN TECHNOLOGY CO LT"}, {id: "79232", name: "JABIL INC."},
-      {id: "79281", name: "ENTRON CONTROLS DE MEXICO SA DE CV"}, {id: "79319", name: "DANIELA PATRICIA CASTAÑO LOPEZ"},
-      {id: "79494", name: "SINCI GDL"}, {id: "79585", name: "WORLDMARK UK LIMITED"},
-      {id: "79718", name: "QP HOLDINGS, LLC"}, {id: "79723", name: "QP HOLDINGS, LLC"},
-      {id: "79725", name: "TROQUELES COREN SA DE CV"}, {id: "79745", name: "MACHINE CONCEPTS, INC."},
-      {id: "79958", name: "SPECTRUM ENGINEERING SERVICES"}, {id: "80153", name: "HECTOR DAVID RODRIGUEZ GONZALEZ"},
-      {id: "80203", name: "DEREN ELECTRONIC HONGKONG CO LTD"}, {id: "80363", name: "AGRAMKOW FLUID SYSTEMS"},
-      {id: "80373", name: "FLURIDA SINGAPORE PTE., LTD."}, {id: "80402", name: "HARRIS PRODUCTS GROUP"},
-      {id: "80404", name: "KONVEYOR BEYAZ ESYA VE OTOMOTIV YAN"}, {id: "80442", name: "SDIMSA S.A. DE C.V."},
-      {id: "80506", name: "ISYSOFT"}, {id: "80674", name: "ARION TECHNOLOGY LTD"},
-      {id: "80683", name: "MARCOS TREJO CANTU"}, {id: "80793", name: "AB TEST SOLUTIONS SA DE CV"},
-      {id: "80798", name: "VIDEOLAR-INNOVA S.A."}, {id: "80814", name: "INCO CONSTRUCCIONES Y MANTENIMIENTO"},
-      {id: "80984", name: "LONGDA INTERNATIONAL GROUP LIMITED"}, {id: "80998", name: "INDUSTRIAS DINAMEK SA DE CV"},
-      {id: "81020", name: "JUAN ARMANDO LOERA HERNANDEZ"}, {id: "81025", name: "PRAXAIR MEXICO S DE R L DE C V"},
-      {id: "81059", name: "BARKSDALE & ASSOC INC"}, {id: "81227", name: "TOOLS TRY OUTS AND SERVICES S DE RL"},
-      {id: "81345", name: "SOLUCIONES EN EXTRUSIONES NORESTE"}, {id: "81391", name: "WORLD BUYING SERVICE"},
-      {id: "81396", name: "THE GREAT STAR PRECISION SCREW CO"}, {id: "81448", name: "CHEONG WOON MEXICO S.A. DE C.V."},
-      {id: "81569", name: "TECH-SONIC, INC."}, {id: "81589", name: "REGAL MOLD & DIE"},
-      {id: "81603", name: "QINGDAO CONRUN INDUSTRY& TRADE CO."}, {id: "81686", name: "METALMECANICA Y AUTOMATIZACION RODG"},
-      {id: "81693", name: "MAHABAL AUTO ANCILLARIES PVT. LTD."}, {id: "81800", name: "ASTOM S.R.L"},
-      {id: "82096", name: "SANHUA INTERNATIONAL, INC."}, {id: "82113", name: "ELECTRICAL COMPONENTS INTERNATIONAL"},
-      {id: "82205", name: "SICHUAN MICOLON VACUUM NEW MATERIAL"}, {id: "82209", name: "LESHI LEILI TRADE CO LIMITED"},
-      {id: "82330", name: "H&T INTELLIGENT CONTROL INTERNATION"}, {id: "82470", name: "LINCOLN ELECTRIC AUTOMATION, INC."},
-      {id: "82473", name: "COMI AMERICAS"}, {id: "82488", name: "WANHUA CHEMICAL (SINGAPORE) PTE LTD"},
-      {id: "82528", name: "ZHEJIANG SANHUA"}, {id: "82662", name: "WHIRLPOOL CHINA CO LTD"},
-      {id: "82758", name: "NN, INC"}, {id: "82900", name: "TERMOPLASTICOS MNLH S.A. DE C.V."},
-      {id: "82948", name: "REVERE SALTILLO PLANT"}, {id: "83016", name: "OLSON METAL PRODUCTS, LLC"},
-      {id: "83134", name: "SHENZHEN EASTFIELD LIGHTING CO. LTD"}, {id: "83228", name: "ISE METAL INC"},
-      {id: "83280", name: "IFCN.SW S DE RL DE CV"}, {id: "83346", name: "TTI, INC"},
-      {id: "83523", name: "MECHANICA S.R.L."}, {id: "83595", name: "EVONIK INDUSTRIES DE MEXICO, SA DE"},
-      {id: "83624", name: "XPACK INTERNATIONAL CO LTD"}, {id: "83628", name: "KARTHIGEYA DRIVE AND COMPONENTS"},
-      {id: "83635", name: "JIAXIPERA COMPRESSOR CO., LTD."}, {id: "83756", name: "NIDEC GLOBAL APPLIANCE NORTH AMERIC"},
-      {id: "83908", name: "ELECTRICAL COMPONENTS INTERNATIONAL"}, {id: "83910", name: "EAMMOSCA DE MEXICO S DE RL DE CV"},
-      {id: "84013", name: "SENIX TOOLS"}, {id: "84028", name: "NISSHA PMX TECHNOLOGIES"},
-      {id: "84049", name: "KX TECHNOLOGIES PTE LTD"}, {id: "84085", name: "A´DEXCELLEI MOTOR MEXICO SA DE CV"},
-      {id: "84098", name: "GOODTIME MANUFACTURING SDN BHD"}, {id: "84099", name: "CHANGZHENG BMR REFRIGERATION"},
-      {id: "84108", name: "NIDEC GLOBAL APPLIANCE NORTH"}, {id: "84446", name: "SELF GROUP COMI SRL"},
-      {id: "84469", name: "YAT (H.K.) CO., LIMITED"}, {id: "84484", name: "GURU AMARDASS INTERNATIONAL PVT LTD"},
-      {id: "84491", name: "NGL RESOURCES, S.A. DE C.V."}, {id: "84528", name: "OPTIMAS OE SOLUTIONS LTDA"},
-      {id: "84565", name: "SEPSTAR MEXICO"}, {id: "84577", name: "EASTFIELD LIGHTING (HONG KONG)"},
-      {id: "84804", name: "REHAU INDUSTRIAL SOLUTIONS MEXICO"}, {id: "208167", name: "GOODTIME MANUFACTURING"},
-      {id: "A463", name: "WHIRLPOOL OVERSEAS MANUFACTURING"}, {id: "F002", name: "WHIRLPOOL PLAINFIELD DIVISION"},
-      {id: "FM21", name: "RAMOS FDC"}, {id: "M008", name: "FINDLAY DIV WHIRLPOOL CORP"},
-      {id: "M022", name: "SUPSA MFG"}, {id: "M023", name: "ERNA MFG"},
-      {id: "M039", name: "OTTAWA DIV WHIRLPOOL CORP"}, {id: "M317", name: "AMANA MFG DIVISION"},
-      {id: "ML20", name: "WHIRLPOOL OVERSEAS MANUFACTURING"}, {id: "ML21", name: "RAMOS ARIZPE PLANT"},
-      {id: "ML24", name: "WHIRLPOOL OVERSEAS MANUFACTURING S."}, {id: "P002", name: "LAPORTE PARTS DIV WHIRLPOOL CORP"},
-      {id: "P005", name: "FORT SMITH DIV WHIRLPOOL CORP"}, {id: "P007", name: "EVANSVILLE DIV WHIRLPOOL CORP"},
-      {id: "P317", name: "AMANA MFG DIVISION"}, {id: "SEPM", name: "EUROPARTNERS MEXICO S A DE C V"},
-      {id: "SGLINT", name: "GLINT SOLUCIONES S A DE C V"}, {id: "SHWLD", name: "HELLMANN WORLDWIDE LOGISTICS SA DE"},
-      {id: "SPENLUS", name: "PENSKE LOGISTICA S A DE C V"}, {id: "SPLLLC", name: "PENSKE LOGISTICS LLC"},
-      {id: "SRCM", name: "RACING CARGO MEXICO SA DE CV"}
+      {id: "47083", name: "IDENTI"}, {id: "47089", name: "INLAND CORRUGADOS DE MONTERREY SA D"},
+      {id: "47095", name: "ILLINOIS TOOL WORKS, INC"}, {id: "47098", name: "JABIL CIRCUIT INC"},
+      {id: "47100", name: "JONES PLASTIC & ENGINEERING DE"}, {id: "47103", name: "ALPHA ASSEMBLY SOLUTIONS INC."},
+      {id: "47105", name: "INEOS ABS USA CORP"}, {id: "47106", name: "LIMEX FORMADO Y DECORADO S RL DE CV"},
+      {id: "47108", name: "MANSFIELD ENGINEERED COMPONENTS INC"}, {id: "47110", name: "MASTER MANUFACTURING CO"},
+      {id: "47111", name: "MERCURY PLASTICS LLC"}, {id: "47112", name: "METALURGICA DUQUE S A"},
+      {id: "47120", name: "WHIRLPOOL SA"}, {id: "47122", name: "NORTHERN ENGRAVING CO"},
+      {id: "47126", name: "PANASONIC INDUSTRIAL CO"}, {id: "47127", name: "PANDUIT MEXICO S DE ENNC DE CV"},
+      {id: "47128", name: "POLY VINYL CO"}, {id: "47131", name: "UNIQUE PRESCOTECH INC"},
+      {id: "47134", name: "PSC FABRICATING CORP"}, {id: "47135", name: "REHAU SA DE CV"},
+      {id: "47140", name: "SERVICE TOOL & PLASTICS"}, {id: "47141", name: "SHAMROCK INTERNATIONAL FASTENER LLC"},
+      {id: "47143", name: "SOLVAY FLUOR MEXICO SA DE CV"}, {id: "47144", name: "SPARTECH DE MEXICO SA DE CV"},
+      {id: "47146", name: "BACKER EHP INC"}, {id: "47147", name: "SUNG SHIN CO LTD"},
+      {id: "47149", name: "SENSATA TECHNOLOGIES INC"}, {id: "47156", name: "TRIOWORLD NYBORG A/S"},
+      {id: "47157", name: "UNELKO CORP"}, {id: "47159", name: "UNIVERSAL METAL PRODUCTS INC"},
+      {id: "47163", name: "ELECTRICAL COMPONENTS INTERNATIONAL"}, {id: "47167", name: "WHIRLPOOL CORP"},
+      {id: "47169", name: "REVERE PLASTICS SYSTEMS LLC"}, {id: "47171", name: "WOLVERINE TUBE INC"},
+      {id: "47172", name: "VERITIV OPERATING COMPANY"}, {id: "47173", name: "ZOPPAS INDUSTRIES DE MEXICO SA DE C"},
+      {id: "47796", name: "UNICAR PLASTICS SA DE CV"}, {id: "47804", name: "MADERERIA Y FERRETERIA LOS ALPES SA"},
+      {id: "47806", name: "TERMOPLASTICOS DE MONTERREY SA DE C"}, {id: "47814", name: "CRISER SA DE CV"},
+      {id: "47815", name: "ELECTRONICOS ANIMADOS SA DE CV"}, {id: "47836", name: "REFRIGERACION Y AIRE ACONDICIONADO"},
+      {id: "47846", name: "LG CHEMICAL AMERICA INC"}, {id: "47852", name: "TASUS CANADA CORP"},
+      {id: "47866", name: "SISTEMAS DE FUERZA INDUSTRIAL SA"}, {id: "47958", name: "DUDEK & BOCK S DE RL DE CV"},
+      {id: "47979", name: "EMZ HANAUER GMBH & CO KGAA"}, {id: "48001", name: "MOLL MEXICO S DE RL DE CV"},
+      {id: "48007", name: "PAS APPLIANCE SYSTEMS S A DE C V"}, {id: "48118", name: "INFASTECH DECORAH LLC"},
+      {id: "48120", name: "ILPEA S DE R L DE C V"}, {id: "48132", name: "AWECO DE MEXICO S EN C DE CV"},
+      {id: "48282", name: "NEUMATICA PROFESIONAL SA DE CV"}, {id: "48284", name: "OMNI MANUFACTURING SERVICES SA DE"},
+      {id: "48315", name: "SOLUCIONES INTEGRADAS EN MANEJO DE"}, {id: "48319", name: "TECNO MONTAJES S A DE C V"},
+      {id: "48320", name: "TECNO TROQUELES S A DE C V"}, {id: "48325", name: "TYCO ELECTRONICS MEXICO S A"},
+      {id: "48440", name: "AIR POWER INC"}, {id: "48542", name: "EQUIPOS INDUSTRIALES DE CONTROL SA"},
+      {id: "48567", name: "POLIESTIRENO ALFA GAMMA S A DE C V"}, {id: "48604", name: "GRAINGER S A DE C V"},
+      {id: "48798", name: "OMEGA TOOL INC"}, {id: "48824", name: "LUIS BORIOLI S A DE C V"},
+      {id: "48834", name: "POLIENVASES S A DE C V"}, {id: "48923", name: "VAUGHN MANUFACTURING CO INC"},
+      {id: "48975", name: "INDUSTRIAS DINAMEK SA DE CV"}, {id: "48983", name: "TROQUELES ELIZONDO SA DE CV"},
+      {id: "48995", name: "PSION TEKLOGIX S A DE C V"}, {id: "49047", name: "HERRAMENTAL MONTERREY S A"},
+      {id: "49094", name: "HECTOR RODRIGUEZ MENDOZA"}, {id: "49329", name: "GLASSER SA DE CV"},
+      {id: "49344", name: "NATIONAL INSTRUMENTS DE MEX SA CV"}, {id: "49365", name: "SISTEMAS DE DESARROLLO Y LOGIST SA"},
+      {id: "49368", name: "DITEMSA S A DE C V"}, {id: "49391", name: "HUNTINGTON FOAM DE MEXICO"},
+      {id: "49517", name: "JARDEN PLASTICS SOLUTIONS"}, {id: "49581", name: "INGENIERIA Y DIS ELECTRICO Y DE CON"},
+      {id: "49612", name: "MLS SYSTEMS INC"}, {id: "49614", name: "THE CONAIR GROUP INC"},
+      {id: "49643", name: "FRANCISCO JAVIER GARCIA HERNANDEZ"}, {id: "49678", name: "USON LP"},
+      {id: "49719", name: "MANUFACTURAS Y DISEÑOS DE SALTILLO"}, {id: "49736", name: "NATIONAL COPPER & SMELTING CO"},
+      {id: "49738", name: "QUALITY SCREW & NUT CO INC"}, {id: "49741", name: "SERVIACERO PLANOS S DE R L DE C V"},
+      {id: "49744", name: "SNIDER BOLT & SCREW INC"}, {id: "49753", name: "WHIRLPOOL S.A."},
+      {id: "49834", name: "CASSIOLI SRL"}, {id: "49977", name: "CAMCAR DE MEXICO SA DE CV"},
+      {id: "50053", name: "MILLS PRODUCTS DE MEXICO SA DE CV"}, {id: "50137", name: "KOPAR S A DE C V"},
+      {id: "50307", name: "AUTOMATED DATA SYSTEMS S A DE C V"}, {id: "50313", name: "EVCO PLASTICS DE MEXICO S DE RL"},
+      {id: "50326", name: "EPM PLASTICS SA DE CV"}, {id: "50407", name: "BECKETT AIR, INC"},
+      {id: "50408", name: "US MINIATURE LAMPS"}, {id: "50409", name: "BAYER DE MEXICO"},
+      {id: "50571", name: "SENSORTROL S A DE C V"}, {id: "50578", name: "SCREENPRINT/DOW"},
+      {id: "50630", name: "INEOS STYRENICS LLC"}, {id: "50672", name: "COMERCIALIZADORA DE MANGUERAS Y ART"},
+      {id: "50721", name: "YI FONG MOLD LTD"}, {id: "50953", name: "CONAIR MEXICANA S A DE C V"},
+      {id: "51035", name: "CANNON LEGOS S.P.A"}, {id: "51235", name: "AUTOMATICA TECHNOLOGIES S A DE C V"},
+      {id: "51282", name: "MARTINIANO BERRONES CONTRERAS"}, {id: "51349", name: "PACE INDUSTRIES OF MEXICO L L C"},
+      {id: "51376", name: "ENGINEERED PRODUCTS INDUSTRIES LLC"}, {id: "51454", name: "KENMORE REFRIGERATION COMPONENTS"},
+      {id: "51479", name: "PERTEK ERLER S DE RL DE CV"}, {id: "51564", name: "EMZ HANAUER GMBH & CO KG AA"},
+      {id: "51567", name: "SERIGRAPH INC"}, {id: "51702", name: "EDGE ADHESIVES INC., DBA PARR"},
+      {id: "51737", name: "SP MANUFACTURAS S DE RL DE CV"}, {id: "51937", name: "ZHANGQIU HAIER ELECTROMOTOR CO LTD"},
+      {id: "52154", name: "MORRILL MOTORS INC"}, {id: "52182", name: "MT VERNON SCREW PROD"},
+      {id: "52212", name: "MAYTAG APPLIANCES SALES CO"}, {id: "52281", name: "MOONS' PRECISION PRODUCTS, INC."},
+      {id: "52302", name: "JAMAK INC"}, {id: "52366", name: "MILLS PRODUCTS LLC"},
+      {id: "52394", name: "NUEVA GENERACION MANUFACTURAS SA DE"}, {id: "52416", name: "NIDEC INSTRUMENTS (AMERICA) CORPORA"},
+      {id: "52420", name: "PLASTIC PRODUCTS COMPANY INC"}, {id: "52491", name: "GKN SINTER METALS"},
+      {id: "52626", name: "SFEG CORP"}, {id: "52679", name: "INTREX GLOBAL SOURCING"},
+      {id: "52792", name: "DESIGN SYSTEMS INC"}, {id: "52842", name: "IDTEC AUTOMATIZACION S A DE C V"},
+      {id: "52920", name: "INDUSTRIAL RAGUSA S A DE C V"}, {id: "52996", name: "ABRAHAM PUGA CASTAÑON"},
+      {id: "53040", name: "PLASTIEXPORTS SA DE CV"}, {id: "53115", name: "IMPRESOS TECNOGRAFICOS SA DE CV"},
+      {id: "53159", name: "SPARTECH DE MEXICO SA DE CV"}, {id: "53420", name: "VERITIV SA DE CV"},
+      {id: "53567", name: "NETWORK IMAGING SOLUTIONS LLC"}, {id: "53596", name: "ROSTI SEARCY INC"},
+      {id: "53649", name: "CHANNEL PRIME ALLIANCE"}, {id: "53765", name: "MEM COMERCIALIZADORA E IMPRESOS"},
+      {id: "53899", name: "INDUSTRIAL EQUIPMENT & ACCESORIES S"}, {id: "54326", name: "CHANGZHOU HUAWEI ARRK MOULD CO LTD"},
+      {id: "54386", name: "NATIONAL STARCH & CHEMICALS"}, {id: "54458", name: "INTERNATIONAL BUYING GROUP LTD"},
+      {id: "54466", name: "CCL LABEL, INC."}, {id: "54613", name: "ENGINEERED PLASTIC COMPONENTS INC"},
+      {id: "54622", name: "PERENNIAL USA INC"}, {id: "54624", name: "HIP YICK INDUSTRIAL COMPANY LTD"},
+      {id: "54660", name: "OPTIMAS OE SOLUTIONS LLC"}, {id: "54707", name: "TAYLOR CORPORATION"},
+      {id: "54718", name: "RIVER BEND INDUSTRIES LLC"}, {id: "54733", name: "PLASTIC PRODUCTS COMPANY INC"},
+      {id: "54756", name: "FOAM FABRICATORS INC"}, {id: "54758", name: "FLAIR MOLDED PLASTICS INC"},
+      {id: "54794", name: "PLASTIC PRODUCTS COMPANY INC"}, {id: "54812", name: "DERBY INDUSTRIES"},
+      {id: "54820", name: "HONEYWELL SENSING & CNTRL"}, {id: "54821", name: "NETWORK IMAGING SOLUTIONS"},
+      {id: "55086", name: "MAYTAG CORP"}, {id: "55098", name: "EQUIPOS E INSUMOS INDUSTLS PARA LIM"},
+      {id: "55268", name: "MOLON MOTORS & COIL CORP"}, {id: "55296", name: "HANKSCRAFT INC"},
+      {id: "55337", name: "DUROPLAST RAMOS ARIZPE SA DE CV"}, {id: "56001", name: "LEDFORD ENGINEERING CO IN"},
+      {id: "56169", name: "MAQUINADOS Y RECTIFICADOS LIBERTAD"}, {id: "56485", name: "TOUCH SENSOR TECHNOLOGIES"},
+      {id: "56573", name: "ILLINOIS TOOL WORKS, INC."}, {id: "56953", name: "BIKKOPLAST SP Z O O"},
+      {id: "57029", name: "ROBERTSHAW CONTROLS CO"}, {id: "57170", name: "MANTZ AUTOMATION INC"},
+      {id: "57502", name: "RIVER BEND INDUSTRIES"}, {id: "57503", name: "MANUEL HOLGUIN MELENDEZ"},
+      {id: "58239", name: "SUNRON INTL LLC"}, {id: "58553", name: "INTERDRYERS S R L"},
+      {id: "58568", name: "KEMFLO INT CO LTD"}, {id: "58754", name: "CENTRO DE ING Y MAQUINADOS ESP DE C"},
+      {id: "58827", name: "ASC CAPACITORS"}, {id: "59043", name: "SEIL S A DE C V"},
+      {id: "59200", name: "CONVEYORS Y ACCESORIOS REGIOMONTANO"}, {id: "59419", name: "PENTHA S R L"},
+      {id: "59698", name: "DISTRIBUCION DE PIEZAS METALICAS Y"}, {id: "59799", name: "FOAM FABRICATORS INC"},
+      {id: "59882", name: "FORTIS PLASTICS LLC"}, {id: "59974", name: "JING MEI INDUSTRIAL LTD"},
+      {id: "59978", name: "ARNOLDO MALACARA ALVAREZ"}, {id: "60129", name: "THERM-O-DISC (ASIA) LIMITED"},
+      {id: "60241", name: "HCL TECHNOLOGIES CORPORATE"}, {id: "60393", name: "COMMAI DE MONTERREY S A DE C V"},
+      {id: "60419", name: "TAE SUNG PRECISION CO LTD"}, {id: "60428", name: "VALLEY INTERNATIONAL CORP"},
+      {id: "60741", name: "COMERCIALIZADORA INDUSTRIAL DEL NOR"}, {id: "60752", name: "MAQUILADORA SYR S A DE C V"},
+      {id: "60869", name: "USEONG INTERNATIONAL LTD"}, {id: "60888", name: "HERNANDO MAURICIO GARZA MUZQUIZ"},
+      {id: "61179", name: "PNEUMATECNIA S A DE C V"}, {id: "61244", name: "ENGINEERED PLASTIC COMPONENTS INC"},
+      {id: "61393", name: "MOELLER MANUFACTURING DE MEXICO S D"}, {id: "61431", name: "SRG GLOBAL SUZHOU CO LTD"},
+      {id: "61438", name: "ITECH AUTOMATION SOLUTIONS INC."}, {id: "61461", name: "AUTOMATION CONSULTING GROUP S A D"},
+      {id: "61870", name: "PLASTIEQUIPOS DE MONTERREY S A"}, {id: "61882", name: "CICLOPLAFEST"},
+      {id: "61922", name: "CHANGZHOU LESHI LEILI MOTOR CO LTD"}, {id: "61944", name: "RWC SPARE PARTS, INC."},
+      {id: "61946", name: "RACKART DEL NORTE S A DE C V"}, {id: "61961", name: "INTERNATIONAL QUALITY PLASTICS S A"},
+      {id: "62194", name: "JUAN ALONSO ALVAREZ"}, {id: "62197", name: "COGNIS BRASIL L TDA"},
+      {id: "62300", name: "ASSEMBLY & TEST WORLWIDE INC"}, {id: "62345", name: "JING MEI INDUSTRIAL USA INC"},
+      {id: "62583", name: "PINTURA Y ENSAMBLES DE MEXICO SA"}, {id: "62680", name: "MARCEGAGLIA DO BRASIL LTC"},
+      {id: "62689", name: "FLEXTRONICS INTERNATIONAL LATIN"}, {id: "62723", name: "F LLI ROSSI S R L"},
+      {id: "62832", name: "ANIXTER FASTENERS DE MEXICO S DE R"}, {id: "62937", name: "GUANGHENG HEYOU INTERNATIONAL TRADI"},
+      {id: "63035", name: "MAQUINADOS Y DISPOSITIVOS MAREHC S"}, {id: "63326", name: "INGERSOLL RAND S A DE C V"},
+      {id: "63347", name: "PRESMEC INTERNATIONAL LLC"}, {id: "63415", name: "TUV RHEINLAND DE MEXICO S A DE C V"},
+      {id: "63437", name: "STAHL FASTENERS S A DE C V"}, {id: "63462", name: "STEEL TECHNOLOGIES DE MEXICO SA DE"},
+      {id: "63556", name: "SPG CO LTD"}, {id: "63567", name: "TS CONSULTORIA DE INFORMATICA"},
+      {id: "63579", name: "INSTALACIONES Y SERVICIOS INDLS REA"}, {id: "63580", name: "AVYDI S DE R L DE C V"},
+      {id: "63585", name: "XIAMEN RUNNER INDUSTRIAL CORPORATIO"}, {id: "63660", name: "AUTOMATIZACIONES E INSTALACIONES IN"},
+      {id: "63695", name: "GRO MAC ASSOC INC"}, {id: "63789", name: "NATIONAL MATERIAL OF MEXICO S DE R"},
+      {id: "63846", name: "TIN INC DBA TEMPLE INLAND"}, {id: "63853", name: "POLYMSA S A DE C V"},
+      {id: "63970", name: "TERNIUM MEXICO S A DE C V"}, {id: "63983", name: "LIBERTY MOLDS INC"},
+      {id: "64032", name: "SUPER ELECTRIC MOTOR LTD"}, {id: "64047", name: "CALVERT MCBRIDE INC"},
+      {id: "64247", name: "SABIC COMMERCIAL MATERIALS S DE R"}, {id: "64349", name: "GUANGDONG DAYA SMART KITCHEN"},
+      {id: "64361", name: "SHANGHAI TONGTAI PRECISE ALUMINUM A"}, {id: "64443", name: "APERAM STAINLESS EUROPE"},
+      {id: "64541", name: "ANSEN ELECTRONICS CO"}, {id: "64719", name: "SISTEMAS ELECTRONICOS DE MONTERREY"},
+      {id: "64790", name: "COMERCIALIZADORA BLH S A DE C V"}, {id: "64799", name: "DONGKUK STEEL MEXICO"},
+      {id: "64801", name: "BN STEELA CO LTD"}, {id: "64955", name: "COLLIS DE MEXICO LLC"},
+      {id: "65049", name: "SUZHOU HESHENG SPECIAL MATERIAL CO"}, {id: "65239", name: "IUSA S A DE C V"},
+      {id: "65283", name: "PROCESOS ELECTROFORETICOS S A"}, {id: "65354", name: "FIRST FILM EXTRUDING LLC"},
+      {id: "65368", name: "TP REFLEX GROUP S.P.A"}, {id: "65373", name: "EMPRESAS TITAN S A DE C V"},
+      {id: "65391", name: "MARMON RETAIL SERVICES ASIA CORPOR"}, {id: "65540", name: "ELECTRICAL COMPONENTS INTERNATIONAL"},
+      {id: "65604", name: "ENGINEERED PLASTIC COMPONENTS INC"}, {id: "65610", name: "D & S MACHINE PRODUCTS INC"},
+      {id: "65642", name: "AUTO&HYN S DE R L DE C V"}, {id: "65749", name: "TAE SUNG MEXICO S A DE C V"},
+      {id: "65784", name: "LESHI LEILI TRADE CO LIMITED"}, {id: "65858", name: "BACKER ALPE S DE R L DE C V"},
+      {id: "66047", name: "FORTIS PLASTICS LLC"}, {id: "66103", name: "REFRIGERACION Y AIRE ACONDICIONADO"},
+      {id: "66104", name: "SOLTEAM INCORPORATION"}, {id: "66142", name: "PAS APPLIANCE SYSTEMS S A DE C V"},
+      {id: "66221", name: "TEST TECHNOLOGIES DE MEXICO S A DE"}, {id: "66238", name: "INDUSTRIAS COLUNGA S A DE C V"},
+      {id: "66239", name: "CHICAGO MOLD ENGINEERING CO INC"}, {id: "66244", name: "MANGAS TOOL & DIE DIV OF PACER IND"},
+      {id: "66317", name: "HOFFER PLASTICS CORP"}, {id: "66338", name: "INDUSTRIAS EN SERVICIOS PLASTICOS"},
+      {id: "66434", name: "ESSENTRA COMPONENTS S DE RL DE CV"}, {id: "66456", name: "OETIKER INC"},
+      {id: "66457", name: "FORTIS PLASTICS LLC"}, {id: "66543", name: "SAINT GOBAIN MEXICO S A DE C V"},
+      {id: "66643", name: "MODELLERIA PIVA SRL"}, {id: "66684", name: "INTERNATIONAL QUALITY PLASTICS S A"},
+      {id: "66701", name: "HENAN NEW KELONG ELECT APPLIANCES"}, {id: "66778", name: "NISSHA USA INC"},
+      {id: "66779", name: "SIGMA ELECTRIC MFG CORP"}, {id: "66809", name: "LG HAUSYS AMERICA INC"},
+      {id: "66838", name: "KUNSHAN SPECIAL TECHNOLOGY PRECISIO"}, {id: "66849", name: "FPG MEXICO S DE R L DE C V"},
+      {id: "66928", name: "ATW LEBANON"}, {id: "66930", name: "M&M PRODUCTS AND SERVICES"},
+      {id: "67139", name: "TESERACTO S C"}, {id: "67175", name: "JIANGSU XIUQIANG GLASSWORK CO LTD"},
+      {id: "67224", name: "MSC LAMINATES & COMPOSITES EGV"}, {id: "67245", name: "PLASTEC USA INC"},
+      {id: "67253", name: "CIS GLOBAL LLC"}, {id: "67313", name: "HIRATA CORPORATION OF AMERICA"},
+      {id: "67315", name: "VOLTRAK S A DE C V"}, {id: "67323", name: "DITEK DE MEXICO S A DE CV"},
+      {id: "67446", name: "SOLTEAM INCORPORATION"}, {id: "67448", name: "POLYONE DISTRIBUTION"},
+      {id: "67456", name: "C&H DIE CASTING INC"}, {id: "67534", name: "EIMO TECHNOLOGIES INC"},
+      {id: "67564", name: "VISTA LIGHTING WORLDWIDE LLC"}, {id: "67630", name: "SPARTECH LLC"},
+      {id: "67692", name: "MODELOS INDUSTRIALES DEL NORTE S A"}, {id: "67764", name: "ENGINEERED PLASTIC COMPONENTS INC"},
+      {id: "67891", name: "GRACO MEXICANA S A DE C V"}, {id: "67929", name: "SHENZHEN MEIYAD OPTOELECTRONICS"},
+      {id: "67953", name: "QINGDAO HAIER MOULDS CO LTD"}, {id: "68006", name: "ATLAS INSTALADOR DE MAQUINARIA INDL"},
+      {id: "68110", name: "CUSTOM MECHANICAL CONSTRUCTION INC"}, {id: "68169", name: "GALVASID S A DE C V"},
+      {id: "68244", name: "STANDARD TOOL & DIE S DE R L DE C V"}, {id: "68359", name: "FLEXTRONICS INTERNATIONAL EUROPE"},
+      {id: "68594", name: "PUNE METAGRAPH"}, {id: "68759", name: "APPLIED MEXICO S A DE CV"},
+      {id: "68801", name: "COILPLUS TEXAS"}, {id: "68814", name: "SEALED AIR DE MEXICO OPERATIONS"},
+      {id: "68980", name: "FUJIAN SUPER TECH ADVANCED MATERIAL"}, {id: "68995", name: "BEMIS DE MEXICO S A DE C V"},
+      {id: "69115", name: "C&H DIE CASTING DE MONTERREY S DE"}, {id: "69184", name: "IMM INOX MARKET MESSICO SA DE CV"},
+      {id: "69223", name: "ISGO NA LLC"}, {id: "69253", name: "JMI"},
+      {id: "69286", name: "SUNRISE TOOL & DIE INC"}, {id: "69308", name: "CELESTICA CORP"},
+      {id: "69323", name: "POSCO MPPC S A DE C V"}, {id: "69361", name: "CHAU'S ELECTRICAL CO LTD"},
+      {id: "69455", name: "ABLE ONE TECHNOLOGY LTD"}, {id: "69506", name: "RUBEN MORENO ARIAS"},
+      {id: "69557", name: "ASCOMATICA S A DE C V"}, {id: "69680", name: "ARCHWAY MARKETING SERVICES"},
+      {id: "69699", name: "SIGNATURE PARTNERS INC"}, {id: "69774", name: "MILLER MOLD CO"},
+      {id: "69830", name: "JABIL CIRCUIT GUANGZHOU LTD"}, {id: "69845", name: "SABIC INNOVATIVE PLASTICS MEXICO"},
+      {id: "69850", name: "EPC COLUMBIA INC"}, {id: "70053", name: "NIDEC AMERICA CORP"},
+      {id: "70063", name: "ESTROSA"}, {id: "70147", name: "EXCELCUTS S DE R L DE C V"},
+      {id: "70154", name: "NEWARK CORP"}, {id: "70168", name: "NORDRI SOLUTIONS S C"},
+      {id: "70285", name: "NACIONAL DE COBRE S A DE C V"}, {id: "70333", name: "CRAIG MACHINERY & DESIGN INC"},
+      {id: "70356", name: "BRINDEC BRINDES PROMOCIONAIS LTDA"}, {id: "70466", name: "THERMAL VISIONS INC"},
+      {id: "70575", name: "LESHI LEILI TRADE CO LIMITED"}, {id: "70688", name: "SUZHOU PUDA PRECISE MOLD LTD"},
+      {id: "70695", name: "MEXICHEM FLUOR S A DE C V"}, {id: "70703", name: "GOSS AUTOMOTIVE S A DE C V"},
+      {id: "70801", name: "MAQUINADOS INDUSTRIALES TAMEZ S A D"}, {id: "70869", name: "LUVATA FRANKLIN INC"},
+      {id: "70921", name: "IMA ENTERPRISES LLC"}, {id: "70958", name: "MINTECH DE MEXICO S A DE C V"},
+      {id: "70992", name: "SIGLOC DE COAHUILA S A DE C V"}, {id: "71032", name: "ENSEL TECHNOLOGIES S A DE CV"},
+      {id: "71109", name: "UNION INDUSTRY HK HOLDING CO LTD"}, {id: "71142", name: "TECNOMECANICA PRIES"},
+      {id: "71143", name: "INTERNACIONAL DE PLASTICOS Y"}, {id: "71245", name: "JU YOUNG SERVICES SA DE CV"},
+      {id: "71267", name: "COILPLUS MEXICANA SA DE CV"}, {id: "71286", name: "SCANET SOLUTIONS S A DE C V"},
+      {id: "71392", name: "DIGA S A DE C V"}, {id: "71398", name: "DITEMSA PLASTICS S A DE C V"},
+      {id: "71538", name: "ERACOM SA DE CV"}, {id: "71580", name: "MARCEGAGLIA MEXICO, S DE RL DE CV"},
+      {id: "71606", name: "TORNEXPRESS SA DE CV"}, {id: "71724", name: "STARION MONTERREY MEXICO S A DE C"},
+      {id: "71791", name: "INGENIERIA METALICA Y PLASTICA DE M"}, {id: "72059", name: "BASF S A"},
+      {id: "72196", name: "ZHEJIANG KANGSHENG CO LTD"}, {id: "72209", name: "CORCAR MANUFACTURING SERVICES LLC"},
+      {id: "72247", name: "INTERNATIONAL AUTOMOTIVE COMPONENTS"}, {id: "72390", name: "KURZ MEXICO S DE RL DE CV"},
+      {id: "72618", name: "SOFTTEK SERVICIOS Y TECNOLOGIA SA"}, {id: "72628", name: "KEYENCE MEXICO SA DE CV"},
+      {id: "72684", name: "POLYONE DE MEXICO MANUFACTURING"}, {id: "72691", name: "ARMA FILTRE SISTEMLERI SANAYI VE TI"},
+      {id: "72799", name: "A B GRAPHICS SA DE CV"}, {id: "72937", name: "ILPEA INDUSTRIES"},
+      {id: "72958", name: "OPENSERVICE S A DE C V"}, {id: "72963", name: "REVERE INDUSTRIES"},
+      {id: "72975", name: "HENAN NEW KELONG ELECT APPLIANCES"}, {id: "73034", name: "ASCOMATICA S A DE C V"},
+      {id: "73098", name: "FOSHAN TONGBAO HUAYU INDUSTRIAL LTD"}, {id: "73300", name: "ACME MACHINE AUTOMATICS, INC"},
+      {id: "73371", name: "GLOBAL MOLD TECH MANAGEMENT LLC"}, {id: "73405", name: "JABIL CIRCUIT MEXICO"},
+      {id: "73442", name: "JABIL CIRCUIT GUANGZHOU LTD"}, {id: "73475", name: "INTERNATIONAL PAPER MONTERREY"},
+      {id: "73553", name: "SHENZHEN H&T INTELLIGENT CONTROL CO"}, {id: "73660", name: "FEINROHREN S P A"},
+      {id: "73695", name: "3D MEASUREMENT TECHNOLOGIES"}, {id: "73870", name: "MICRO PLASTICS INC"},
+      {id: "73884", name: "CCL LABEL INC"}, {id: "73886", name: "COSMA SRL"},
+      {id: "73889", name: "PSC S&S INDUSTRIES DE MEXICO"}, {id: "73936", name: "PRETTL HOME SOL MEX"},
+      {id: "73956", name: "PAS APPLIANCE SYSTEMS SA DE CV"}, {id: "74045", name: "WSP SOFTWARE FACTORY SA DE CV"},
+      {id: "74051", name: "SWANN INDUSTRIES PTE LTD"}, {id: "74098", name: "TOOLING SYSTEMS GROUP INC"},
+      {id: "74197", name: "ALMES NA INC"}, {id: "74268", name: "EMZ-HANAUER GMBH & CO. KGAA"},
+      {id: "74286", name: "GALVAPRIME SA DE CV"}, {id: "74338", name: "INTERNATIONAL PAPER MX CO, S DE RL"},
+      {id: "74351", name: "MATRIX WIRE MEXICO LLC"}, {id: "74389", name: "FORZA GLOBAL SOLUTIONS"},
+      {id: "74427", name: "ARCHER WIRE INTERNATIONAL CORP"}, {id: "74558", name: "POLYMSA SA DE CV"},
+      {id: "74581", name: "POLYEMPAQUES Y DERIVADOS MTY"}, {id: "74598", name: "MAQUILADORA SYR S A DE C V"},
+      {id: "74639", name: "HUANGSHI DONGBEI ELECTRICAL"}, {id: "74773", name: "JC GRAND CORPORATION"},
+      {id: "74903", name: "QUIMICA SAGITARIO S A DE C V"}, {id: "75228", name: "AISLANTES INDUSTRIALES MONTERREY"},
+      {id: "75318", name: "IDENTCO DE MEXICO S DE RL DE CV"}, {id: "75448", name: "WATERS SA DE CV"},
+      {id: "75624", name: "INTERNATIONAL PAPER MX CO S DE RL"}, {id: "75684", name: "UNION INDUSTRY HONG KONG HOLDING CO"},
+      {id: "75739", name: "ENGINEERING INTERNATIONAL INC"}, {id: "75815", name: "ANALISIS Y SOLUCIONES ELECTRICAS"},
+      {id: "75820", name: "COMERCIALIZADORA TEST TECHNOLOGIES"}, {id: "75831", name: "JIAXIPERA COMPRESSOR CO LTD"},
+      {id: "75895", name: "REPLASA ADVANCED MATERIALS, S.A."}, {id: "75928", name: "BIO PAPPEL PRODUCTS"},
+      {id: "76106", name: "POSCO AMERICA CORP"}, {id: "76268", name: "PROYECTOS INDUSTRIALES Y DE"},
+      {id: "76272", name: "GEXPRO SERVICES"}, {id: "76289", name: "APISA FASTENERS"},
+      {id: "76515", name: "SUZHOU GOODTIME TECH DEV CO LTD"}, {id: "76538", name: "ADRIANO ENGINEERING S DE RL DE CV"},
+      {id: "76551", name: "NANTONG ZHENQUN ELECTRONIC CO LTD"}, {id: "76577", name: "TEKMART INTEGRATED MANUFACTURING"},
+      {id: "76583", name: "COVESTRO S A DE C V"}, {id: "76736", name: "DONGGUAN KUMKANG LOTUS LIGHTING CO"},
+      {id: "76770", name: "HI TEC CNC MEXICO SA DE CV"}, {id: "76976", name: "BIO PAPPEL SAB DE CV"},
+      {id: "76982", name: "NANTONG SAFETY HARDWARE TECHNOLOGY"}, {id: "77015", name: "FOAM FABRICATORS SERVICES S DE RL D"},
+      {id: "77023", name: "TEST AND CONTROLS INTERNATIONAL, IN"}, {id: "77047", name: "GALILEO TP INC."},
+      {id: "77079", name: "GT PLASTICS NORTE"}, {id: "77138", name: "SONOCO OPERADORA S DE RL DE CV"},
+      {id: "77206", name: "HAINING HAIYUE ILLUMINATION CO, LTD"}, {id: "77220", name: "DANIEL FUENTES ELIZONDO"},
+      {id: "77644", name: "MICG SOLUCIONES SA DE CV"}, {id: "77722", name: "HOLM INDUSTRIES"},
+      {id: "77727", name: "ROBERT BOSCH LLC"}, {id: "77731", name: "COMMERCIAL TOOL & DIE"},
+      {id: "77786", name: "MECATRÓNICA E INTEGRACIÓN S.A. DE C"}, {id: "78157", name: "CONTROL AUTOMATIZACION Y PROYECTOS"},
+      {id: "78290", name: "ANSEN ELECTRONICS COMPANY"}, {id: "78349", name: "METAK INDUSTRIA E COMERCIO DE PEÇAS"},
+      {id: "78425", name: "FLUIDOS TECNICOS, S.A. DE C.V."}, {id: "78564", name: "JIANGSU KIND ELECTRIC CO., LTD"},
+      {id: "78703", name: "INDUMA S.A. DE C.V."}, {id: "78808", name: "SUZHOU V.I.P NEW MATERIAL CO. LTD."},
+      {id: "78870", name: "VENTURA MANUFACTURING"}, {id: "78927", name: "DISEÑOS METÁLICOS JMH SA DE CV"},
+      {id: "79037", name: "SUZHOU WEIXI WIRE ELECTRICAL APPLIA"}, {id: "79075", name: "WUXI JINHUA YIYUAN TECHNOLOGY CO LT"},
+      {id: "79232", name: "JABIL INC."}, {id: "79281", name: "ENTRON CONTROLS DE MEXICO SA DE CV"},
+      {id: "79319", name: "DANIELA PATRICIA CASTAÑO LOPEZ"}, {id: "79494", name: "SINCI GDL"},
+      {id: "79585", name: "WORLDMARK UK LIMITED"}, {id: "79718", name: "QP HOLDINGS, LLC"},
+      {id: "79723", name: "QP HOLDINGS, LLC"}, {id: "79725", name: "TROQUELES COREN SA DE CV"},
+      {id: "79745", name: "MACHINE CONCEPTS, INC."}, {id: "79958", name: "SPECTRUM ENGINEERING SERVICES"},
+      {id: "80153", name: "HECTOR DAVID RODRIGUEZ GONZALEZ"}, {id: "80203", name: "DEREN ELECTRONIC HONGKONG CO LTD"},
+      {id: "80363", name: "AGRAMKOW FLUID SYSTEMS"}, {id: "80373", name: "FLURIDA SINGAPORE PTE., LTD."},
+      {id: "80402", name: "HARRIS PRODUCTS GROUP"}, {id: "80404", name: "KONVEYOR BEYAZ ESYA VE OTOMOTIV YAN"},
+      {id: "80442", name: "SDIMSA S.A. DE C.V."}, {id: "80506", name: "ISYSOFT"},
+      {id: "80674", name: "ARION TECHNOLOGY LTD"}, {id: "80683", name: "MARCOS TREJO CANTU"},
+      {id: "80793", name: "AB TEST SOLUTIONS SA DE CV"}, {id: "80798", name: "VIDEOLAR-INNOVA S.A."},
+      {id: "80814", name: "INCO CONSTRUCCIONES Y MANTENIMIENTO"}, {id: "80984", name: "LONGDA INTERNATIONAL GROUP LIMITED"},
+      {id: "80998", name: "INDUSTRIAS DINAMEK SA DE CV"}, {id: "81020", name: "JUAN ARMANDO LOERA HERNANDEZ"},
+      {id: "81025", name: "PRAXAIR MEXICO S DE R L DE C V"}, {id: "81059", name: "BARKSDALE & ASSOC INC"},
+      {id: "81227", name: "TOOLS TRY OUTS AND SERVICES S DE RL"}, {id: "81345", name: "SOLUCIONES EN EXTRUSIONES NORESTE"},
+      {id: "81391", name: "WORLD BUYING SERVICE"}, {id: "81396", name: "THE GREAT STAR PRECISION SCREW CO"},
+      {id: "81448", name: "CHEONG WOON MEXICO S.A. DE C.V."}, {id: "81569", name: "TECH-SONIC, INC."},
+      {id: "81589", name: "REGAL MOLD & DIE"}, {id: "81603", name: "QINGDAO CONRUN INDUSTRY& TRADE CO."},
+      {id: "81686", name: "METALMECANICA Y AUTOMATIZACION RODG"}, {id: "81693", name: "MAHABAL AUTO ANCILLARIES PVT. LTD."},
+      {id: "81800", name: "ASTOM S.R.L"}, {id: "82096", name: "SANHUA INTERNATIONAL, INC."},
+      {id: "82113", name: "ELECTRICAL COMPONENTS INTERNATIONAL"}, {id: "82205", name: "SICHUAN MICOLON VACUUM NEW MATERIAL"},
+      {id: "82209", name: "LESHI LEILI TRADE CO LIMITED"}, {id: "82330", name: "H&T INTELLIGENT CONTROL INTERNATION"},
+      {id: "82470", name: "LINCOLN ELECTRIC AUTOMATION, INC."}, {id: "82473", name: "COMI AMERICAS"},
+      {id: "82488", name: "WANHUA CHEMICAL (SINGAPORE) PTE LTD"}, {id: "82528", name: "ZHEJIANG SANHUA"},
+      {id: "82662", name: "WHIRLPOOL CHINA CO LTD"}, {id: "82758", name: "NN, INC"},
+      {id: "82900", name: "TERMOPLASTICOS MNLH S.A. DE C.V."}, {id: "82948", name: "REVERE SALTILLO PLANT"},
+      {id: "83016", name: "OLSON METAL PRODUCTS, LLC"}, {id: "83134", name: "SHENZHEN EASTFIELD LIGHTING CO. LTD"},
+      {id: "83228", name: "ISE METAL INC"}, {id: "83280", name: "IFCN.SW S DE RL DE CV"},
+      {id: "83346", name: "TTI, INC"}, {id: "83523", name: "MECHANICA S.R.L."},
+      {id: "83595", name: "EVONIK INDUSTRIES DE MEXICO, SA DE"}, {id: "83624", name: "XPACK INTERNATIONAL CO LTD"},
+      {id: "83628", name: "KARTHIGEYA DRIVE AND COMPONENTS"}, {id: "83635", name: "JIAXIPERA COMPRESSOR CO., LTD."},
+      {id: "83756", name: "NIDEC GLOBAL APPLIANCE NORTH AMERIC"}, {id: "83908", name: "ELECTRICAL COMPONENTS INTERNATIONAL"},
+      {id: "83910", name: "EAMMOSCA DE MEXICO S DE RL DE CV"}, {id: "84013", name: "SENIX TOOLS"},
+      {id: "84028", name: "NISSHA PMX TECHNOLOGIES"}, {id: "84049", name: "KX TECHNOLOGIES PTE LTD"},
+      {id: "84085", name: "A´DEXCELLEI MOTOR MEXICO SA DE CV"}, {id: "84098", name: "GOODTIME MANUFACTURING SDN BHD"},
+      {id: "84099", name: "CHANGZHENG BMR REFRIGERATION"}, {id: "84108", name: "NIDEC GLOBAL APPLIANCE NORTH"},
+      {id: "84446", name: "SELF GROUP COMI SRL"}, {id: "84469", name: "YAT (H.K.) CO., LIMITED"},
+      {id: "84484", name: "GURU AMARDASS INTERNATIONAL PVT LTD"}, {id: "84491", name: "NGL RESOURCES, S.A. DE C.V."},
+      {id: "84528", name: "OPTIMAS OE SOLUTIONS LTDA"}, {id: "84565", name: "SEPSTAR MEXICO"},
+      {id: "84577", name: "EASTFIELD LIGHTING (HONG KONG)"}, {id: "84804", name: "REHAU INDUSTRIAL SOLUTIONS MEXICO"},
+      {id: "208167", name: "GOODTIME MANUFACTURING"}, {id: "A463", name: "WHIRLPOOL OVERSEAS MANUFACTURING"},
+      {id: "F002", name: "WHIRLPOOL PLAINFIELD DIVISION"}, {id: "FM21", name: "RAMOS FDC"},
+      {id: "M008", name: "FINDLAY DIV WHIRLPOOL CORP"}, {id: "M022", name: "SUPSA MFG"},
+      {id: "M023", name: "ERNA MFG"}, {id: "M039", name: "OTTAWA DIV WHIRLPOOL CORP"},
+      {id: "M317", name: "AMANA MFG DIVISION"}, {id: "ML20", name: "WHIRLPOOL OVERSEAS MANUFACTURING"},
+      {id: "ML21", name: "RAMOS ARIZPE PLANT"}, {id: "ML24", name: "WHIRLPOOL OVERSEAS MANUFACTURING S."},
+      {id: "P002", name: "LAPORTE PARTS DIV WHIRLPOOL CORP"}, {id: "P005", name: "FORT SMITH DIV WHIRLPOOL CORP"},
+      {id: "P007", name: "EVANSVILLE DIV WHIRLPOOL CORP"}, {id: "P317", name: "AMANA MFG DIVISION"},
+      {id: "SEPM", name: "EUROPARTNERS MEXICO S A DE C V"}, {id: "SGLINT", name: "GLINT SOLUCIONES S A DE C V"},
+      {id: "SHWLD", name: "HELLMANN WORLDWIDE LOGISTICS SA DE"}, {id: "SPENLUS", name: "PENSKE LOGISTICA S A DE C V"},
+      {id: "SPLLLC", name: "PENSKE LOGISTICS LLC"}, {id: "SRCM", name: "RACING CARGO MEXICO SA DE CV"}
     ];
 
     const PALETA_COLORES = [
@@ -1029,8 +1051,9 @@
     let tamanoSeleccionado = '3.5 Tons';
     let contenidoSeleccionado = 'Importación';
     let currentUserEmail = "Invitado/Báscula";
-    let baseDataCache = { descargas: [], equipoVacio: [], facturas: [] };
+    let baseDataCache = { descargas: [], equipoVacio: [], salidas: [] };
     window.estadoAlertas = {}; 
+    window.speechUtterances = [];
     let filtroVacioPeriodoActual = 'diario';
     let filtroDescargasVendorPeriodo = 'diario';
     
@@ -1169,7 +1192,7 @@
     function actualizarFolioAutomatico() {
       db.collection("llegadas").orderBy("timestamp", "desc").limit(1).get()
         .then((snapshot) => {
-          let maxFolio = 337647;
+          let maxFolio = 337651;
           if (!snapshot.empty) {
             let docData = snapshot.docs[0].data();
             if (docData && docData.folio) {
@@ -1179,7 +1202,7 @@
           }
           document.getElementById('llegada_folio').value = maxFolio + 1;
         })
-        .catch(() => { document.getElementById('llegada_folio').value = 337648; });
+        .catch(() => { document.getElementById('llegada_folio').value = 337652; });
     }
 
     function poblarRampasDestinoSelect() {
@@ -1215,7 +1238,83 @@
       rowRampa.style.display = (tipo === 'Rampa') ? 'flex' : 'none';
     }
 
-    // CONSTRUCCIÓN DEL MAPA DE RAMPAS (IMAGEN 5)
+    // SISTEMA DE ALERTAS POR VOZ ROBUTO (SOLUCIÓN DEL BUG)
+    function cargarVocesPremium() {
+      if (!('speechSynthesis' in window)) return;
+      let voces = window.speechSynthesis.getVoices();
+      vozHumana = voces.find(v => v.name.includes('Google español') || v.name.includes('Google Español')) || 
+                  voces.find(v => v.name.includes('Sabina') || v.name.includes('Paulina')) ||
+                  voces.find(v => v.name.includes('Microsoft') && v.lang === 'es-MX') ||
+                  voces.find(v => v.lang === 'es-MX') || 
+                  voces.find(v => v.lang.startsWith('es'));
+    }
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = cargarVocesPremium;
+      cargarVocesPremium(); 
+    }
+
+    function playToneAsync(freq, type, duration, vol) {
+      return new Promise(resolve => {
+        if (!audioActivado || audioCtx.state !== 'running') { resolve(); return; }
+        try {
+          const osc = audioCtx.createOscillator();
+          const gainNode = audioCtx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+          gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+          osc.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + duration);
+          setTimeout(resolve, duration * 1000);
+        } catch(e) { resolve(); }
+      });
+    }
+
+    function queueAlert(textoVoz) {
+      if (!audioActivado) return;
+      alertQueue = alertQueue.then(async () => {
+        await playToneAsync(800, 'square', 0.15, 0.1);
+        await playToneAsync(1000, 'square', 0.15, 0.1);
+        return new Promise(resolve => {
+          if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel(); // Limpiar voz anterior colgada
+            let utterance = new SpeechSynthesisUtterance(textoVoz);
+            if (vozHumana) utterance.voice = vozHumana;
+            utterance.lang = 'es-MX';
+            utterance.rate = 0.9; 
+            utterance.pitch = 1.0; 
+            utterance.onend = resolve;
+            utterance.onerror = resolve;
+            window.speechUtterances.push(utterance); // Previene Garbage Collection
+            window.speechSynthesis.speak(utterance);
+          } else { resolve(); }
+        });
+      });
+    }
+
+    window.toggleAudio = function() {
+      audioActivado = !audioActivado;
+      const btn = document.getElementById('btnAudioToggle');
+      if(audioActivado) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        btn.innerText = "🔊 Alertas Activadas"; btn.classList.add("active");
+        playToneAsync(1000, 'sine', 0.1, 0.05); 
+        if('speechSynthesis' in window) { 
+          cargarVocesPremium();
+          let s = new SpeechSynthesisUtterance("Alertas por voz activadas");
+          s.lang = 'es-MX';
+          if(vozHumana) s.voice = vozHumana;
+          window.speechSynthesis.speak(s); 
+        }
+      } else {
+        btn.innerText = "🔇 Activar Alertas y Voz"; btn.classList.remove("active");
+        if('speechSynthesis' in window) window.speechSynthesis.cancel();
+      }
+    };
+
+    // CONSTRUCCIÓN EXACTA DEL MAPA DE RAMPAS SEGÚN IMAGEN cebb0d.png
     function construirMapaBase() {
       const crearGrupo = (titulo, idGrupo, arrayRampas) => {
         let html = `<div class="ramp-group"><span class="ramp-group-title">${titulo}</span>`;
@@ -1224,16 +1323,18 @@
       };
 
       let mapaHtml = "";
+      // FILA SUPERIOR
       mapaHtml += `<div class="d-flex justify-content-between align-items-start w-100 mb-2">`;
       mapaHtml += crearGrupo("CURVA EQUIPO VACIO", "curvaev", ["1","2","3","4","5","6"]);
-      mapaHtml += crearGrupo("Rampas Recibo Sur (1x15)", "sur", ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"]);
+      mapaHtml += crearGrupo("Rampas Recibo Sur", "sur", ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"]);
       mapaHtml += crearGrupo("Servicios", "serv1", ["Serv 1"]);
       mapaHtml += `</div>`;
 
+      // SECCIÓN CENTRAL CON COLUMNA DERECHA (RECIBO PONIENTE)
       mapaHtml += `<div class="d-flex justify-content-between align-items-center w-100 mb-2">
-                     <div class="d-flex flex-column gap-3">`;
+                     <div class="d-flex flex-column gap-2">`;
       mapaHtml += crearGrupo("EQUIPO VACIO", "eqv", ["RVP 1","RVP 2"]);
-      mapaHtml += crearGrupo("CALLE EV (1x3)", "calleev", ["1","2","3"]);
+      mapaHtml += crearGrupo("CALLE EV", "calleev", ["1","2","3"]);
       mapaHtml += crearGrupo("R. Servicios", "serv8", ["Serv 8"]);
       mapaHtml += crearGrupo("OTE / Serv 7", "ote_s7", ["OTE 41","Serv 7","OTE 40","OTE 39"]);
       mapaHtml += `</div><div class="flex-grow-1"></div>`;
@@ -1248,6 +1349,7 @@
       mapaHtml += crearGrupo("Pte 22-24", "pte22_24", ["22","23","24"]);
       mapaHtml += `</div><div class="ramp-group" style="height:280px; width:45px; writing-mode: vertical-rl; text-align:center; color:#f39c12; font-weight:bold; letter-spacing:2px; padding:6px;">RAMPAS RECIBO PONIENTE</div></div></div>`;
       
+      // FILA INFERIOR
       mapaHtml += `<div class="d-flex justify-content-between align-items-end w-100">`;
       mapaHtml += crearGrupo("NORTE", "norte", ["38","37","36","35"]);
       mapaHtml += crearGrupo("POSTES HF", "hf", ["34","33","32","31","30","29"]);
@@ -1274,7 +1376,17 @@
       filas.forEach(f => {
         let caja = f[0], rampa = f[2], status = f[13], mulero = f[3];
         if (caja && rampa && (status === "En Proceso" || status === "Fuera de Tiempo")) {
-          let box = document.querySelector(`.ramp-box[data-rampa="${rampa}"]`) || document.querySelector(`.ramp-box[data-rampa="${rampa.replace(/[^0-9]/g, '')}"]`);
+          let cleanRampaStr = rampa.toString().replace(/[^0-9a-zA-Z]/g, '');
+          let box = document.querySelector(`.ramp-box[data-rampa="${rampa}"]`) || 
+                    document.querySelector(`.ramp-box[data-rampa="${rampa.replace(/[^0-9]/g, '')}"]`);
+          
+          if (!box) {
+            document.querySelectorAll('.ramp-box').forEach(b => {
+              let rVal = b.getAttribute('data-rampa');
+              if (rVal && (rVal === rampa || rVal === rampa.replace(/[^0-9]/g, '') || rampa.includes(rVal))) { box = b; }
+            });
+          }
+
           if (box) {
             box.classList.add('ocupada');
             let sinMulero = (!mulero || mulero.trim() === "" || mulero.trim() === "N/A" || mulero.includes("Pendiente"));
@@ -1295,9 +1407,9 @@
       });
     }
 
-    // CARGA DE DATOS DESDE FIREBASE FIRESTORE
+    // CARGA Y SINCRONIZACIÓN CENTRAL DE DATOS CON FIRESTORE
     function cargarDatosBase() {
-      // 1. Escuchar salidas / rampas
+      // 1. Escuchar salidas / rampas de Firestore
       db.collection("salidas").onSnapshot(snapshot => {
         let liveSalidas = [];
         snapshot.forEach(doc => {
@@ -1312,32 +1424,28 @@
         calcularMetricasProveedores();
       });
 
-      // 2. Escuchar descargas desde Firestore
+      // 2. Escuchar descargas desde Firestore (fusionado con histórico)
       db.collection("descargas").onSnapshot(snapshot => {
-        let descargasList = [HISTORICO_DESCARGAS[0]];
+        let descargasList = [...HISTORICO_DESCARGAS];
         if (!snapshot.empty) {
           snapshot.forEach(doc => {
             let d = doc.data();
             descargasList.push([d.dia, d.fecha, d.linea, d.caja, d.factura, d.proveedor, d.folio, d.rampa, d.muleroSube, d.horaSube, d.retirar, d.muleroRetira, d.horaBaja, d.grupo, d.turno, d.almacen]);
           });
-        } else {
-          descargasList = HISTORICO_DESCARGAS;
         }
         baseDataCache.descargas = descargasList;
         procesarDescargas(descargasList);
         calcularMetricasProveedores();
       });
 
-      // 3. Escuchar equipo vacío desde Firestore
+      // 3. Escuchar equipo vacío desde Firestore (fusionado con histórico)
       db.collection("equipo_vacio").onSnapshot(snapshot => {
-        let vacioList = [HISTORICO_EQUIPO_VACIO[0]];
+        let vacioList = [...HISTORICO_EQUIPO_VACIO];
         if (!snapshot.empty) {
           snapshot.forEach(doc => {
             let d = doc.data();
             vacioList.push([d.fecha, d.linea, d.caja, d.proveedor, d.tractor, d.transportista, d.horaSalida, d.grupo]);
           });
-        } else {
-          vacioList = HISTORICO_EQUIPO_VACIO;
         }
         baseDataCache.equipoVacio = vacioList;
         procesarEquipoVacio(vacioList);
@@ -1363,7 +1471,7 @@
       });
     }
 
-    // CAPTURA DE LLEGADAS (SOLUCIONA IMÁGENES 1, 2, 3 Y 4)
+    // CAPTURA DE LLEGADAS
     function guardarCapturaLlegada(e) {
       e.preventDefault();
       let folio = document.getElementById('llegada_folio').value;
@@ -1410,13 +1518,13 @@
           mulero: "Pendiente Mulero",
           paso1: horaStr,
           usuarioSolicita: currentUserEmail,
-          usuario: `Pide: ${currentUserEmail} | Confirma: Pendiente`,
+          usuario: `Pide: ${currentUserEmail} | Confirms: Pendiente`,
           status: "En Proceso",
           updatedAt: new Date().toISOString()
         });
       }
 
-      // 3. SI VA A PATIO -> Agregar al Inventario de Patios
+      // 3. SI VA A PATIO -> Agregar a Inventario de Patios
       if (tipoUbicacion === 'Patio') {
         db.collection("patios").doc(cajaFull).set({
           folio: folio,
@@ -1450,7 +1558,7 @@
       });
     }
 
-    // RENDERIZAR PATIOS (SOLUCIONA IMÁGENES 3 Y 4)
+    // RENDERIZAR PATIOS
     function renderInventarioPatios(patiosList) {
       let container = document.getElementById('patios-container');
       if (!container) return;
@@ -1489,7 +1597,6 @@
       container.innerHTML = html;
     }
 
-    // RENDERIZAR TABLA HISTÓRICO LLEGADAS
     function renderTablaLlegadasHistorico(llegadasList) {
       let container = document.getElementById('tabla-llegadas-historico-container');
       if(!container) return;
@@ -1599,11 +1706,10 @@
       if(container) container.innerHTML = finalHtml;
     }
 
-    // CÁLCULO DE CAJAS X PROVEEDOR (SOLUCIONA IMAGEN 6)
+    // CONTEO CAJAS X PROVEEDOR
     function calcularMetricasProveedores() {
       let vendorCounts = {};
 
-      // 1. Contar desde Facturas / Llegadas
       if (window.facturasFirestoreCache) {
         window.facturasFirestoreCache.forEach(f => {
           let v = (f.vendor || 'GENERAL').toUpperCase();
@@ -1611,7 +1717,6 @@
         });
       }
 
-      // 2. Contar desde Rampas / Salidas Activas
       if (baseDataCache.salidas) {
         baseDataCache.salidas.forEach(f => {
           let prov = f[1] || '';
@@ -1624,7 +1729,6 @@
 
       let arregloOrdenado = Object.keys(vendorCounts).map(k => [k, vendorCounts[k]]).sort((a,b) => b[1] - a[1]);
       
-      // Dibujar Gráfica de Barras
       if (typeof google !== 'undefined' && google.charts && document.getElementById('bar_vendors')) {
         let chartData = [['Proveedor', 'Cajas', { role: 'style' }, {role: 'annotation'}]];
         let top10 = arregloOrdenado.slice(0, 10);
@@ -1648,7 +1752,6 @@
         new google.visualization.BarChart(document.getElementById('bar_vendors')).draw(data, options);
       }
 
-      // Dibujar Directorio y Tabla de Conteo
       let htmlTabla = '<table class="table table-dark table-hover table-sm align-middle text-center"><thead><tr><th class="bg-dark text-warning border-dark">Vendor ID</th><th class="bg-dark text-warning border-dark">Nombre</th><th class="bg-dark text-warning border-dark">Total Cajas</th></tr></thead><tbody>';
       if(arregloOrdenado.length === 0) {
         htmlTabla += '<tr><td colspan="3" class="text-muted py-4">No se encontraron cajas registradas.</td></tr>';
@@ -2030,7 +2133,7 @@
       });
     };
 
-    // ENVÍO DE REGISTRO BÁSCULA
+    // ENVÍO BÁSCULA FIRESTORE
     function enviarFormulario(e) {
       e.preventDefault(); 
       const btn = document.getElementById('btnGuardar');
@@ -2059,7 +2162,6 @@
       };
 
       db.collection("salidas").doc(cajaClean).set(datos).then(() => {
-        // Registrar descargas automáticamente al finalizar
         if (datos.status === "Finalizado") {
           let now = new Date();
           db.collection("descargas").add({
@@ -2167,6 +2269,18 @@
              let resS = (diff % 60).toString().padStart(2, '0');
              let newText = `${resH}:${resM}:${resS}`;
              if(spanTime.innerText !== newText) spanTime.innerText = newText;
+           }
+
+           let min = Math.floor(diff / 60);
+           if (min >= 20 && min < 40 && !state.m20) {
+             state.m20 = true;
+             queueAlert(`Aviso. La caja ${caja} lleva veinte minutos en proceso.`);
+           } else if (min >= 40 && min < 60 && !state.m40) {
+             state.m40 = true;
+             queueAlert(`Alerta. La caja ${caja} lleva cuarenta minutos en proceso.`);
+           } else if (min >= 60 && !state.m60) {
+             state.m60 = true;
+             queueAlert(`Alerta Crítica. La caja ${caja} lleva más de sesenta minutos en proceso.`);
            }
         }
       }
