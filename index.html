@@ -137,12 +137,11 @@
     .btn-submit { background-color: var(--accent-orange); color: black; font-weight: bold; width: 100%; border: none; padding: 10px; font-size: 1.1rem; border-radius: 5px; margin-top: 15px;}
     .btn-submit:hover { background-color: #d68910; }
 
-    /* MAPA DE RAMPAS - ESTILO AMARILLO SUR Y PONIENTE */
+    /* MAPA DE RAMPAS - DEGRADADO Y DESTELLO EN RAMPAS SOLICITADAS */
     .map-layout { background-color: var(--bg-main); padding: 20px; border-radius: 8px; border: 1px dashed var(--accent-orange); }
     .ramp-group { border: 1px solid var(--border-color); border-radius: 6px; padding: 6px; background-color: var(--card-inner); display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; position: relative; margin-top: 10px;}
     .ramp-group-title { position: absolute; top: -12px; background: var(--card-inner); padding: 0 5px; font-size: 0.68rem; color: var(--accent-blue); font-weight: bold; border-radius:3px; }
     
-    /* ENCABEZADO DESTACADO SUR AMARILLO/NARANJA */
     .sur-header-banner {
       background-color: #141b22;
       border: 2px solid #f39c12;
@@ -159,7 +158,13 @@
 
     .ramp-box { background-color: #2c3e50; border: 2px solid #7f8c8d; border-radius: 4px; padding: 2px; width: 52px; height: 48px; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between; align-items: center; font-size: 0.62rem;}
     .ramp-box:hover { border-color: var(--accent-orange); transform: scale(1.1); z-index: 10;}
-    .ramp-box.ocupada { border-color: var(--accent-orange); background-color: #d35400; }
+    
+    /* DEGRADADO Y RESALTADO DE RAMPA OCUPADA */
+    .ramp-box.ocupada { 
+      border-color: #f39c12 !important; 
+      background: linear-gradient(135deg, #d35400 0%, #f39c12 100%) !important; 
+      box-shadow: 0 0 10px rgba(243, 156, 18, 0.7);
+    }
     
     .ramp-box span.title { color: #fff; font-weight: bold; font-size: 0.65rem; margin-bottom: 1px;}
     .ramp-box span.badge { background: #000; color: #bdc3c7; padding: 1px 2px; border-radius: 2px; font-size: 0.55rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
@@ -184,17 +189,14 @@
 
     .card-prov-text { color: var(--text-main) !important; font-size: 0.78rem; font-weight: bold; margin-top: 3px; display: block; }
 
-    /* CORRECCIÓN DE CONTRASTE PERFECTO PARA MODO CLARO / ANTIFLASH (IMAGEN 2 FIX) */
-    body.light-theme .table,
-    body.light-theme .table-dark,
-    body.light-theme #tablaHistoricoLlegadasCompleta,
-    body.light-theme #tablaHistoricoLlegadasCompleta tr,
-    body.light-theme #tablaHistoricoLlegadasCompleta td,
-    body.light-theme #tablaHistoricoLlegadasCompleta th,
-    body.light-theme #tabla-llegadas-historico-container table,
-    body.light-theme #tabla-llegadas-historico-container table tr,
-    body.light-theme #tabla-llegadas-historico-container table td,
-    body.light-theme #tabla-llegadas-historico-container table th {
+    /* OVERRIDE DEFINITIVO MODO CLARO PARA BOOTSTRAP 5 Y TABLAS (LEGIBILIDAD IMPACABLE) */
+    body.light-theme .table-dark {
+      --bs-table-bg: #ffffff !important;
+      --bs-table-color: #0f172a !important;
+      --bs-table-striped-bg: #f8fafc !important;
+      --bs-table-striped-color: #0f172a !important;
+      --bs-table-hover-bg: #e2e8f0 !important;
+      --bs-table-hover-color: #0f172a !important;
       color: #0f172a !important;
       background-color: #ffffff !important;
       border-color: #cbd5e1 !important;
@@ -203,21 +205,23 @@
     body.light-theme .table-dark th,
     body.light-theme #tablaHistoricoLlegadasCompleta th,
     body.light-theme #tabla-llegadas-historico-container table th {
-      color: #0f172a !important;
       background-color: #e2e8f0 !important;
-      border-color: #cbd5e1 !important;
-      font-weight: bold;
-    }
-
-    body.light-theme .table-striped > tbody > tr:nth-of-type(odd) > td,
-    body.light-theme .table-striped > tbody > tr:nth-of-type(odd) {
-      background-color: #f8fafc !important;
       color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+      font-weight: bold !important;
     }
 
-    body.light-theme .table-hover > tbody > tr:hover > td,
-    body.light-theme .table-hover > tbody > tr:hover {
-      background-color: #f1f5f9 !important;
+    body.light-theme .table-dark td,
+    body.light-theme #tablaHistoricoLlegadasCompleta td,
+    body.light-theme #tabla-llegadas-historico-container table td {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    body.light-theme .table-dark.table-striped > tbody > tr:nth-of-type(odd) > td,
+    body.light-theme #tablaHistoricoLlegadasCompleta tbody tr:nth-of-type(odd) td {
+      background-color: #f8fafc !important;
       color: #0f172a !important;
     }
 
@@ -352,7 +356,7 @@
                         <label class="form-label d-flex align-items-center gap-2 mb-1">
                           Estatus Caja Vacía:
                           <button type="button" class="btn-status-retira btn-libre" onclick="setRetiraValue('Rampa Libre')">Rampa Libre</button>
-                          <button type="button" class="btn-status-retira btn-pendiente" onclick="setRetiraValue('Caja Vacía Pendiente')">Caja Vacía Pend.</button>
+                          <button type="button" class="btn-status-retira btn-pendiente" onclick="setRetiraValue('Caja Vacía Pend.')">Caja Vacía Pend.</button>
                         </label>
                         <input type="text" class="form-control" id="retira">
                       </div>
@@ -1345,7 +1349,7 @@
       if(rowRampa) rowRampa.style.display = (tipo === 'Rampa') ? 'flex' : 'none';
     }
 
-    // SISTEMA DE ALERTAS POR VOZ
+    // SISTEMA DE ALERTAS POR VOZ DIRECTO Y SIN BLOQUEOS
     function cargarVocesPremium() {
       if (!('speechSynthesis' in window)) return;
       let voces = window.speechSynthesis.getVoices();
@@ -1362,7 +1366,6 @@
 
     function playToneAsync(freq, type, duration, vol) {
       return new Promise(resolve => {
-        if (!audioActivado) { resolve(); return; }
         const ctx = getAudioContext();
         if (!ctx || ctx.state !== 'running') { resolve(); return; }
         try {
@@ -1382,28 +1385,26 @@
     }
 
     function queueAlert(textoVoz) {
-      audioActivado = true; // Activar voz explícitamente para llamados
-      const ctx = getAudioContext();
-      if (ctx && ctx.state === 'suspended') ctx.resume();
+      audioActivado = true;
+      const btn = document.getElementById('btnAudioToggle');
+      if(btn) { btn.innerText = "🔊 Alertas Activadas"; btn.classList.add("active"); }
 
-      alertQueue = alertQueue.then(async () => {
-        await playToneAsync(800, 'square', 0.15, 0.1);
-        await playToneAsync(1000, 'square', 0.15, 0.1);
-        return new Promise(resolve => {
-          if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            let utterance = new SpeechSynthesisUtterance(textoVoz);
-            if (vozHumana) utterance.voice = vozHumana;
-            utterance.lang = 'es-MX';
-            utterance.rate = 0.9; 
-            utterance.pitch = 1.0; 
-            utterance.onend = resolve;
-            utterance.onerror = resolve;
-            window.speechUtterances.push(utterance);
-            window.speechSynthesis.speak(utterance);
-          } else { resolve(); }
-        });
-      });
+      const ctx = getAudioContext();
+      if (ctx && ctx.state === 'suspended') { ctx.resume(); }
+
+      if (!('speechSynthesis' in window)) return;
+      try { window.speechSynthesis.cancel(); } catch(e){}
+
+      let utterance = new SpeechSynthesisUtterance(textoVoz);
+      cargarVocesPremium();
+      if (vozHumana) utterance.voice = vozHumana;
+      utterance.lang = 'es-MX';
+      utterance.rate = 0.95;
+      utterance.pitch = 1.0;
+
+      try {
+        window.speechSynthesis.speak(utterance);
+      } catch(e) { console.log("SpeechSynthesis error:", e); }
     }
 
     window.toggleAudio = function() {
@@ -1558,8 +1559,6 @@
 
     // CARGA DE DATOS DE FIRESTORE
     function cargarDatosBase() {
-      cargarMemoriaLocal();
-
       db.collection("salidas").onSnapshot(snapshot => {
         let liveSalidas = [];
         snapshot.forEach(doc => {
@@ -1831,7 +1830,7 @@
           </tr>
         </thead><tbody>`;
 
-      if(llegadasList.length === 0) {
+      if(!llegadasList || llegadasList.length === 0) {
         html += `<tr><td colspan="10" class="text-muted py-3">No hay llegadas registradas aún.</td></tr>`;
       } else {
         llegadasList.forEach(item => {
@@ -2505,6 +2504,7 @@
       if(vcElem) vcElem.innerHTML = html;
     }
 
+    // POBLAR BÚSQUEDA BÁSCULA CON TODAS LAS LLEGADAS / FACTURAS DISPONIBLES
     function poblarDatalistCajas() {
       let html = "";
       let cajasAgregadas = new Set();
@@ -2584,6 +2584,7 @@
       });
     };
 
+    // ENVÍO DE FORMULARIO BÁSCULA - CON ALERTAS Y CAMBIO DE COLOR EN TIEMPO REAL
     function enviarFormulario(e) {
       if(e) e.preventDefault(); 
       const btn = document.getElementById('btnGuardar');
@@ -2644,6 +2645,11 @@
         dibujarCajasActivas(baseDataCache.salidas);
         actualizarMapaRampas(baseDataCache.salidas);
         if (typeof google !== 'undefined' && google.charts) { dibujarDonutStatus(baseDataCache.salidas); }
+        
+        if (datos.rampa && (datos.status === "En Proceso" || datos.status === "Fuera de Tiempo")) {
+          queueAlert(`Se solicita mulero para la caja ${cajaClean} en rampa ${datos.rampa}.`);
+        }
+
         guardarMemoriaLocal();
 
         let msg = document.getElementById('mensajeExito');
@@ -2801,6 +2807,23 @@
     document.addEventListener("DOMContentLoaded", function() {
       actualizarReloj();
       construirMapaBase(); 
+      cargarMemoriaLocal();
+
+      if (window.llegadasFirestoreCache && window.llegadasFirestoreCache.length > 0) {
+        renderTablaLlegadasHistorico(window.llegadasFirestoreCache);
+        renderTablaHistoricoCompleto(window.llegadasFirestoreCache);
+      }
+      if (window.facturasFirestoreCache && window.facturasFirestoreCache.length > 0) {
+        renderFacturasCompletas();
+      }
+      if (baseDataCache.salidas && baseDataCache.salidas.length > 0) {
+        dibujarCajasActivas(baseDataCache.salidas);
+        actualizarMapaRampas(baseDataCache.salidas);
+      }
+
+      poblarDatalistCajas();
+      actualizarFolioAutomatico();
+
       cargarDatosBase(); 
       inicializarFormularioLlegadas();
       setInterval(actualizarCronometrosYAlarmas, 1000); 
