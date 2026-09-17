@@ -189,7 +189,7 @@
 
     .card-prov-text { color: var(--text-main) !important; font-size: 0.78rem; font-weight: bold; margin-top: 3px; display: block; }
 
-    /* OVERRIDE DEFINITIVO MODO CLARO PARA BOOTSTRAP 5 Y TABLAS (LEGIBILIDAD IMPACABLE) */
+    /* OVERRIDE DEFINITIVO MODO CLARO PARA BOOTSTRAP 5 Y TABLAS (LEGIBILIDAD IMPANABLE) */
     body.light-theme .table-dark {
       --bs-table-bg: #ffffff !important;
       --bs-table-color: #0f172a !important;
@@ -1428,7 +1428,7 @@
       }
     };
 
-    // CONSTRUCCIÓN DEL MAPA DE RAMPAS (ALINEACIÓN VERTICAL PONIENTE)
+    // CONSTRUCCIÓN DEL MAPA DE RAMPAS - CON PLANO PLANTA EN EL CENTRO EN BLANCO Y ALINEACIÓN DE RAMPAS INFERIORES A LA MISMA ALTURA
     function construirMapaBase() {
       const crearGrupo = (titulo, idGrupo, arrayRampas) => {
         let html = `<div class="ramp-group"><span class="ramp-group-title">${titulo}</span>`;
@@ -1467,7 +1467,7 @@
       mapaHtml += crearGrupo("Servicios", "serv1", ["Serv 1"]);
       mapaHtml += `</div>`;
 
-      // 2. SECCIÓN CENTRAL
+      // 2. SECCIÓN CENTRAL CON LAYOUT PLANTA EN BLANCO EN EL CENTRO
       mapaHtml += `<div class="d-flex justify-content-between align-items-center w-100 mb-2">
                      <div class="d-flex flex-column gap-2">`;
       mapaHtml += crearGrupo("EQUIPO VACIO", "eqv", ["RVP 1","RVP 2"]);
@@ -1487,10 +1487,15 @@
                     </div>
                     <div class="ramp-group" style="height:180px; width:35px; writing-mode: vertical-rl; text-anchor: middle; text-align:center; color:var(--accent-orange); font-weight:bold; letter-spacing:2px;">ORIENTE</div>
                    </div>`;
-      mapaHtml += `</div><div class="flex-grow-1"></div>`;
       
-      mapaHtml += `<div class="d-flex gap-2 align-items-stretch">
-                    <div class="d-flex flex-column gap-2">`;
+      // CENTRO: LAYOUT PLANTA EN BLANCO
+      mapaHtml += `</div>
+                   <div class="d-flex justify-content-center align-items-center flex-grow-1 px-3 py-2 mx-3 shadow-sm" style="background-color: #ffffff; border-radius: 8px; border: 2px solid #cbd5e1; min-height: 420px; max-height: 520px; overflow: hidden;">
+                     <img src="layout planta 2026.png" style="max-height: 480px; width: auto; max-width: 100%; object-fit: contain;" alt="Layout Planta 2026" title="Layout Planta 2026">
+                   </div>
+                   <div class="d-flex gap-2 align-items-stretch">`;
+      
+      mapaHtml += `<div class="d-flex flex-column gap-2">`;
       mapaHtml += crearGrupoVertical("Rampa de Servicios", "serv2", ["Serv 2"]);
       mapaHtml += crearGrupoVertical("Pte 16-19", "pte16_19", ["16","17","18","19"]);
       mapaHtml += crearGrupoVertical("Serv 3", "serv3", ["Serv 3"]);
@@ -1499,11 +1504,11 @@
       mapaHtml += crearGrupoVertical("Pte 22-24", "pte22_24", ["22","23","24"]);
       mapaHtml += `</div><div class="ramp-group d-flex align-items-center justify-content-center" style="width:38px; writing-mode: vertical-rl; text-align:center; color:var(--accent-orange); font-weight:bold; letter-spacing:2px; font-size: 0.85rem;">RAMPAS RECIBO PONIENTE</div></div></div>`;
       
-      // 3. FILA INFERIOR
-      mapaHtml += `<div class="d-flex justify-content-center align-items-end w-100 gap-4 mt-2">`;
+      // 3. FILA INFERIOR - ALINEACIÓN TOTAL A LA MISMA ALTURA (NORTE, POSTES HF Y RECIBO PONIENTE)
+      mapaHtml += `<div class="d-flex justify-content-center align-items-start w-100 gap-4 mt-3">`;
       mapaHtml += `<div class="d-flex flex-column align-items-center">` + crearGrupo("NORTE", "norte", ["38","37","36","35"]) + `<span class="badge bg-dark border border-warning mt-1" style="color: var(--accent-orange);">NORTE</span></div>`;
       mapaHtml += `<div class="d-flex flex-column align-items-center">` + crearGrupo("POSTES HF", "hf", ["34","33","32","31","30","29"]) + `<span class="badge bg-dark border border-warning mt-1" style="color: var(--accent-orange);">POSTES HF</span></div>`;
-      mapaHtml += crearGrupo("Rampas Recibo Poniente", "pte25_34", ["28","27","26","25","34"]);
+      mapaHtml += `<div class="d-flex flex-column align-items-center">` + crearGrupo("Rampas Recibo Poniente", "pte25_34", ["28","27","26","25","34"]) + `<span class="badge bg-dark border border-warning mt-1" style="color: var(--accent-orange);">RECIBO PONIENTE</span></div>`;
       mapaHtml += `</div>`;
 
       let mapElem = document.getElementById('mapa-rampas');
@@ -1559,6 +1564,8 @@
 
     // CARGA DE DATOS DE FIRESTORE
     function cargarDatosBase() {
+      cargarMemoriaLocal();
+
       db.collection("salidas").onSnapshot(snapshot => {
         let liveSalidas = [];
         snapshot.forEach(doc => {
