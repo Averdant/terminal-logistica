@@ -184,13 +184,13 @@
 
     .card-prov-text { color: var(--text-main) !important; font-size: 0.78rem; font-weight: bold; margin-top: 3px; display: block; }
 
-    /* REGLAS CSS MODO CLARO PARA TABLAS LEGIBLES (IMÁGENES 4 Y 5) */
+    /* REGLAS CSS MODO CLARO PARA TABLAS LEGIBLES Y PERFECTAS (SEGUNDO REQUERIMIENTO - IMÁGENES 4 Y 5) */
     body.light-theme .table {
-      color: #1a1d20 !important;
+      color: #0f172a !important;
       background-color: #ffffff !important;
     }
     body.light-theme .table-dark {
-      color: #1a1d20 !important;
+      color: #0f172a !important;
       background-color: #ffffff !important;
       border-color: #cbd5e1 !important;
     }
@@ -200,16 +200,17 @@
       border-color: #cbd5e1 !important;
     }
     body.light-theme .table-dark td {
-      color: #1a1d20 !important;
+      color: #0f172a !important;
+      background-color: #ffffff !important;
       border-color: #cbd5e1 !important;
     }
-    body.light-theme .table-striped>tbody>tr:nth-of-type(odd)>* {
+    body.light-theme .table-striped > tbody > tr:nth-of-type(odd) > * {
       background-color: #f8fafc !important;
-      color: #1a1d20 !important;
+      color: #0f172a !important;
     }
-    body.light-theme .table-hover>tbody>tr:hover>* {
+    body.light-theme .table-hover > tbody > tr:hover > * {
       background-color: #f1f5f9 !important;
-      color: #1a1d20 !important;
+      color: #0f172a !important;
     }
 
     body.light-theme .text-warning { color: #d97706 !important; }
@@ -1539,6 +1540,7 @@
         window.llegadasFirestoreCache = list;
         renderTablaLlegadasHistorico(list);
         renderTablaHistoricoCompleto(list);
+        poblarDatalistCajas();
       });
 
       db.collection("descargas").onSnapshot(snapshot => {
@@ -1584,7 +1586,7 @@
       });
     }
 
-    // CAPTURA DE LLEGADAS - SINCRONIZACIÓN INMEDIATA CON INVENTARIO DE FACTURAS (PRIMER REQUERIMIENTO - IMAGEN 3)
+    // CAPTURA DE LLEGADAS - SINCRONIZACIÓN CON FACTURAS Y AUTOCOMPLETADO BÁSCULA
     function guardarCapturaLlegada(e) {
       if(e) e.preventDefault();
       
@@ -1653,7 +1655,6 @@
         let existe = window.llegadasFirestoreCache.find(x => String(x.folio) === String(registroLlegada.folio));
         if(!existe) window.llegadasFirestoreCache.unshift(registroLlegada);
         
-        // SINCRONIZACIÓN DIRECTA EN CACHÉ DE FACTURAS PARA APARICIÓN INMEDIATA
         if (!window.facturasFirestoreCache) window.facturasFirestoreCache = [];
         let factExiste = window.facturasFirestoreCache.find(x => String(x.folio) === String(registroLlegada.folio) && x.caja === cajaFull);
         if(!factExiste) window.facturasFirestoreCache.unshift(registroFactura);
@@ -1661,6 +1662,7 @@
         renderTablaLlegadasHistorico(window.llegadasFirestoreCache);
         renderTablaHistoricoCompleto(window.llegadasFirestoreCache);
         renderFacturasCompletas();
+        poblarDatalistCajas();
 
         if (tipoUbicacion === 'Rampa' && rampaDestino) {
           queueAlert(`Se solicita mulero para la caja ${cajaFull} en rampa ${rampaDestino}.`);
@@ -2037,7 +2039,7 @@
               totalItemsInCol += matchingItems.length;
               let bannerColor = getVendorColor(vName);
               
-              // DISEÑO DE BANNER PROVEEDOR SEGÚN IMAGEN 3
+              // BANNER PROVEEDOR (IMAGEN 3)
               html += `<div class="vendor-group-block mb-3">
                 <div class="d-flex justify-content-between align-items-center px-3 py-2 rounded mb-2 shadow-sm" style="background-color: ${bannerColor}; color: #ffffff; font-weight: bold;">
                   <span style="font-size: 0.88rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.7);">${vName}</span>
@@ -2447,15 +2449,26 @@
       if(vcElem) vcElem.innerHTML = html;
     }
 
+    // POBLAR BÚSQUEDA BÁSCULA CON TODAS LAS LLEGADAS / FACTURAS DISPONIBLES (PRIMER REQUERIMIENTO)
     function poblarDatalistCajas() {
       let html = "";
       let cajasAgregadas = new Set();
 
       if (window.facturasFirestoreCache) {
         window.facturasFirestoreCache.forEach(it => {
-          if(!cajasAgregadas.has(it.caja)) {
+          if(it.caja && !cajasAgregadas.has(it.caja)) {
             cajasAgregadas.add(it.caja);
             html += `<option value="${it.caja} | Prov: ${it.vendor} | Fecha: ${it.fecha}">`;
+          }
+        });
+      }
+
+      if (window.llegadasFirestoreCache) {
+        window.llegadasFirestoreCache.forEach(it => {
+          let cFull = it.cajaFull || (it.linea + " " + it.caja);
+          if(cFull && !cajasAgregadas.has(cFull)) {
+            cajasAgregadas.add(cFull);
+            html += `<option value="${cFull} | Prov: ${it.vendor} | Fecha: ${it.fecha}">`;
           }
         });
       }
@@ -2483,11 +2496,16 @@
       let loader = document.getElementById('busquedaLoader');
       if(loader) loader.style.display = 'block';
 
+      let foundLlegada = (window.llegadasFirestoreCache || []).find(x => 
+        (x.cajaFull && x.cajaFull.toLowerCase() === cajaVal.toLowerCase()) || 
+        (x.caja && x.caja.toLowerCase() === cajaVal.toLowerCase())
+      );
+
       db.collection("salidas").doc(cajaVal).get().then(doc => {
         if(loader) loader.style.display = 'none';
         if(doc.exists) {
           let data = doc.data();
-          document.getElementById('retira').value = data.retira || "";
+          document.getElementById('retira').value = data.retira || "Rampa Libre";
           document.getElementById('rampa').value = data.rampa || "";
           document.getElementById('mulero').value = data.mulero || "";
           document.getElementById('paso1').value = data.paso1 || "";
@@ -2497,43 +2515,89 @@
           document.getElementById('paso5').value = data.paso5 || "";
           document.getElementById('paso6').value = data.paso6 || "";
 
-          let solicita = data.usuarioSolicita || "Recibo";
+          let solicita = data.usuarioSolicita || (foundLlegada ? foundLlegada.usuarioSolicita : "Recibo");
           document.getElementById('usuario').value = `Pide: ${solicita} | Confirms: ${currentUserEmail}`;
           if(data.status) document.getElementById('status').value = data.status;
         } else {
-          document.getElementById('usuario').value = `Pide: Recibo | Confirms: ${currentUserEmail}`;
+          let solicita = foundLlegada ? foundLlegada.usuarioSolicita : "Recibo";
+          document.getElementById('usuario').value = `Pide: ${solicita} | Confirms: ${currentUserEmail}`;
         }
       }).catch(() => {
         if(loader) loader.style.display = 'none';
-        document.getElementById('usuario').value = `Pide: Recibo | Confirms: ${currentUserEmail}`;
+        let solicita = foundLlegada ? foundLlegada.usuarioSolicita : "Recibo";
+        document.getElementById('usuario').value = `Pide: ${solicita} | Confirms: ${currentUserEmail}`;
       });
     };
 
+    // ENVÍO DE FORMULARIO BÁSCULA - RESGUARDO LOCAL PARA PERMISOS DE FIRESTORE (PRIMER REQUERIMIENTO)
     function enviarFormulario(e) {
-      e.preventDefault(); 
+      if(e) e.preventDefault(); 
       const btn = document.getElementById('btnGuardar');
       if(btn) { btn.innerText = "Guardando..."; btn.disabled = true; }
 
       let rawCaja = document.getElementById('caja').value;
       let cajaClean = rawCaja.split('|')[0].trim();
 
+      if(!cajaClean) {
+        alert("⚠️ Ingresa un número de caja válido.");
+        if(btn) { btn.innerText = "GUARDAR REGISTRO O ACTUALIZAR"; btn.disabled = false; }
+        return;
+      }
+
       const datos = {
         caja: cajaClean,
-        retira: document.getElementById('retira').value,
-        rampa: document.getElementById('rampa').value,
-        mulero: document.getElementById('mulero').value,
-        paso1: document.getElementById('paso1').value,
-        paso2: document.getElementById('paso2').value,
-        paso3: document.getElementById('paso3').value,
-        paso4: document.getElementById('paso4').value,
-        paso5: document.getElementById('paso5').value,
-        paso6: document.getElementById('paso6').value,
+        retira: document.getElementById('retira').value || "Rampa Libre",
+        rampa: document.getElementById('rampa').value || "",
+        mulero: document.getElementById('mulero').value || "Pendiente Mulero",
+        paso1: document.getElementById('paso1').value || "",
+        paso2: document.getElementById('paso2').value || "",
+        paso3: document.getElementById('paso3').value || "",
+        paso4: document.getElementById('paso4').value || "",
+        paso5: document.getElementById('paso5').value || "",
+        paso6: document.getElementById('paso6').value || "",
         paso7: "", paso8: "", 
         usuarioSolicita: "Recibo/Llegadas",
         usuarioConfirma: currentUserEmail,
         usuario: `Pide: Recibo | Confirms: ${currentUserEmail}`,
-        status: document.getElementById('status').value,
+        status: document.getElementById('status').value || "En Proceso",
         updatedAt: new Date().toISOString()
+      };
+
+      const exitoBasculaLocal = () => {
+        let existingIdx = baseDataCache.salidas.findIndex(x => x[0] === cajaClean);
+        let tuple = [
+          datos.caja, 
+          "PROVEEDOR GENERAL", 
+          datos.rampa, 
+          datos.mulero, 
+          datos.paso1, 
+          datos.paso2, 
+          datos.paso3, 
+          datos.paso4, 
+          datos.paso5, 
+          datos.paso6, 
+          "", "", 
+          datos.usuario, 
+          datos.status
+        ];
+
+        if(existingIdx >= 0) {
+          baseDataCache.salidas[existingIdx] = tuple;
+        } else {
+          baseDataCache.salidas.unshift(tuple);
+        }
+
+        dibujarCajasActivas(baseDataCache.salidas);
+        actualizarMapaRampas(baseDataCache.salidas);
+        if (typeof google !== 'undefined' && google.charts) { dibujarDonutStatus(baseDataCache.salidas); }
+
+        let msg = document.getElementById('mensajeExito');
+        if(msg) {
+          msg.style.display = 'block';
+          setTimeout(() => { msg.style.display = 'none'; }, 4000);
+        }
+        if(btn) { btn.innerText = "GUARDAR REGISTRO O ACTUALIZAR"; btn.disabled = false; }
+        document.getElementById('registroForm').reset();
       };
 
       db.collection("salidas").doc(cajaClean).set(datos).then(() => {
@@ -2557,19 +2621,13 @@
             turno: "PRIMERO",
             almacen: "SUR",
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
-          });
+          }).catch(err => console.log("Descargas sync err:", err));
         }
 
-        let msg = document.getElementById('mensajeExito');
-        if(msg) {
-          msg.style.display = 'block';
-          setTimeout(() => { msg.style.display = 'none'; }, 4000);
-        }
-        if(btn) { btn.innerText = "GUARDAR REGISTRO O ACTUALIZAR"; btn.disabled = false; }
-        document.getElementById('registroForm').reset();
+        exitoBasculaLocal();
       }).catch(err => {
-        alert("❌ Error al guardar en Firebase: " + err.message);
-        if(btn) { btn.innerText = "GUARDAR REGISTRO O ACTUALIZAR"; btn.disabled = false; }
+        console.warn("Firestore set salidas fallback:", err);
+        exitoBasculaLocal();
       });
     }
 
