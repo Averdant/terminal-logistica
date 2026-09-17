@@ -137,11 +137,26 @@
     .btn-submit { background-color: var(--accent-orange); color: black; font-weight: bold; width: 100%; border: none; padding: 10px; font-size: 1.1rem; border-radius: 5px; margin-top: 15px;}
     .btn-submit:hover { background-color: #d68910; }
 
-    /* MAPA DE RAMPAS - LAYOUT UNIFICADO */
+    /* MAPA DE RAMPAS - ESTILO AMARILLO SUR Y PONIENTE */
     .map-layout { background-color: var(--bg-main); padding: 20px; border-radius: 8px; border: 1px dashed var(--accent-orange); }
     .ramp-group { border: 1px solid var(--border-color); border-radius: 6px; padding: 6px; background-color: var(--card-inner); display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; position: relative; margin-top: 10px;}
     .ramp-group-title { position: absolute; top: -12px; background: var(--card-inner); padding: 0 5px; font-size: 0.68rem; color: var(--accent-blue); font-weight: bold; border-radius:3px; }
     
+    /* ENCABEZADO DESTACADO SUR AMARILLO/NARANJA (IMAGEN 5 Y 6) */
+    .sur-header-banner {
+      background-color: #141b22;
+      border: 2px solid #f39c12;
+      color: #f39c12;
+      font-weight: bold;
+      font-size: 1rem;
+      padding: 3px 20px;
+      border-radius: 6px;
+      letter-spacing: 2px;
+      text-align: center;
+      margin-bottom: 6px;
+      box-shadow: 0 0 8px rgba(243, 156, 18, 0.2);
+    }
+
     .ramp-box { background-color: #2c3e50; border: 2px solid #7f8c8d; border-radius: 4px; padding: 2px; width: 52px; height: 48px; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between; align-items: center; font-size: 0.62rem;}
     .ramp-box:hover { border-color: var(--accent-orange); transform: scale(1.1); z-index: 10;}
     .ramp-box.ocupada { border-color: var(--accent-orange); background-color: #d35400; }
@@ -168,6 +183,13 @@
     .btn-option-group .btn.active { background-color: var(--accent-blue); color: #fff; border-color: #2980b9; }
 
     .card-prov-text { color: var(--text-main) !important; font-size: 0.78rem; font-weight: bold; margin-top: 3px; display: block; }
+
+    /* MEDIA PRINT PARA IMPRIMIR FOLIOS DE HISTÓRICO DE LLEGADAS */
+    @media print {
+      body * { visibility: hidden; }
+      #printAreaSection, #printAreaSection * { visibility: visible; }
+      #printAreaSection { position: absolute; left: 0; top: 0; width: 100%; color: #000; background: #fff; }
+    }
   </style>
 </head>
 <body>
@@ -243,9 +265,11 @@
     </div>
 
     <div class="container-fluid">
+      <!-- MAIN TAB NAVIGATION BAR -->
       <ul class="nav nav-tabs justify-content-center" id="mainTabs" role="tablist">
         <li class="nav-item"><button class="nav-link active" id="rampas-tab" data-bs-toggle="tab" data-bs-target="#rampas" type="button">🚚 Movimientos y Rampas</button></li>
         <li class="nav-item"><button class="nav-link" id="llegadas-tab" data-bs-toggle="tab" data-bs-target="#llegadas" type="button">📥 Captura de Llegadas</button></li>
+        <li class="nav-item"><button class="nav-link" id="historico-llegadas-tab" data-bs-toggle="tab" data-bs-target="#historico-llegadas" type="button">📜 Histórico de Llegadas</button></li>
         <li class="nav-item"><button class="nav-link" id="descargas-tab" data-bs-toggle="tab" data-bs-target="#descargas" type="button">📉 Descargas x Turno</button></li>
         <li class="nav-item"><button class="nav-link" id="equipovacio-tab" data-bs-toggle="tab" data-bs-target="#equipovacio" type="button">🚛 Equipo Vacío</button></li>
         <li class="nav-item"><button class="nav-link" id="facturas-tab" data-bs-toggle="tab" data-bs-target="#facturas" type="button">📑 Inventario Facturas</button></li>
@@ -457,7 +481,7 @@
           </div>
 
           <div class="card-terminal mt-4">
-            <h4 class="text-warning mb-3">📜 Histórico de Llegadas</h4>
+            <h4 class="text-warning mb-3">📜 Histórico de Llegadas (Vista Rápida)</h4>
             <div class="d-flex justify-content-center mb-3">
               <div style="width: 70%; max-width: 650px;">
                 <input type="text" id="searchLlegadasTable" class="form-control text-center shadow" 
@@ -468,6 +492,66 @@
             </div>
             <div id="tabla-llegadas-historico-container" class="table-responsive" style="max-height: 600px; overflow-y: auto;">
               <p class="text-muted text-center">Cargando histórico de llegadas...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB NUEVA: HISTÓRICO DE LLEGADAS DEDICADA (IMÁGENES 7 Y 8) -->
+        <div class="tab-pane fade" id="historico-llegadas" role="tabpanel">
+          <div class="card-terminal">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h3 class="fw-bold m-0" style="color: var(--text-main);">Histórico de llegadas</h3>
+              <button class="btn btn-outline-primary btn-sm fw-bold" onclick="irACapturaLlegadas()">Ir a captura</button>
+            </div>
+
+            <!-- BARRA DE FILTROS Y BÚSQUEDA TIPO IMAGEN 7 -->
+            <div class="row g-2 align-items-center mb-4">
+              <div class="col-md-2">
+                <input type="date" id="hist_fecha_inicio" class="form-control form-control-sm">
+              </div>
+              <div class="col-md-2">
+                <input type="date" id="hist_fecha_fin" class="form-control form-control-sm">
+              </div>
+              <div class="col-md-3">
+                <input type="text" id="hist_proveedor_input" class="form-control form-control-sm" placeholder="Proveedor">
+              </div>
+              <div class="col-md-2">
+                <button type="button" class="btn btn-primary btn-sm w-100 fw-bold" onclick="filtrarHistoricoAvanzado()">Buscar</button>
+              </div>
+              <div class="col-md-3 text-end">
+                <button type="button" class="btn btn-primary btn-sm fw-bold" onclick="imprimirFoliosLlegadas()">🖨️ Imprimir folios</button>
+              </div>
+            </div>
+
+            <div class="form-group mb-3">
+              <label class="form-label fw-bold">Buscar llegada</label>
+              <input type="text" id="hist_general_search" class="form-control" placeholder="Buscar por Folio, Línea, Caja, Vendor..." onkeyup="filtrarHistoricoAvanzado()">
+            </div>
+
+            <!-- TABLA HISTÓRICA COMPLETA -->
+            <div id="printAreaSection" class="table-responsive" style="max-height: 700px; overflow-y: auto;">
+              <table class="table table-dark table-striped table-hover align-middle text-center small" id="tablaHistoricoLlegadasCompleta">
+                <thead>
+                  <tr>
+                    <th>Folio ⇅</th>
+                    <th>Tamaño Caja ⇅</th>
+                    <th>Línea transporte ⇅</th>
+                    <th>Número de caja ⇅</th>
+                    <th>Contenido ⇅</th>
+                    <th>Tipo ubicación ⇅</th>
+                    <th>Ubicación ⇅</th>
+                    <th>Fecha ⇅</th>
+                    <th>Hora ⇅</th>
+                    <th>Salida ⇅</th>
+                    <th>Facturas</th>
+                    <th>Capturado Por / Editado Por</th>
+                    <th>Editar</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyHistoricoLlegadasCompleto">
+                  <tr><td colspan="13" class="text-muted">Cargando histórico de llegadas...</td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -628,6 +712,59 @@
         </div>
 
       </div> 
+    </div>
+  </div>
+
+  <!-- MODAL EDITAR REGISTRO DE LLEGADA (IMAGEM 8) -->
+  <div class="modal fade" id="modalEditarLlegada" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-white text-dark shadow">
+        <div class="modal-header border-bottom-0 pb-0">
+          <h5 class="modal-title fw-bold">Editar registro de llegada</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formModalEditarLlegada">
+            <input type="hidden" id="edit_modal_doc_id">
+            <div class="mb-2">
+              <label class="form-label text-dark mb-1 small fw-bold">Tamaño Caja</label>
+              <input type="text" id="edit_modal_tamano" class="form-control form-control-sm text-dark bg-light border" required>
+            </div>
+            <div class="mb-2">
+              <label class="form-label text-dark mb-1 small fw-bold">Línea de Transporte</label>
+              <input type="text" id="edit_modal_linea" class="form-control form-control-sm text-dark bg-light border" required>
+            </div>
+            <div class="mb-2">
+              <label class="form-label text-dark mb-1 small fw-bold">Número de Caja</label>
+              <input type="text" id="edit_modal_caja_num" class="form-control form-control-sm text-dark bg-light border" required>
+            </div>
+            <div class="mb-2">
+              <label class="form-label text-dark mb-1 small fw-bold">Tipo de contenedor / Contenido</label>
+              <input type="text" id="edit_modal_contenido" class="form-control form-control-sm text-dark bg-light border">
+            </div>
+            <div class="mb-2">
+              <label class="form-label text-dark mb-1 small fw-bold">Tipo ubicación</label>
+              <select id="edit_modal_tipo_ubicacion" class="form-select form-select-sm text-dark bg-light border">
+                <option value="Patio">Patio</option>
+                <option value="Rampa">Rampa</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label text-dark mb-1 small fw-bold">Ubicación</label>
+              <input type="text" id="edit_modal_ubicacion" class="form-control form-control-sm text-dark bg-light border">
+            </div>
+            <div class="mb-3">
+              <label class="form-label text-dark mb-1 small fw-bold">Salida / Fecha Salida</label>
+              <input type="text" id="edit_modal_salida" class="form-control form-control-sm text-dark bg-light border" placeholder="HH:MM:SS o Fecha">
+            </div>
+            <p class="small text-muted mb-3">¿Seguro que desea editar el registro de llegada?</p>
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-secondary btn-sm fw-bold px-3" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-primary btn-sm fw-bold px-3">Confirmar</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -947,6 +1084,7 @@
     let baseDataCache = { descargas: [], equipoVacio: [], salidas: [] };
     window.estadoAlertas = {}; 
     window.speechUtterances = [];
+    window.llegadasFirestoreCache = [];
     let filtroVacioPeriodoActual = 'diario';
     let filtroDescargasVendorPeriodo = 'diario';
     let sortFacturasDesc = true;
@@ -1081,7 +1219,7 @@
     function actualizarFolioAutomatico() {
       db.collection("llegadas").orderBy("timestamp", "desc").limit(1).get()
         .then((snapshot) => {
-          let maxFolio = 337651;
+          let maxFolio = 339931;
           if (!snapshot.empty) {
             let docData = snapshot.docs[0].data();
             if (docData && docData.folio) {
@@ -1094,7 +1232,7 @@
         })
         .catch(() => { 
           let el = document.getElementById('llegada_folio');
-          if(el) el.value = 337652; 
+          if(el) el.value = 339948; 
         });
     }
 
@@ -1210,7 +1348,7 @@
       }
     };
 
-    // CONSTRUCCIÓN DEL MAPA DE RAMPAS
+    // CONSTRUCCIÓN DEL MAPA DE RAMPAS - SEGUNDO REQUERIMIENTO (IMÁGENES 3,4,5,6)
     function construirMapaBase() {
       const crearGrupo = (titulo, idGrupo, arrayRampas) => {
         let html = `<div class="ramp-group"><span class="ramp-group-title">${titulo}</span>`;
@@ -1232,7 +1370,13 @@
                       <div class="ramp-box" data-rampa="6" onclick="seleccionarRampa('6')"><span class="title">6</span><span class="badge mt-auto">Vacía</span></div>
                     </div>
                    </div>`;
-      mapaHtml += crearGrupo("RAMPAS RECIBO SUR", "sur", ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"]);
+      
+      // ENCABEZADO AMARILLO SUR DESTACADO (IMAGEN 5 Y 6)
+      mapaHtml += `<div class="d-flex flex-column align-items-center">
+                    <div class="sur-header-banner">RAMPAS RECIBO SUR</div>` + 
+                    crearGrupo("", "sur", ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"]) + 
+                  `</div>`;
+      
       mapaHtml += crearGrupo("Servicios", "serv1", ["Serv 1"]);
       mapaHtml += `</div>`;
 
@@ -1258,6 +1402,7 @@
                    </div>`;
       mapaHtml += `</div><div class="flex-grow-1"></div>`;
       
+      // RAMPAS RECIBO PONIENTE (LATERAL DERECHA IMAGEN 4 Y 6 STRICTLY ACCORDING TO poniente.png)
       mapaHtml += `<div class="d-flex gap-2 align-items-center">
                     <div class="d-flex flex-column gap-1">`;
       mapaHtml += crearGrupo("Rampa de Servicios", "serv2", ["Serv 2"]);
@@ -1266,7 +1411,7 @@
       mapaHtml += crearGrupo("Pte 20-21", "pte20_21", ["20","21"]);
       mapaHtml += crearGrupo("Serv 4-5", "serv4_5", ["Serv 4","Serv 5"]);
       mapaHtml += crearGrupo("Pte 22-24", "pte22_24", ["22","23","24"]);
-      mapaHtml += `</div><div class="ramp-group" style="height:380px; width:38px; writing-mode: vertical-rl; text-align:center; color:var(--accent-orange); font-weight:bold; letter-spacing:2px;">RAMPAS RECIBO PONIENTE</div></div></div>`;
+      mapaHtml += `</div><div class="ramp-group" style="height:410px; width:38px; writing-mode: vertical-rl; text-align:center; color:var(--accent-orange); font-weight:bold; letter-spacing:2px;">RAMPAS RECIBO PONIENTE</div></div></div>`;
       
       // 3. FILA INFERIOR
       mapaHtml += `<div class="d-flex justify-content-center align-items-end w-100 gap-4 mt-2">`;
@@ -1342,6 +1487,19 @@
         calcularMetricasProveedores();
       });
 
+      // ESCUCHA HISTÓRICA LLEGADAS REAL-TIME
+      db.collection("llegadas").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+        let list = [];
+        snapshot.forEach(doc => {
+          let data = doc.data();
+          data._docId = doc.id;
+          list.push(data);
+        });
+        window.llegadasFirestoreCache = list;
+        renderTablaLlegadasHistorico(list);
+        renderTablaHistoricoCompleto(list);
+      });
+
       db.collection("descargas").onSnapshot(snapshot => {
         let descargasList = [...HISTORICO_DESCARGAS];
         if (!snapshot.empty) {
@@ -1385,17 +1543,32 @@
       });
     }
 
-    // CAPTURA DE LLEGADAS
+    // CAPTURA DE LLEGADAS - CORRECCIÓN PRIMER REQUERIMIENTO (IMÁGENES 1 Y 2)
     function guardarCapturaLlegada(e) {
-      e.preventDefault();
-      let folio = document.getElementById('llegada_folio').value;
-      let linea = document.getElementById('llegada_linea').value;
-      let caja = document.getElementById('llegada_caja').value;
-      let factura = document.getElementById('llegada_factura').value;
-      let vendor = document.getElementById('llegada_vendor').value;
-      let area = document.getElementById('llegada_area').value;
-      let tipoUbicacion = document.getElementById('llegada_tipo_ubicacion').value;
-      let rampaDestino = document.getElementById('llegada_rampa_destino').value;
+      if(e) e.preventDefault();
+      
+      let folioElem = document.getElementById('llegada_folio');
+      let lineaElem = document.getElementById('llegada_linea');
+      let cajaElem = document.getElementById('llegada_caja');
+      let facturaElem = document.getElementById('llegada_factura');
+      let vendorElem = document.getElementById('llegada_vendor');
+      let areaElem = document.getElementById('llegada_area');
+      let tipoUbicacionElem = document.getElementById('llegada_tipo_ubicacion');
+      let rampaDestinoElem = document.getElementById('llegada_rampa_destino');
+
+      let folio = folioElem ? folioElem.value : "";
+      let linea = lineaElem ? lineaElem.value : "";
+      let caja = cajaElem ? cajaElem.value : "";
+      let factura = facturaElem ? facturaElem.value : "";
+      let vendor = vendorElem ? vendorElem.value : "";
+      let area = areaElem ? areaElem.value : "";
+      let tipoUbicacion = tipoUbicacionElem ? tipoUbicacionElem.value : "Patio";
+      let rampaDestino = rampaDestinoElem ? rampaDestinoElem.value : "";
+
+      if (!linea || !caja) {
+        alert("⚠️ Por favor completa los campos obligatorios: Línea y Número de caja.");
+        return;
+      }
 
       let now = new Date();
       let fechaStr = now.toLocaleDateString('es-MX');
@@ -1403,7 +1576,7 @@
       let cajaFull = `${linea} ${caja}`;
 
       let registroLlegada = {
-        folio: folio,
+        folio: folio || ("339" + Math.floor(Math.random()*1000)),
         tamanoCaja: tamanoSeleccionado,
         linea: linea,
         caja: caja,
@@ -1415,60 +1588,67 @@
         factura: factura || 'S/F',
         vendor: vendor || 'PROVEEDOR GENERAL',
         usuarioSolicita: currentUserEmail,
+        capturadoPor: currentUserEmail,
         fecha: fechaStr,
         hora: horaStr,
+        salida: 'Pendiente',
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       };
 
-      db.collection("llegadas").doc(folio).set(registroLlegada);
+      // Guardar en la colección principal de llegadas
+      db.collection("llegadas").doc(String(registroLlegada.folio)).set(registroLlegada)
+        .then(() => {
+          if (tipoUbicacion === 'Rampa' && rampaDestino) {
+            db.collection("salidas").doc(cajaFull).set({
+              caja: cajaFull,
+              rampa: rampaDestino,
+              retira: "Enrampad@",
+              mulero: "Pendiente Mulero",
+              paso1: horaStr,
+              usuarioSolicita: currentUserEmail,
+              usuario: `Pide: ${currentUserEmail} | Confirms: Pendiente`,
+              status: "En Proceso",
+              updatedAt: new Date().toISOString()
+            });
 
-      if (tipoUbicacion === 'Rampa' && rampaDestino) {
-        db.collection("salidas").doc(cajaFull).set({
-          caja: cajaFull,
-          rampa: rampaDestino,
-          retira: "Enrampad@",
-          mulero: "Pendiente Mulero",
-          paso1: horaStr,
-          usuarioSolicita: currentUserEmail,
-          usuario: `Pide: ${currentUserEmail} | Confirms: Pendiente`,
-          status: "En Proceso",
-          updatedAt: new Date().toISOString()
+            queueAlert(`Se solicita mulero para la caja ${cajaFull} en rampa ${rampaDestino}.`);
+          }
+
+          if (tipoUbicacion === 'Patio') {
+            db.collection("patios").doc(cajaFull).set({
+              folio: registroLlegada.folio,
+              caja: cajaFull,
+              linea: linea,
+              cajaNumero: caja,
+              proveedor: vendor || 'PROVEEDOR GENERAL',
+              contenido: contenidoSeleccionado,
+              area: area,
+              factura: factura || 'S/F',
+              fecha: fechaStr,
+              hora: horaStr,
+              timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+          }
+
+          let destinoFacturas = (area === "PENDIENTE POR DEFINIR" || !area) ? "RECIBO SUR" : area;
+          db.collection("facturas_llegadas").add({
+            recibo: destinoFacturas,
+            caja: cajaFull,
+            vendor: vendor || 'PROVEEDOR GENERAL',
+            factura: factura || 'S/F',
+            folio: registroLlegada.folio,
+            usuarioSolicita: currentUserEmail,
+            fecha: fechaStr,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          });
+
+          alert(`✅ Llegada registrada con éxito (Folio: ${registroLlegada.folio}). Ubicación: ${tipoUbicacion} ${rampaDestino || ''}`);
+          document.getElementById('formCapturaLlegadas').reset();
+          actualizarFolioAutomatico();
+        })
+        .catch(err => {
+          alert("❌ Error al guardar la captura: " + err.message);
         });
-
-        queueAlert(`Se solicita mulero para la caja ${cajaFull} en rampa ${rampaDestino}.`);
-      }
-
-      if (tipoUbicacion === 'Patio') {
-        db.collection("patios").doc(cajaFull).set({
-          folio: folio,
-          caja: cajaFull,
-          linea: linea,
-          cajaNumero: caja,
-          proveedor: vendor || 'PROVEEDOR GENERAL',
-          contenido: contenidoSeleccionado,
-          area: area,
-          factura: factura || 'S/F',
-          fecha: fechaStr,
-          hora: horaStr,
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-      }
-
-      let destinoFacturas = (area === "PENDIENTE POR DEFINIR" || !area) ? "RECIBO SUR" : area;
-      db.collection("facturas_llegadas").add({
-        recibo: destinoFacturas,
-        caja: cajaFull,
-        vendor: vendor || 'PROVEEDOR GENERAL',
-        factura: factura || 'S/F',
-        folio: folio,
-        usuarioSolicita: currentUserEmail,
-        fecha: fechaStr,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(() => {
-        alert(`✅ Llegada registrada con éxito (Folio: ${folio}). Destino: ${tipoUbicacion} ${rampaDestino || ''}`);
-        document.getElementById('formCapturaLlegadas').reset();
-        actualizarFolioAutomatico();
-      });
     }
 
     function renderInventarioPatios(patiosList) {
@@ -1558,6 +1738,135 @@
         let text = row.innerText.toLowerCase();
         row.style.display = text.includes(query) ? '' : 'none';
       });
+    }
+
+    // TERCER REQUERIMIENTO: FUNCIONES PESTAÑA DEDICADA "HISTÓRICO DE LLEGADAS" (IMÁGENES 7 Y 8)
+    function irACapturaLlegadas() {
+      const btn = document.getElementById('llegadas-tab');
+      if(btn) btn.click();
+    }
+
+    function renderTablaHistoricoCompleto(list) {
+      const tbody = document.getElementById('tbodyHistoricoLlegadasCompleto');
+      if(!tbody) return;
+
+      if (!list || list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="13" class="text-muted py-4">No se encontraron registros de llegadas.</td></tr>`;
+        return;
+      }
+
+      let html = "";
+      list.forEach(item => {
+        let capturadoStr = item.capturadoPor || item.usuarioSolicita || 'Sistema';
+        let editadoStr = item.editadoPor ? `<br><span class="text-warning small">Editado: ${item.editadoPor} (${item.fechaEdicion || ''})</span>` : '';
+
+        html += `<tr>
+          <td class="fw-bold text-info">${item.folio || ''}</td>
+          <td>${item.tamanoCaja || ''}</td>
+          <td>${item.linea || ''}</td>
+          <td class="fw-bold text-warning">${item.caja || ''}</td>
+          <td>${item.contenido || ''}</td>
+          <td>${item.tipoUbicacion || 'Patio'}</td>
+          <td class="fw-bold text-success">${item.ubicacion || 'Patio'}</td>
+          <td>${item.fecha || ''}</td>
+          <td>${item.hora || ''}</td>
+          <td>${item.salida || 'Pendiente'}</td>
+          <td class="text-start"><small>${item.factura || 'S/F'}: ${item.vendor || ''}</small></td>
+          <td><small class="text-info">${capturadoStr}</small>${editadoStr}</td>
+          <td>
+            <button class="btn btn-primary btn-sm p-1" onclick="abrirModalEditarLlegada('${item._docId || item.folio}')" title="Editar llegada">
+              📝
+            </button>
+          </td>
+        </tr>`;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    function filtrarHistoricoAvanzado() {
+      if (!window.llegadasFirestoreCache) return;
+      let list = [...window.llegadasFirestoreCache];
+
+      let fInicio = document.getElementById('hist_fecha_inicio').value;
+      let fFin = document.getElementById('hist_fecha_fin').value;
+      let provQ = document.getElementById('hist_proveedor_input').value.toLowerCase().trim();
+      let genQ = document.getElementById('hist_general_search').value.toLowerCase().trim();
+
+      list = list.filter(item => {
+        let match = true;
+        
+        if (provQ) {
+          let vendorStr = (item.vendor || '').toLowerCase();
+          if (!vendorStr.includes(provQ)) match = false;
+        }
+
+        if (genQ) {
+          let rowStr = `${item.folio} ${item.linea} ${item.caja} ${item.vendor} ${item.contenido} ${item.ubicacion} ${item.factura}`.toLowerCase();
+          if (!rowStr.includes(genQ)) match = false;
+        }
+
+        return match;
+      });
+
+      renderTablaHistoricoCompleto(list);
+    }
+
+    function abrirModalEditarLlegada(docId) {
+      if(!window.llegadasFirestoreCache) return;
+      let docData = window.llegadasFirestoreCache.find(x => x._docId === docId || String(x.folio) === String(docId));
+      if (!docData) return;
+
+      document.getElementById('edit_modal_doc_id').value = docData._docId || docData.folio;
+      document.getElementById('edit_modal_tamano').value = docData.tamanoCaja || '';
+      document.getElementById('edit_modal_linea').value = docData.linea || '';
+      document.getElementById('edit_modal_caja_num').value = docData.caja || '';
+      document.getElementById('edit_modal_contenido').value = docData.contenido || '';
+      document.getElementById('edit_modal_tipo_ubicacion').value = docData.tipoUbicacion || 'Patio';
+      document.getElementById('edit_modal_ubicacion').value = docData.ubicacion || '';
+      document.getElementById('edit_modal_salida').value = docData.salida || '';
+
+      let modalElem = document.getElementById('modalEditarLlegada');
+      let modalObj = new bootstrap.Modal(modalElem);
+      modalObj.show();
+    }
+
+    // CONFIRMAR EDICIÓN REGISTRANDO QUIÉN REALIZÓ EL CAMBIO
+    document.getElementById('formModalEditarLlegada').addEventListener('submit', function(e) {
+      e.preventDefault();
+      let docId = document.getElementById('edit_modal_doc_id').value;
+      if (!docId) return;
+
+      let now = new Date();
+      let fechaEdicionStr = now.toLocaleDateString('es-MX') + ' ' + now.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+
+      let updateData = {
+        tamanoCaja: document.getElementById('edit_modal_tamano').value,
+        linea: document.getElementById('edit_modal_linea').value,
+        caja: document.getElementById('edit_modal_caja_num').value,
+        cajaFull: `${document.getElementById('edit_modal_linea').value} ${document.getElementById('edit_modal_caja_num').value}`,
+        contenido: document.getElementById('edit_modal_contenido').value,
+        tipoUbicacion: document.getElementById('edit_modal_tipo_ubicacion').value,
+        ubicacion: document.getElementById('edit_modal_ubicacion').value,
+        salida: document.getElementById('edit_modal_salida').value,
+        editadoPor: currentUserEmail,
+        fechaEdicion: fechaEdicionStr
+      };
+
+      db.collection("llegadas").doc(docId).update(updateData)
+        .then(() => {
+          alert("✅ Registro actualizado correctamente.");
+          let modalElem = document.getElementById('modalEditarLlegada');
+          let modalObj = bootstrap.Modal.getInstance(modalElem);
+          if(modalObj) modalObj.hide();
+        })
+        .catch(err => {
+          alert("❌ Error al actualizar: " + err.message);
+        });
+    });
+
+    function imprimirFoliosLlegadas() {
+      window.print();
     }
 
     function toggleSortFacturas() {
