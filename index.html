@@ -137,7 +137,7 @@
     .btn-submit { background-color: var(--accent-orange); color: black; font-weight: bold; width: 100%; border: none; padding: 10px; font-size: 1.1rem; border-radius: 5px; margin-top: 15px;}
     .btn-submit:hover { background-color: #d68910; }
 
-    /* MAPA DE RAMPAS - LAYOUT UNIFICADO */
+    /* MAPA DE RAMPAS - ESTILO AMARILLO SUR Y PONIENTE */
     .map-layout { background-color: var(--bg-main); padding: 20px; border-radius: 8px; border: 1px dashed var(--accent-orange); }
     .ramp-group { border: 1px solid var(--border-color); border-radius: 6px; padding: 6px; background-color: var(--card-inner); display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; position: relative; margin-top: 10px;}
     .ramp-group-title { position: absolute; top: -12px; background: var(--card-inner); padding: 0 5px; font-size: 0.68rem; color: var(--accent-blue); font-weight: bold; border-radius:3px; }
@@ -183,6 +183,40 @@
     .btn-option-group .btn.active { background-color: var(--accent-blue); color: #fff; border-color: #2980b9; }
 
     .card-prov-text { color: var(--text-main) !important; font-size: 0.78rem; font-weight: bold; margin-top: 3px; display: block; }
+
+    /* REGLAS CSS MODO CLARO PARA TABLAS LEGIBLES (IMÁGENES 4 Y 5) */
+    body.light-theme .table {
+      color: #1a1d20 !important;
+      background-color: #ffffff !important;
+    }
+    body.light-theme .table-dark {
+      color: #1a1d20 !important;
+      background-color: #ffffff !important;
+      border-color: #cbd5e1 !important;
+    }
+    body.light-theme .table-dark th {
+      color: #0f172a !important;
+      background-color: #e2e8f0 !important;
+      border-color: #cbd5e1 !important;
+    }
+    body.light-theme .table-dark td {
+      color: #1a1d20 !important;
+      border-color: #cbd5e1 !important;
+    }
+    body.light-theme .table-striped>tbody>tr:nth-of-type(odd)>* {
+      background-color: #f8fafc !important;
+      color: #1a1d20 !important;
+    }
+    body.light-theme .table-hover>tbody>tr:hover>* {
+      background-color: #f1f5f9 !important;
+      color: #1a1d20 !important;
+    }
+
+    body.light-theme .text-warning { color: #d97706 !important; }
+    body.light-theme .text-info { color: #0284c7 !important; }
+    body.light-theme .text-success { color: #15803d !important; }
+    body.light-theme .text-primary { color: #2563eb !important; }
+    body.light-theme .text-muted { color: #64748b !important; }
 
     @media print {
       body * { visibility: hidden; }
@@ -1109,6 +1143,7 @@
         btn.innerHTML = isLight ? "🌙 Modo Oscuro" : "☀️ Modo Claro (Antiflash)";
       }
       redrawAllCharts();
+      renderFacturasCompletas();
     }
 
     if (localStorage.getItem("themePreference") === "light") {
@@ -1119,7 +1154,7 @@
       }, 100);
     }
 
-    // FIREBASE AUTH HANDLERS & ANONYMOUS AUTH FALLBACK (PRIMER REQUERIMIENTO - FIX PERMISOS)
+    // FIREBASE AUTH HANDLERS & ANONYMOUS AUTH FALLBACK
     auth.onAuthStateChanged((user) => {
       const overlay = document.getElementById("loginOverlay");
       const mainApp = document.getElementById("mainAppContainer");
@@ -1347,7 +1382,7 @@
       }
     };
 
-    // CONSTRUCCIÓN DEL MAPA DE RAMPAS - SEGUNDO REQUERIMIENTO (ALINEACIÓN VERTICAL RECIBO PONIENTE SEGÚN IMAGEN 3)
+    // CONSTRUCCIÓN DEL MAPA DE RAMPAS (ALINEACIÓN VERTICAL RECIBO PONIENTE SEGÚN IMAGEN 3)
     function construirMapaBase() {
       const crearGrupo = (titulo, idGrupo, arrayRampas) => {
         let html = `<div class="ramp-group"><span class="ramp-group-title">${titulo}</span>`;
@@ -1549,7 +1584,7 @@
       });
     }
 
-    // CAPTURA DE LLEGADAS - RESGUARDO Y MANEJO RESILIENTE DE ERRORES DE PERMISO (PRIMER REQUERIMIENTO - IMAGEN 1)
+    // CAPTURA DE LLEGADAS - SINCRONIZACIÓN INMEDIATA CON INVENTARIO DE FACTURAS (PRIMER REQUERIMIENTO - IMAGEN 3)
     function guardarCapturaLlegada(e) {
       if(e) e.preventDefault();
       
@@ -1601,13 +1636,31 @@
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       };
 
+      let destinoFacturas = (area === "PENDIENTE POR DEFINIR" || !area) ? "RECIBO SUR" : area;
+      let registroFactura = {
+        recibo: destinoFacturas,
+        caja: cajaFull,
+        vendor: vendor || 'PROVEEDOR GENERAL',
+        factura: factura || 'S/F',
+        folio: registroLlegada.folio,
+        usuarioSolicita: currentUserEmail,
+        fecha: fechaStr,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
       const exitoLocal = () => {
         if (!window.llegadasFirestoreCache) window.llegadasFirestoreCache = [];
         let existe = window.llegadasFirestoreCache.find(x => String(x.folio) === String(registroLlegada.folio));
         if(!existe) window.llegadasFirestoreCache.unshift(registroLlegada);
         
+        // SINCRONIZACIÓN DIRECTA EN CACHÉ DE FACTURAS PARA APARICIÓN INMEDIATA
+        if (!window.facturasFirestoreCache) window.facturasFirestoreCache = [];
+        let factExiste = window.facturasFirestoreCache.find(x => String(x.folio) === String(registroLlegada.folio) && x.caja === cajaFull);
+        if(!factExiste) window.facturasFirestoreCache.unshift(registroFactura);
+
         renderTablaLlegadasHistorico(window.llegadasFirestoreCache);
         renderTablaHistoricoCompleto(window.llegadasFirestoreCache);
+        renderFacturasCompletas();
 
         if (tipoUbicacion === 'Rampa' && rampaDestino) {
           queueAlert(`Se solicita mulero para la caja ${cajaFull} en rampa ${rampaDestino}.`);
@@ -1651,17 +1704,8 @@
             }).catch(err => console.log("Patios sync notice:", err));
           }
 
-          let destinoFacturas = (area === "PENDIENTE POR DEFINIR" || !area) ? "RECIBO SUR" : area;
-          db.collection("facturas_llegadas").add({
-            recibo: destinoFacturas,
-            caja: cajaFull,
-            vendor: vendor || 'PROVEEDOR GENERAL',
-            factura: factura || 'S/F',
-            folio: registroLlegada.folio,
-            usuarioSolicita: currentUserEmail,
-            fecha: fechaStr,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-          }).catch(err => console.log("Facturas sync notice:", err));
+          db.collection("facturas_llegadas").add(registroFactura)
+            .catch(err => console.log("Facturas sync notice:", err));
 
           exitoLocal();
         })
@@ -1922,15 +1966,16 @@
       return new Date(fStr);
     }
 
+    // DIBUJAR INVENTARIO DE FACTURAS AGRUPADO POR PROVEEDOR (RESTRUCTURACIÓN FIEL A IMAGEN 3)
     function dibujarFacturasGroups(containerId, query = "") {
-      let grupos = { "RECIBO SUR": [], "RECIBO PONIENTE": [], "RECIBO ORIENTE": [] };
+      let grupos = { "RECIBO SUR": {}, "RECIBO PONIENTE": {}, "RECIBO ORIENTE": {} };
       let maxDiasFiltro = document.getElementById('filterDiasAntiguedad') ? document.getElementById('filterDiasAntiguedad').value : "todos";
 
       if(window.facturasFirestoreCache && window.facturasFirestoreCache.length > 0) {
         let now = new Date();
         window.facturasFirestoreCache.forEach(fExtra => {
           let recName = fExtra.recibo || "RECIBO SUR";
-          if(!grupos[recName]) grupos[recName] = [];
+          if(!grupos[recName]) grupos[recName] = {};
           
           let fDate = parseFechaSimple(fExtra.fecha);
           let diffDias = Math.floor((now - fDate) / (1000 * 60 * 60 * 24));
@@ -1943,52 +1988,80 @@
           }
 
           if (pasaFiltroAntiguedad) {
-            grupos[recName].push({
+            let vendorName = (fExtra.vendor || 'PROVEEDOR GENERAL').toUpperCase();
+            if (!grupos[recName][vendorName]) {
+              grupos[recName][vendorName] = [];
+            }
+            grupos[recName][vendorName].push({
               caja: fExtra.caja,
               fecha: fExtra.fecha,
               dateObj: fDate,
               diasAntiguedad: diffDias,
-              vendor: fExtra.vendor,
+              vendor: vendorName,
               factura: fExtra.factura || 'S/F',
-              folio: fExtra.folio || 'N/A',
-              color: getVendorColor(fExtra.vendor)
+              folio: fExtra.folio || 'N/A'
             });
           }
         });
       }
 
-      Object.keys(grupos).forEach(rec => {
-        grupos[rec].sort((a,b) => sortFacturasDesc ? (b.dateObj - a.dateObj) : (a.dateObj - b.dateObj));
-      });
-
       const renderCol = (secName) => {
-        let list = grupos[secName] || [];
-        let html = `<div class="col-md-4"><div class="card-terminal p-3" style="max-height: 800px; overflow-y: auto;"><h5 class="text-center text-warning mb-3 border-bottom border-warning pb-2">${secName} (${list.length})</h5><div class="facturas-list">`;
+        let vendorMap = grupos[secName] || {};
+        let vendorNames = Object.keys(vendorMap);
         
-        if (list.length === 0) {
+        let html = `<div class="col-md-4">
+          <div class="card-terminal p-3" style="max-height: 800px; overflow-y: auto;">
+            <h5 class="text-center text-warning mb-3 border-bottom border-warning pb-2" style="font-size: 1.1rem; letter-spacing: 1px;">${secName}</h5>
+            <div class="facturas-list">`;
+        
+        let totalItemsInCol = 0;
+
+        if (vendorNames.length === 0) {
           html += `<div class="text-muted text-center py-4 small">Sin facturas o cajas registradas en esta área.</div>`;
         } else {
-          list.forEach(item => {
-            let cajaMatch = item.caja.toLowerCase().includes(query);
-            let fechaMatch = item.fecha.toLowerCase().includes(query);
-            let vendorMatch = item.vendor ? item.vendor.toLowerCase().includes(query) : false;
-            let facturaMatch = item.factura ? item.factura.toLowerCase().includes(query) : false;
+          vendorNames.forEach(vName => {
+            let items = vendorMap[vName];
+            
+            items.sort((a,b) => sortFacturasDesc ? (b.dateObj - a.dateObj) : (a.dateObj - b.dateObj));
 
-            if (query === "" || cajaMatch || fechaMatch || vendorMatch || facturaMatch) {
-              html += `<div class="d-flex justify-content-between align-items-center mb-2 px-3 py-2 rounded border border-secondary shadow-sm" style="background-color: var(--card-inner);">
-                          <div class="d-flex flex-column text-start">
-                            <span class="badge mb-1" style="background-color: #7b2cbf; color: white; font-size: 0.8rem; width: fit-content;">${item.caja}</span>
-                            <span class="card-prov-text">${item.vendor}</span>
-                            <small class="text-info fw-bold" style="font-size:0.72rem;">Factura: ${item.factura} | Folio: ${item.folio}</small>
-                          </div>
-                          <div class="text-end d-flex flex-column align-items-end">
-                            <span class="fw-bold text-warning" style="font-size: 0.75rem;">📅 ${item.fecha || 'Sin Fecha'}</span>
-                            <span class="badge bg-secondary text-white mt-1" style="font-size:0.65rem;">⏱️ ${item.diasAntiguedad} Días</span>
-                          </div>
-                       </div>`;
+            let matchingItems = items.filter(item => {
+              if (query === "") return true;
+              let cMatch = item.caja.toLowerCase().includes(query);
+              let fMatch = item.fecha.toLowerCase().includes(query);
+              let vMatch = item.vendor.toLowerCase().includes(query);
+              let facMatch = item.factura.toLowerCase().includes(query);
+              return cMatch || fMatch || vMatch || facMatch;
+            });
+
+            if (matchingItems.length > 0) {
+              totalItemsInCol += matchingItems.length;
+              let bannerColor = getVendorColor(vName);
+              
+              // DISEÑO DE BANNER PROVEEDOR SEGÚN IMAGEN 3
+              html += `<div class="vendor-group-block mb-3">
+                <div class="d-flex justify-content-between align-items-center px-3 py-2 rounded mb-2 shadow-sm" style="background-color: ${bannerColor}; color: #ffffff; font-weight: bold;">
+                  <span style="font-size: 0.88rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.7);">${vName}</span>
+                  <span class="badge bg-dark text-white rounded-pill px-2 py-1" style="font-size: 0.75rem;">${matchingItems.length}</span>
+                </div>
+                <div class="d-flex flex-column gap-1 ms-1">`;
+
+              matchingItems.forEach(item => {
+                let invoiceText = item.factura && item.factura !== 'S/F' ? ` (${item.factura})` : '';
+                html += `<div class="d-flex justify-content-between align-items-center px-2 py-1.5 rounded border border-secondary" style="background-color: var(--card-inner); font-size: 0.8rem;">
+                  <span class="badge" style="background-color: #7b2cbf; color: #ffffff; font-size: 0.75rem; padding: 4px 8px;">${item.caja}${invoiceText}</span>
+                  <span class="fw-bold text-warning" style="font-size: 0.75rem;">📅 ${item.fecha || 'Sin Fecha'}</span>
+                </div>`;
+              });
+
+              html += `</div></div>`;
             }
           });
+
+          if (totalItemsInCol === 0) {
+            html += `<div class="text-muted text-center py-4 small">No coinciden facturas con la búsqueda.</div>`;
+          }
         }
+
         html += `</div></div></div>`;
         return html;
       };
