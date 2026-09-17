@@ -30,9 +30,9 @@
 
     body.light-theme {
       --bg-main: #fafafa !important;
-      --text-main: #1a1d20 !important;
+      --text-main: #0f172a !important;
       --card-bg: #ffffff !important;
-      --card-inner: #f0f4f9 !important;
+      --card-inner: #f1f5f9 !important;
       --header-bg: #ffffff !important;
       --border-color: #cbd5e1 !important;
       --input-bg: #ffffff !important;
@@ -184,40 +184,48 @@
 
     .card-prov-text { color: var(--text-main) !important; font-size: 0.78rem; font-weight: bold; margin-top: 3px; display: block; }
 
-    /* REGLAS CSS MODO CLARO PARA TABLAS LEGIBLES Y PERFECTAS (SEGUNDO REQUERIMIENTO - IMÁGENES 4 Y 5) */
-    body.light-theme .table {
-      color: #0f172a !important;
-      background-color: #ffffff !important;
-    }
-    body.light-theme .table-dark {
+    /* CORRECCIÓN DE CONTRASTE PERFECTO PARA MODO CLARO / ANTIFLASH (IMAGEN 2 FIX) */
+    body.light-theme .table,
+    body.light-theme .table-dark,
+    body.light-theme #tablaHistoricoLlegadasCompleta,
+    body.light-theme #tablaHistoricoLlegadasCompleta tr,
+    body.light-theme #tablaHistoricoLlegadasCompleta td,
+    body.light-theme #tablaHistoricoLlegadasCompleta th,
+    body.light-theme #tabla-llegadas-historico-container table,
+    body.light-theme #tabla-llegadas-historico-container table tr,
+    body.light-theme #tabla-llegadas-historico-container table td,
+    body.light-theme #tabla-llegadas-historico-container table th {
       color: #0f172a !important;
       background-color: #ffffff !important;
       border-color: #cbd5e1 !important;
     }
-    body.light-theme .table-dark th {
+
+    body.light-theme .table-dark th,
+    body.light-theme #tablaHistoricoLlegadasCompleta th,
+    body.light-theme #tabla-llegadas-historico-container table th {
       color: #0f172a !important;
       background-color: #e2e8f0 !important;
       border-color: #cbd5e1 !important;
+      font-weight: bold;
     }
-    body.light-theme .table-dark td {
-      color: #0f172a !important;
-      background-color: #ffffff !important;
-      border-color: #cbd5e1 !important;
-    }
-    body.light-theme .table-striped > tbody > tr:nth-of-type(odd) > * {
+
+    body.light-theme .table-striped > tbody > tr:nth-of-type(odd) > td,
+    body.light-theme .table-striped > tbody > tr:nth-of-type(odd) {
       background-color: #f8fafc !important;
       color: #0f172a !important;
     }
-    body.light-theme .table-hover > tbody > tr:hover > * {
+
+    body.light-theme .table-hover > tbody > tr:hover > td,
+    body.light-theme .table-hover > tbody > tr:hover {
       background-color: #f1f5f9 !important;
       color: #0f172a !important;
     }
 
     body.light-theme .text-warning { color: #d97706 !important; }
     body.light-theme .text-info { color: #0284c7 !important; }
-    body.light-theme .text-success { color: #15803d !important; }
+    body.light-theme .text-success { color: #16a34a !important; }
     body.light-theme .text-primary { color: #2563eb !important; }
-    body.light-theme .text-muted { color: #64748b !important; }
+    body.light-theme .text-muted { color: #475569 !important; }
 
     @media print {
       body * { visibility: hidden; }
@@ -1133,6 +1141,28 @@
       return audioCtx;
     }
 
+    // PERSISTENCIA LOCAL EN TIEMPO REAL (RESISTENTE A REFRESH)
+    function guardarMemoriaLocal() {
+      try {
+        if(window.llegadasFirestoreCache) localStorage.setItem("cache_llegadas", JSON.stringify(window.llegadasFirestoreCache));
+        if(window.facturasFirestoreCache) localStorage.setItem("cache_facturas", JSON.stringify(window.facturasFirestoreCache));
+        if(baseDataCache.salidas) localStorage.setItem("cache_salidas", JSON.stringify(baseDataCache.salidas));
+      } catch(e) { console.log("Local storage write notice:", e); }
+    }
+
+    function cargarMemoriaLocal() {
+      try {
+        let l = localStorage.getItem("cache_llegadas");
+        if(l) window.llegadasFirestoreCache = JSON.parse(l);
+
+        let f = localStorage.getItem("cache_facturas");
+        if(f) window.facturasFirestoreCache = JSON.parse(f);
+
+        let s = localStorage.getItem("cache_salidas");
+        if(s) baseDataCache.salidas = JSON.parse(s);
+      } catch(e) { console.log("Local storage read notice:", e); }
+    }
+
     // CAMBIO DE TEMA ANTIFLASH
     function toggleTheme() {
       const body = document.body;
@@ -1252,22 +1282,33 @@
     }
 
     function actualizarFolioAutomatico() {
+      let maxFolio = 339931;
+
+      if (window.llegadasFirestoreCache && window.llegadasFirestoreCache.length > 0) {
+        window.llegadasFirestoreCache.forEach(docData => {
+          if (docData && docData.folio) {
+            let fNum = parseInt(docData.folio, 10);
+            if (!isNaN(fNum) && fNum > maxFolio) maxFolio = fNum;
+          }
+        });
+      }
+
+      let el = document.getElementById('llegada_folio');
+      if(el) el.value = maxFolio + 1;
+
       db.collection("llegadas").orderBy("timestamp", "desc").limit(1).get()
         .then((snapshot) => {
-          let maxFolio = 339931;
           if (!snapshot.empty) {
             let docData = snapshot.docs[0].data();
             if (docData && docData.folio) {
               let fNum = parseInt(docData.folio, 10);
-              if (!isNaN(fNum)) maxFolio = fNum;
+              if (!isNaN(fNum) && fNum >= maxFolio) maxFolio = fNum;
             }
           }
-          let el = document.getElementById('llegada_folio');
           if(el) el.value = maxFolio + 1;
         })
         .catch(() => { 
-          let el = document.getElementById('llegada_folio');
-          if(el) el.value = 339948; 
+          if(el) el.value = maxFolio + 1;
         });
     }
 
@@ -1341,7 +1382,10 @@
     }
 
     function queueAlert(textoVoz) {
-      if (!audioActivado) return;
+      audioActivado = true; // Activar voz explícitamente para llamados
+      const ctx = getAudioContext();
+      if (ctx && ctx.state === 'suspended') ctx.resume();
+
       alertQueue = alertQueue.then(async () => {
         await playToneAsync(800, 'square', 0.15, 0.1);
         await playToneAsync(1000, 'square', 0.15, 0.1);
@@ -1383,7 +1427,7 @@
       }
     };
 
-    // CONSTRUCCIÓN DEL MAPA DE RAMPAS (ALINEACIÓN VERTICAL RECIBO PONIENTE SEGÚN IMAGEN 3)
+    // CONSTRUCCIÓN DEL MAPA DE RAMPAS (ALINEACIÓN VERTICAL PONIENTE)
     function construirMapaBase() {
       const crearGrupo = (titulo, idGrupo, arrayRampas) => {
         let html = `<div class="ramp-group"><span class="ramp-group-title">${titulo}</span>`;
@@ -1414,7 +1458,6 @@
                     </div>
                    </div>`;
       
-      // ENCABEZADO AMARILLO SUR DESTACADO
       mapaHtml += `<div class="d-flex flex-column align-items-center">
                     <div class="sur-header-banner">RAMPAS RECIBO SUR</div>` + 
                     crearGrupo("", "sur", ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"]) + 
@@ -1445,7 +1488,6 @@
                    </div>`;
       mapaHtml += `</div><div class="flex-grow-1"></div>`;
       
-      // RAMPAS RECIBO PONIENTE (LATERAL DERECHA - COLUMNA VERTICAL EXACTA SEGÚN IMAGEN 3)
       mapaHtml += `<div class="d-flex gap-2 align-items-stretch">
                     <div class="d-flex flex-column gap-2">`;
       mapaHtml += crearGrupoVertical("Rampa de Servicios", "serv2", ["Serv 2"]);
@@ -1516,18 +1558,21 @@
 
     // CARGA DE DATOS DE FIRESTORE
     function cargarDatosBase() {
+      cargarMemoriaLocal();
+
       db.collection("salidas").onSnapshot(snapshot => {
         let liveSalidas = [];
         snapshot.forEach(doc => {
           let d = doc.data();
           liveSalidas.push([d.caja, d.retira || '', d.rampa || '', d.mulero || '', d.paso1 || '', d.paso2 || '', d.paso3 || '', d.paso4 || '', d.paso5 || '', d.paso6 || '', '', '', d.usuario || '', d.status || 'En Proceso']);
         });
-        baseDataCache.salidas = liveSalidas;
-        dibujarCajasActivas(liveSalidas);
-        actualizarMapaRampas(liveSalidas);
-        if (typeof google !== 'undefined' && google.charts) { dibujarDonutStatus(liveSalidas); }
+        if(liveSalidas.length > 0) baseDataCache.salidas = liveSalidas;
+        dibujarCajasActivas(baseDataCache.salidas);
+        actualizarMapaRampas(baseDataCache.salidas);
+        if (typeof google !== 'undefined' && google.charts) { dibujarDonutStatus(baseDataCache.salidas); }
         poblarDatalistCajas();
         calcularMetricasProveedores();
+        guardarMemoriaLocal();
       });
 
       db.collection("llegadas").orderBy("timestamp", "desc").onSnapshot(snapshot => {
@@ -1537,10 +1582,12 @@
           data._docId = doc.id;
           list.push(data);
         });
-        window.llegadasFirestoreCache = list;
-        renderTablaLlegadasHistorico(list);
-        renderTablaHistoricoCompleto(list);
+        if(list.length > 0) window.llegadasFirestoreCache = list;
+        renderTablaLlegadasHistorico(window.llegadasFirestoreCache);
+        renderTablaHistoricoCompleto(window.llegadasFirestoreCache);
         poblarDatalistCajas();
+        actualizarFolioAutomatico();
+        guardarMemoriaLocal();
       });
 
       db.collection("descargas").onSnapshot(snapshot => {
@@ -1579,14 +1626,15 @@
       db.collection("facturas_llegadas").onSnapshot(snapshot => {
         let extraFacturas = [];
         snapshot.forEach(doc => { extraFacturas.push(doc.data()); });
-        window.facturasFirestoreCache = extraFacturas;
+        if(extraFacturas.length > 0) window.facturasFirestoreCache = extraFacturas;
         renderFacturasCompletas();
         poblarDatalistCajas();
         calcularMetricasProveedores();
+        guardarMemoriaLocal();
       });
     }
 
-    // CAPTURA DE LLEGADAS - SINCRONIZACIÓN CON FACTURAS Y AUTOCOMPLETADO BÁSCULA
+    // CAPTURA DE LLEGADAS
     function guardarCapturaLlegada(e) {
       if(e) e.preventDefault();
       
@@ -1659,14 +1707,22 @@
         let factExiste = window.facturasFirestoreCache.find(x => String(x.folio) === String(registroLlegada.folio) && x.caja === cajaFull);
         if(!factExiste) window.facturasFirestoreCache.unshift(registroFactura);
 
+        if (tipoUbicacion === 'Rampa' && rampaDestino) {
+          let existingIdx = baseDataCache.salidas.findIndex(x => x[0] === cajaFull);
+          let tuple = [cajaFull, vendor || "PROVEEDOR GENERAL", rampaDestino, "Pendiente Mulero", horaStr, "", "", "", "", "", "", "", `Pide: ${currentUserEmail} | Confirms: Pendiente`, "En Proceso"];
+          if(existingIdx >= 0) baseDataCache.salidas[existingIdx] = tuple;
+          else baseDataCache.salidas.unshift(tuple);
+
+          dibujarCajasActivas(baseDataCache.salidas);
+          actualizarMapaRampas(baseDataCache.salidas);
+          queueAlert(`Se solicita mulero para la caja ${cajaFull} en rampa ${rampaDestino}.`);
+        }
+
         renderTablaLlegadasHistorico(window.llegadasFirestoreCache);
         renderTablaHistoricoCompleto(window.llegadasFirestoreCache);
         renderFacturasCompletas();
         poblarDatalistCajas();
-
-        if (tipoUbicacion === 'Rampa' && rampaDestino) {
-          queueAlert(`Se solicita mulero para la caja ${cajaFull} en rampa ${rampaDestino}.`);
-        }
+        guardarMemoriaLocal();
 
         alert(`✅ Llegada registrada con éxito (Folio: ${registroLlegada.folio}). Ubicación: ${tipoUbicacion} ${rampaDestino || ''}`);
         let form = document.getElementById('formCapturaLlegadas');
@@ -1932,6 +1988,7 @@
             if(item) {
               Object.assign(item, updateData);
               renderTablaHistoricoCompleto(window.llegadasFirestoreCache);
+              guardarMemoriaLocal();
             }
           }
           alert("✅ Registro actualizado en modo Local.");
@@ -1968,7 +2025,7 @@
       return new Date(fStr);
     }
 
-    // DIBUJAR INVENTARIO DE FACTURAS AGRUPADO POR PROVEEDOR (RESTRUCTURACIÓN FIEL A IMAGEN 3)
+    // DIBUJAR INVENTARIO DE FACTURAS AGRUPADO POR PROVEEDOR
     function dibujarFacturasGroups(containerId, query = "") {
       let grupos = { "RECIBO SUR": {}, "RECIBO PONIENTE": {}, "RECIBO ORIENTE": {} };
       let maxDiasFiltro = document.getElementById('filterDiasAntiguedad') ? document.getElementById('filterDiasAntiguedad').value : "todos";
@@ -2039,7 +2096,6 @@
               totalItemsInCol += matchingItems.length;
               let bannerColor = getVendorColor(vName);
               
-              // BANNER PROVEEDOR (IMAGEN 3)
               html += `<div class="vendor-group-block mb-3">
                 <div class="d-flex justify-content-between align-items-center px-3 py-2 rounded mb-2 shadow-sm" style="background-color: ${bannerColor}; color: #ffffff; font-weight: bold;">
                   <span style="font-size: 0.88rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.7);">${vName}</span>
@@ -2449,7 +2505,6 @@
       if(vcElem) vcElem.innerHTML = html;
     }
 
-    // POBLAR BÚSQUEDA BÁSCULA CON TODAS LAS LLEGADAS / FACTURAS DISPONIBLES (PRIMER REQUERIMIENTO)
     function poblarDatalistCajas() {
       let html = "";
       let cajasAgregadas = new Set();
@@ -2529,7 +2584,6 @@
       });
     };
 
-    // ENVÍO DE FORMULARIO BÁSCULA - RESGUARDO LOCAL PARA PERMISOS DE FIRESTORE (PRIMER REQUERIMIENTO)
     function enviarFormulario(e) {
       if(e) e.preventDefault(); 
       const btn = document.getElementById('btnGuardar');
@@ -2590,6 +2644,7 @@
         dibujarCajasActivas(baseDataCache.salidas);
         actualizarMapaRampas(baseDataCache.salidas);
         if (typeof google !== 'undefined' && google.charts) { dibujarDonutStatus(baseDataCache.salidas); }
+        guardarMemoriaLocal();
 
         let msg = document.getElementById('mensajeExito');
         if(msg) {
